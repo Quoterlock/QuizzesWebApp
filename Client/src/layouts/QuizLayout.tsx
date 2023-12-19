@@ -6,7 +6,7 @@ interface Props {
 
 export function QuizLayout({children}: Props) {
     return(
-        <div>
+        <div className="bg-color">
             {children}
         </div>
     )

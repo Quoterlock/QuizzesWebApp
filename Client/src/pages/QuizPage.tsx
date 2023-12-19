@@ -11,10 +11,11 @@ export default function QuizPage(){
 
     const hNextQuestion = () => {
         setSelectedQuestion(selectedQuestion+1)
-        userAnswers
+        console.log(userAnswers)
     }
     const hPrevQuestion = () => {
         setSelectedQuestion(selectedQuestion-1)
+        console.log(userAnswers)
     }
 
     const hOnAnswerChange = (index:number) => {
@@ -22,8 +23,6 @@ export default function QuizPage(){
         answers[selectedQuestion] = index 
         setAnswer(answers)
         console.log("Change question " + selectedQuestion + " answer " + index)
-        setShowAnswer(false)
-        setShowAnswer(true)
     }
 
     const hShowAnswerChange = () => {
@@ -39,16 +38,22 @@ export default function QuizPage(){
 
     return(
     <QuizLayout>
-        <div className="background-color col-2 mx-auto">
-            <h1>Question</h1>
-            <Question onAnswerChange={hOnAnswerChange} item={questions[selectedQuestion]}/>
-            {showAnswer && <div>
-                {questions[selectedQuestion].correctAnswerIndex === userAnswers[selectedQuestion] ?
-                <p style={greenText}>Correct!</p> : <p style={redText}>Wrong!</p> }
-                </div>}
+        <div className="col-6 mx-auto">
+            <div className="block-style mb-3">
+                <h1>{
+                    "Question " + (selectedQuestion + 1).toString() + "/" + questions.length.toString()
+                }</h1>
+                <Question onAnswerChange={hOnAnswerChange} 
+                    item={questions[selectedQuestion]} 
+                    userAnswer={userAnswers[selectedQuestion]}/>
+                {showAnswer && <div>
+                    {questions[selectedQuestion].correctAnswerIndex === userAnswers[selectedQuestion] ?
+                    <p className="correct-answer-label-style text-center">Correct!</p> : <p className="wrong-answer-label-style text-center">Wrong!</p> }
+                    </div>}    
+            </div>
             <button className="btn active-btn" onClick={hPrevQuestion}>Prev</button>
-            <button className="btn btn-primary" onClick={hNextQuestion}>Next</button>
-            <button className="btn btn-primary" onClick={hShowAnswerChange}>Finish</button>
+            <button className="btn active-btn" onClick={hNextQuestion}>Next</button>
+            <button className="btn active-btn" onClick={hShowAnswerChange}>Finish</button>
         </div>
     </QuizLayout>)
 }
@@ -57,17 +62,17 @@ function InitQuestions(): QuizItem[] {
     const arr: QuizItem[] = [
         {
             id: "1",
-            question: "1",
+            question: "Як перекладається слово Wizard?",
             answers: [
-                "1","2","3"
+                "а) Чарівник","б) Метелиця","в) Привид"
             ],
-            correctAnswerIndex:2
+            correctAnswerIndex:0
         },
         {
             id: "2",
-            question: "2",
+            question: "Як перекладається слово Adventure?",
             answers: [
-                "1","2","3"
+                "а) Робота","б) Розвиток", "в) Пригода"
             ],
             correctAnswerIndex:2
         }

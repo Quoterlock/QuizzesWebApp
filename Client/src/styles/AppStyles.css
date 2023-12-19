@@ -1,3 +1,76 @@
-.block-style (
-    background-color: yellow;
-)
+:root {
+    --background-color : #2d302f;
+    --block-bg-color : #5b6057;
+    --block-highlings-color : #747a6f;
+    --block-shadow-color : #40423e;
+    --active-color : #ffba7a;
+    --border-active-color : ;
+    --active-color-shadow : #815c39;
+    --main-text-color :;
+    --minor-text-color :; 
+    --danger-color : #ff6a6a;
+    --danger-color-shadow : #a04d4d;
+    --success-color-shadow: #528162;
+    --success-color: #78c091;
+}
+
+.body-style {
+    padding: 30px;
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: white;
+}
+
+.block-style {
+    background-color: var(--block-bg-color);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 8px var(--block-shadow-color);
+}
+
+.answer-style {
+    color: black;
+    border-radius: 10px;
+    background-color: var(--block-highlings-color);
+    padding: 10px;
+    box-shadow: 0px 5px var(--block-shadow-color);
+}
+
+.selected-answer-style {
+    color: black;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: var(--active-color);
+    box-shadow: 0px 5px var(--active-color-shadow);
+}
+
+.wrong-answer-label-style {
+    color: black;
+    border-radius: 10px;
+    padding: 5px;
+    background-color: var(--danger-color);
+    box-shadow: 0px 5px var(--danger-color-shadow);    
+}
+
+.correct-answer-label-style {
+    color: black;
+    border-radius: 10px;
+    padding: 5px;
+    background-color: var(--success-color);
+    box-shadow: 0px 5px var(--success-color-shadow);    
+}
+
+.active-btn {
+    margin: 5px;
+    background-color: var(--active-color) !important;
+    box-shadow: 0px 5px var(--active-color-shadow);
+}
+
+.active-btn:focus {
+    transform: translateY(5px);
+    box-shadow: 0px 0px var(--active-color-shadow);
+}
+
+.minor-btn {
+
+}
