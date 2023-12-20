@@ -1,65 +1,47 @@
-import Question from "../components/Question"
 import { QuizLayout } from "../layouts/QuizLayout"
+import Quiz from '../components/Quiz'
 import { useState } from "react"
 
 export default function QuizPage(){
-    const questions = InitQuestions()
-    const [selectedQuestion, setSelectedQuestion] = useState(0)
-    const [userAnswers, setAnswer] = useState<number[]>(new Array(questions.length))
-    const [showAnswer, setShowAnswer] = useState(false)
 
+    const [quiz, setQuiz] = useState(InitQuestions())
+    const [isDone, setIsDone] = useState(false)
+    const [userAnswers, setAnswers] = useState<number[]>(new Array(quiz.questions.length, 0))
 
-    const hNextQuestion = () => {
-        setSelectedQuestion(selectedQuestion+1)
-        console.log(userAnswers)
-    }
-    const hPrevQuestion = () => {
-        setSelectedQuestion(selectedQuestion-1)
-        console.log(userAnswers)
+    const hOnDone = (answers:number[]) => {
+        setIsDone(true)
+        setAnswers(answers)
     }
 
-    const hOnAnswerChange = (index:number) => {
-        let answers = userAnswers
-        answers[selectedQuestion] = index 
-        setAnswer(answers)
-        console.log("Change question " + selectedQuestion + " answer " + index)
+    const onReset = () => {
+        setQuiz(InitQuestions())
+        setIsDone(false)
+
     }
 
-    const hShowAnswerChange = () => {
-        setShowAnswer(!showAnswer)
-    }
 
-    const redText = {
-        color: 'red'
-    }
-    const greenText = {
-        color: 'green'
-    }
-
-    return(
-    <QuizLayout>
-        <div className="col-6 mx-auto">
-            <div className="block-style mb-3">
-                <h1>{
-                    "Question " + (selectedQuestion + 1).toString() + "/" + questions.length.toString()
-                }</h1>
-                <Question onAnswerChange={hOnAnswerChange} 
-                    item={questions[selectedQuestion]} 
-                    userAnswer={userAnswers[selectedQuestion]}/>
-                {showAnswer && <div>
-                    {questions[selectedQuestion].correctAnswerIndex === userAnswers[selectedQuestion] ?
-                    <p className="correct-answer-label-style text-center">Correct!</p> : <p className="wrong-answer-label-style text-center">Wrong!</p> }
-                    </div>}    
+    return (<QuizLayout>
+        <div className="col-4 mx-auto">
+        { !isDone ? <Quiz quiz={quiz} onDone={hOnDone}></Quiz> :
+            <div>
+                <button className="btn active-btn mb-3" onClick={onReset}>Restart</button>
+                { quiz.questions.map((question, index) => (
+                <div key={index} className="block-style mb-3">
+                    <h5>{(index+1 ).toString() + ". " + question.question}</h5>
+                    <p className={ question.correctAnswerIndex === userAnswers[index] 
+                    ? "correct-answer-label-style" 
+                    : "wrong-answer-label-style"}>{"Your answer: " + question.answers[userAnswers[index]]}</p>
+                    <p>{"Correct answer: " + question.answers[question.correctAnswerIndex]}</p>
+                </div>
+            ))}
             </div>
-            <button className="btn active-btn" onClick={hPrevQuestion}>Prev</button>
-            <button className="btn active-btn" onClick={hNextQuestion}>Next</button>
-            <button className="btn active-btn" onClick={hShowAnswerChange}>Finish</button>
+        }
         </div>
     </QuizLayout>)
 }
 
-function InitQuestions(): QuizItem[] {
-    const arr: QuizItem[] = [
+function InitQuestions(): QuizItem {
+    const arr: QuestionItem[] = [
         {
             id: "1",
             question: "Як перекладається слово Wizard?",
@@ -77,5 +59,6 @@ function InitQuestions(): QuizItem[] {
             correctAnswerIndex:2
         }
     ]
-    return (arr)
+
+    return ({rate:5, questions:arr, author:"Dick Dickkenson", title:"English words"})
 }

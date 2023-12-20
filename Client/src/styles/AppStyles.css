@@ -4,10 +4,7 @@
     --block-highlings-color : #747a6f;
     --block-shadow-color : #40423e;
     --active-color : #ffba7a;
-    --border-active-color : ;
     --active-color-shadow : #815c39;
-    --main-text-color :;
-    --minor-text-color :; 
     --danger-color : #ff6a6a;
     --danger-color-shadow : #a04d4d;
     --success-color-shadow: #528162;
@@ -69,8 +66,4 @@
 .active-btn:focus {
     transform: translateY(5px);
     box-shadow: 0px 0px var(--active-color-shadow);
-}
-
-.minor-btn {
-
 }

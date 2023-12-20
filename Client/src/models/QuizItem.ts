@@ -1,6 +1,6 @@
-type QuizItem = {
-    id: string
-    question: string
-    answers: string[]
-    correctAnswerIndex: number
+type QuizItem {
+    questions: QuestionItem[]
+    rate: number
+    title: string
+    author: string
 }
