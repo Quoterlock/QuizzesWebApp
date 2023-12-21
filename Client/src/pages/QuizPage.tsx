@@ -1,12 +1,17 @@
 import { QuizLayout } from "../layouts/QuizLayout"
 import Quiz from '../components/Quiz'
 import { useState } from "react"
+import { GetQuizById } from '../models/apiManager'
+import { useParams } from "react-router"
 
 export default function QuizPage(){
 
     const [quiz, setQuiz] = useState(InitQuestions())
     const [isDone, setIsDone] = useState(false)
     const [userAnswers, setAnswers] = useState<number[]>(new Array(quiz.questions.length, 0))
+    const {id} = useParams()
+
+    setQuiz(GetQuizById(id as string))
 
     const hOnDone = (answers:number[]) => {
         setIsDone(true)
@@ -18,7 +23,6 @@ export default function QuizPage(){
         setIsDone(false)
 
     }
-
 
     return (<QuizLayout>
         <div className="col-4 mx-auto">

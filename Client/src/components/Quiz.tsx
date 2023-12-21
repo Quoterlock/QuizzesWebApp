@@ -11,6 +11,7 @@ export default function Quiz({quiz, onDone}:Props) {
     const [selectedQuestion, setSelectedQuestion] = useState(0)
     const [userAnswers, setAnswer] = useState<number[]>(new Array(quiz.questions.length))
     const [showAnswer, setShowAnswer] = useState(false)
+    
     console.log(userAnswers)
     const hNextQuestion = () => {
         setSelectedQuestion(selectedQuestion+1)
