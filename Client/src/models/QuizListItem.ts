@@ -1,7 +1,7 @@
 type QuizListItem = {
-    id:number,
-    rate:number,
+    id:string,
     title:string,
+    rate:number,
     author:string,
-    authorId:number
+    authorId:string
 }

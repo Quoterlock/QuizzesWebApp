@@ -12,7 +12,6 @@ export default function Quiz({quiz, onDone}:Props) {
     const [userAnswers, setAnswer] = useState<number[]>(new Array(quiz.questions.length))
     const [showAnswer, setShowAnswer] = useState(false)
     
-    console.log(userAnswers)
     const hNextQuestion = () => {
         setSelectedQuestion(selectedQuestion+1)
     }
@@ -33,7 +32,7 @@ export default function Quiz({quiz, onDone}:Props) {
     const hShowAnswerChange = () => {
         setShowAnswer(!showAnswer)
     }
-
+    console.log(quiz)
     return(
         <div>
             <h1>{"Quiz: " + quiz.title}</h1>
@@ -43,7 +42,7 @@ export default function Quiz({quiz, onDone}:Props) {
                 }</p>
                 <Question 
                     onAnswerChange={hOnAnswerChange} 
-                    item={quiz.questions[selectedQuestion]} 
+                    question={quiz.questions[selectedQuestion]} 
                     userAnswer={userAnswers[selectedQuestion]}/>
                 
                 { showAnswer && <div>
@@ -51,7 +50,7 @@ export default function Quiz({quiz, onDone}:Props) {
                     ? <p className="correct-answer-label-style text-center">Correct!</p> 
                     : <p className="wrong-answer-label-style text-center">Wrong!</p> }
                     </div>
-                }    
+                } 
             </div>
             <button className="btn active-btn" onClick={hPrevQuestion}>Prev</button>
             <button className="btn active-btn" onClick={hNextQuestion}>Next</button>

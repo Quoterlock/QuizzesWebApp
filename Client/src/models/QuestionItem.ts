@@ -1,6 +1,9 @@
 type QuestionItem = {
-    id: string
-    question: string
-    answers: string[]
+    text: string
     correctAnswerIndex: number
+    options: OptionItem[]
+}
+
+type OptionItem = {
+    text: string
 }

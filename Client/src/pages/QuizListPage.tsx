@@ -1,22 +1,11 @@
-import { useState } from "react";
 import GetListOfQuiz from "../models/apiManager";
 import { QuizLayout } from "../layouts/QuizLayout";
-import { Link } from "react-router-dom";
+import QuizList from "../components/QuizList";
 
 export default function QuizListPage() {
-    const [items, setItems] = useState<QuizListItem[]>([])
-    setItems(GetListOfQuiz(0, 0)) // get all
+    const itemsList = GetListOfQuiz(0,0);
 
     return (<QuizLayout>
-        <div>
-            {items.map((item) =>
-                <Link to={"/quiz/${item.id}"}>
-                    <div className="block-style">
-                        <h5>{item.title}</h5>
-                        <p>{item.id}</p>
-                    </div>
-                </Link>
-            )}
-        </div>
+        <QuizList items={itemsList}></QuizList>
     </QuizLayout>)
 }

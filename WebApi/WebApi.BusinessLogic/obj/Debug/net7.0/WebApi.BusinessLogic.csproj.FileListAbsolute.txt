@@ -1,0 +1,15 @@
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.csproj.AssemblyReference.cache
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.AssemblyInfoInputs.cache
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.AssemblyInfo.cs
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.csproj.CoreCompileInputs.cache
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\bin\Debug\net7.0\WebApi.BusinessLogic.deps.json
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\bin\Debug\net7.0\WebApi.BusinessLogic.dll
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\bin\Debug\net7.0\WebApi.BusinessLogic.pdb
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\bin\Debug\net7.0\WebApi.DataAccess.dll
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\bin\Debug\net7.0\WebApi.DataAccess.pdb
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.csproj.CopyComplete
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.dll
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\refint\WebApi.BusinessLogic.dll
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\WebApi.BusinessLogic.pdb
+C:\Users\Kyrpa Vladislav\source\repos\QuizApp\WebApi\WebApi.BusinessLogic\obj\Debug\net7.0\ref\WebApi.BusinessLogic.dll

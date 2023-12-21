@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 
-const apiPath = "local..."
-
+const apiPath = "https://localhost:7181/api"
 
 export function GetListOfQuiz(startIndex:number, endIndex:number) : QuizListItem[] {
     
@@ -9,8 +8,10 @@ export function GetListOfQuiz(startIndex:number, endIndex:number) : QuizListItem
     useEffect(()=>{
         const fetchData = async () => {
             try{
-                const responce = await fetch('${apiPath}/quiz/list?startIndex=${startIndex}&endIndex=${endIndex}')
+                console.log(`${apiPath}/Quizzes/List?startIndex=${startIndex}&endIndex=${endIndex}`)
+                const responce = await fetch(`${apiPath}/Quizzes/List?startIndex=${startIndex}&endIndex=${endIndex}`)
                 const jsonResponce = await responce.json()
+                console.log(jsonResponce)
                 setItems(jsonResponce)
             }
             catch(error){
@@ -19,34 +20,26 @@ export function GetListOfQuiz(startIndex:number, endIndex:number) : QuizListItem
         }
         fetchData()
     }, [])
+    console.log(items)
     return items
 }
 
-export function GetQuizById(id:string) : QuizItem {
-    const [item, setItem] = useState<QuizItem>(getDefaultQuiz())    
-    useEffect(()=>{
-        const fetchData = async () => {
-            try{
-                const responce = await fetch('${apiPath}/quiz/byid?quizId=${id}')
-                const jsonResponce = await responce.json()
-                setItem(jsonResponce)
-            }
-            catch(error){
-                console.error("Error fetching data: ", error)
-            }
+export function GetQuizById(id:string, setItem:(item:QuizItem) => void) {    
+    const hOnSet = (data:QuizItem|undefined) => {
+        if(data != null) {
+            console.log(data)
+            setItem(data)
         }
-        fetchData()
-    }, [])
-    return item
+        console.log("wait...")
+    }
+
+    useEffect(()=>{
+        fetch(`${apiPath}/Quizzes/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                hOnSet(data)
+            })
+    }, [id]) 
 }
 
-function getDefaultQuiz() : QuizItem {
-    return ({
-        questions: [],
-        author: "",
-        title: "",
-        rate: 0
-    })
-}
-
-export default [GetListOfQuiz, GetQuizById]
+export default GetListOfQuiz
