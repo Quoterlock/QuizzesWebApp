@@ -1,9 +1,11 @@
-import GetListOfQuiz from "../models/apiManager";
 import { QuizLayout } from "../layouts/QuizLayout";
 import QuizList from "../components/QuizList";
+import { useContext } from "react";
+import { AppContext } from "../services/app-context";
 
 export default function QuizListPage() {
-    const itemsList = GetListOfQuiz(0,0);
+    const {api} = useContext(AppContext)
+    const itemsList = api.GetList(0,0) 
 
     return (<QuizLayout>
         <QuizList items={itemsList}></QuizList>

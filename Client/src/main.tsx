@@ -8,6 +8,9 @@ import {
 import QuizPage from './pages/QuizPage.tsx';
 import QuizListPage from './pages/QuizListPage.tsx';
 
+
+
+
 const router = createBrowserRouter([
   {
     path:"/",

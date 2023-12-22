@@ -1,15 +1,15 @@
 import { QuizLayout } from "../layouts/QuizLayout"
 import Quiz from '../components/Quiz'
-import { useState } from "react"
-import { GetQuizById } from '../models/apiManager'
+import { useContext, useState } from "react"
 import { useParams } from "react-router"
+import { AppContext } from "../services/app-context"
 
 export default function QuizPage(){
     const {id} = useParams()
     const [quiz, setQuiz] = useState<QuizItem>()
-    
-    GetQuizById(id as string, setQuiz)
-    
+    const {api} = useContext(AppContext)   
+    api.GetById(id as string, setQuiz);
+
     const [isDone, setIsDone] = useState(false)
     const [userAnswers, setAnswers] = useState<number[]>([])
 
