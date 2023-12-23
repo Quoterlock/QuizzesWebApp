@@ -13,11 +13,13 @@ export default function Quiz({quiz, onDone}:Props) {
     const [showAnswer, setShowAnswer] = useState(false)
     
     const hNextQuestion = () => {
-        setSelectedQuestion(selectedQuestion+1)
+        if(selectedQuestion < quiz.questions.length-1)
+            setSelectedQuestion(selectedQuestion+1)
     }
     
     const hPrevQuestion = () => {
-        setSelectedQuestion(selectedQuestion-1)
+        if(selectedQuestion > 0)
+            setSelectedQuestion(selectedQuestion-1)
     }
 
     const hOnAnswerChange = (index:number) => {
@@ -32,7 +34,7 @@ export default function Quiz({quiz, onDone}:Props) {
     const hShowAnswerChange = () => {
         setShowAnswer(!showAnswer)
     }
-    console.log(quiz)
+
     return(
         <div>
             <h1>{"Quiz: " + quiz.title}</h1>
@@ -52,10 +54,21 @@ export default function Quiz({quiz, onDone}:Props) {
                     </div>
                 } 
             </div>
-            <button className="btn active-btn" onClick={hPrevQuestion}>Prev</button>
-            <button className="btn active-btn" onClick={hNextQuestion}>Next</button>
-            <button className="btn active-btn" onClick={hShowAnswerChange}>Show Answer</button>
-            <button className="btn active-btn" onClick={()=> onDone(userAnswers)}>Finish</button>
+            <div className="container-flex">
+                <div className="row g-2 mb-3">
+                    <div className="d-grid col">
+                        <button className="btn active-btn" onClick={hPrevQuestion}>Prev</button>
+                    </div>
+                    <div className="d-grid col">
+                        <button className="btn active-btn" onClick={hNextQuestion}>Next</button>
+                    </div>
+                </div>
+                <div className="row g-2">
+                    <div className="d-grid col">
+                    <button className="btn active-btn" onClick={()=> onDone(userAnswers)}>Finish</button>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

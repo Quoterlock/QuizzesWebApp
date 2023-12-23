@@ -43,4 +43,17 @@ export class QuizApi implements IQuizApi{
         
        return null
     }
+    GetByIdAsync(id: string): QuizItem {
+        try{
+            const responce = await fetch(`${apiPath}/Quizzes/${id}`)
+            if(!responce.ok) {
+                throw new Error ("failed to fetch data");
+            }
+            const data: QuizItem = await responce.json()
+            return data
+        } catch (error) {
+            console.error("Error fetching data:",error);
+            throw error;
+        }
+    }
 }

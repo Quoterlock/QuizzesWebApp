@@ -7,6 +7,9 @@ export class MockQuizApi implements IQuizApi {
     GetList(startIndex: number, endIndex: number): QuizListItem[] {
         return quizzes
     }
+    GetByIdAsync(id: string): QuizItem {
+        return quiz
+    }
 }
 
 const quiz:QuizItem = {
