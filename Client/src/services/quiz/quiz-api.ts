@@ -43,7 +43,8 @@ export class QuizApi implements IQuizApi{
         
        return null
     }
-    GetByIdAsync(id: string): QuizItem {
+    
+    async GetByIdAsync(id: string): Promise<QuizItem> {
         try{
             const responce = await fetch(`${apiPath}/Quizzes/${id}`)
             if(!responce.ok) {

@@ -1,6 +1,6 @@
 import { createContext } from "react"
-//import { QuizApi } from "./quiz/quiz-api"
 import { MockQuizApi } from "./quiz/mock-quiz-api"
+//import { QuizApi } from "./quiz/quiz-api"
 
 interface ContextType{
     api : IQuizApi

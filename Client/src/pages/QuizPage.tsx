@@ -7,11 +7,19 @@ import QuizResults from "../components/QuizResults"
 
 export default function QuizPage(){
     const {id} = useParams()
-    //const [quiz, setQuiz] = useState<QuizItem>()
+    const [quiz, setQuiz] = useState<QuizItem>()
     const {api} = useContext(AppContext)   
     //api.GetById(id as string, setQuiz);
-    const quiz = api.GetByIdAsync(id as string)
-    console.log(quiz)
+    //const quiz = api.GetByIdAsync(id as string)
+    api.GetByIdAsync(id as string)
+        .then((quiz) => {
+        setQuiz(quiz)
+        console.log(quiz);
+        })
+        .catch((error) => {
+        // Handle errors
+        console.error(error);
+        });
 
     const [isDone, setIsDone] = useState(false)
     const [userAnswers, setAnswers] = useState<number[]>([])
