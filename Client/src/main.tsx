@@ -7,6 +7,7 @@ import {
 } from "react-router-dom"
 import QuizPage from './pages/QuizPage.tsx';
 import QuizListPage from './pages/QuizListPage.tsx';
+import NewQuizPage from './pages/NewQuizPage.tsx';
 
 
 
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path:"/quiz/:id",
     element: <QuizPage/>
+  },
+  {
+    path:"/new-quiz/",
+    element: <NewQuizPage/>
   }
 ])
 

@@ -9,6 +9,8 @@
     --danger-color-shadow : #a04d4d;
     --success-color-shadow: #528162;
     --success-color: #78c091;
+    --border-color:#747a6f;
+    --main-text-color: #FFFFFF;
 }
 
 .body-style {
@@ -20,6 +22,7 @@
 
 .block-style {
     background-color: var(--block-bg-color);
+    border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0px 8px var(--block-shadow-color);
@@ -79,4 +82,50 @@
     right: 0;
     left: 0;
     background-color: var(--block-shadow-color);
+}
+
+.form-inputs input[type=text] {
+    color: var(--main-text-color);
+    background-color: var(--background-color);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.form-inputs input[type=text]:focus {
+    border-color: var(--active-color) !important;
+}
+
+.form-inputs input[type="checkbox"]{
+    background-color: var(--background-color);
+    border: var(--border-color);
+    padding: 5px !important;
+    border-radius: 5px;
+}
+
+.edit-option-style {
+    display: flex;
+    align-items: center;
+}
+
+.option-checkbox {
+    margin-right: 10px;
+}
+
+.option-textbox {
+    flex: 1;
+}
+
+.correct-answer-select {
+    height: 24px;
+    width: 24px;
+    border-radius: 5px;
+    background-color: var(--success-color);
+}
+
+.default-answer-select {
+    height: 24px;
+    width: 24px;
+    border-radius: 5px;
+    background-color: var(--danger-color);
 }
