@@ -2,12 +2,11 @@ import { ChangeEvent, useState } from "react"
 
 interface Props {
     onChange:(question:QuestionItem) => void
+    onRemove:()=>void
     question:QuestionItem
 }
 
-export default function CreateQuestionForm({onChange, question}:Props) {
-    console.log(question)
-
+export default function CreateQuestionForm({onChange, onRemove, question}:Props) {
     const addOption = () => {
         onChange({...question, options:[...question.options, GetDefaultOption()]})
     }
@@ -34,17 +33,27 @@ export default function CreateQuestionForm({onChange, question}:Props) {
     }
 
     return(<div className="block-style mb-3">
+        <div className="container-flex">
+            <div className="row mb-2">
+                <div className="col mt-1">
+                    <label>Question</label>        
+                </div>
+                <div className="col text-end">
+                    <button className="btn minor-btn" onClick={onRemove}>Delete</button>
+                </div>
+            </div>
+        </div>
+        
         <div className="d-grid form-inputs mb-3">
-            <label>Question</label>
-            <input type="text" onChange={onQuestionLabelChange}/>
+            <input type="text" className={(CheckInput(question.text)?"wrong-input":"")} onChange={onQuestionLabelChange}/>
         </div>
         <div >
-            <label>Options</label>
+            <label className="mb-2">Options</label>
             { question.options.map((option,index)=> <div key={index} className="edit-option-style form-inputs mb-2">
             <div className={(question.correctAnswerIndex === index?"correct":"default")+"-answer-select me-2"} onClick={()=>onCorrectAnswerChange(index)}></div>
-            <input type="text" className="option-textbox" value={option.text} 
+            <input type="text" className={(CheckInput(option.text) ? "wrong-input" : "") + " option-textbox"} value={option.text} 
                 onChange={(e:ChangeEvent<HTMLInputElement>) => onOptionChange(index,e)}/>
-            <button className="btn active-btn ms-2" onClick={() => removeOption(index)}>-</button>
+            <button className="btn minor-btn ms-2" onClick={() => removeOption(index)}>-</button>
         </div>)}
         </div>
         <div className="d-grid">
@@ -58,4 +67,7 @@ function GetDefaultOption(): OptionItem {
 }
 function GetDefaultQuestion(): QuestionItem {
     return({text:"",options:[{text:""}],correctAnswerIndex:0})
+}
+function CheckInput(value:string):boolean {
+    return (value === null || value === "")
 }

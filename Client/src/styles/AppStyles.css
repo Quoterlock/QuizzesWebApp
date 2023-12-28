@@ -1,8 +1,10 @@
 :root {
     --background-color : #2d302f;
+    --textbox-background-color : #4d504b;
     --block-bg-color : #5b6057;
     --block-highlings-color : #747a6f;
     --block-shadow-color : #40423e;
+    --active-border-color : #ffc793;
     --active-color : #ffba7a;
     --active-color-shadow : #815c39;
     --danger-color : #ff6a6a;
@@ -11,6 +13,7 @@
     --success-color: #78c091;
     --border-color:#747a6f;
     --main-text-color: #FFFFFF;
+    --minor-btn-color: #747a6f;
 }
 
 .body-style {
@@ -70,6 +73,19 @@
     box-shadow: 0px 0px var(--active-color-shadow);
 }
 
+.minor-btn {
+    background-color: var(--minor-btn-color) !important;
+    padding: 5px !important;
+    min-width: 32px;
+    box-shadow: 0px 5px var(--block-shadow-color);
+}
+
+.minor-btn:focus {
+    transform: translateY(5px);
+    box-shadow: 0px 0px var(--active-color-shadow);
+}
+
+
 .styless-link{
     text-decoration: none;
     color: white;
@@ -86,7 +102,7 @@
 
 .form-inputs input[type=text] {
     color: var(--main-text-color);
-    background-color: var(--background-color);
+    background-color: var(--textbox-background-color);
     border: 2px solid var(--border-color);
     border-radius: 10px;
     padding: 5px;
@@ -101,6 +117,10 @@
     border: var(--border-color);
     padding: 5px !important;
     border-radius: 5px;
+}
+
+.wrong-input {
+    border-color: var(--danger-color) !important;
 }
 
 .edit-option-style {
@@ -119,8 +139,10 @@
 .correct-answer-select {
     height: 24px;
     width: 24px;
+    margin-top: 3px;
     border-radius: 5px;
     background-color: var(--success-color);
+    box-shadow: 0px 2px var(--success-color-shadow);    
 }
 
 .default-answer-select {
@@ -128,4 +150,15 @@
     width: 24px;
     border-radius: 5px;
     background-color: var(--danger-color);
+    box-shadow: 0px 5px var(--danger-color-shadow);    
+
+}
+
+.notification-block-style {
+    background-color: var(--active-color);
+    box-shadow: 0px 5px var(--active-color-shadow);
+    border: 1px solid var(--active-border-color);
+    border-radius: 10px;
+    padding: 10px;
+    color: var(--background-color);
 }
