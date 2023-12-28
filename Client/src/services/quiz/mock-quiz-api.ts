@@ -1,4 +1,7 @@
 export class MockQuizApi implements IQuizApi {
+    async CreateNewQuiz(quiz: QuizItem): Promise<RequesResult> {
+        return {code:200, message:"all is ok"}
+    }
     GetById(id: string, setItem: (item: QuizItem) => void): void {
         console.log("use mock")
         setItem(quiz)

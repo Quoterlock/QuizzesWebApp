@@ -3,6 +3,16 @@ import { useEffect, useState } from "react"
 const apiPath = "https://localhost:7181/api"
 
 export class QuizApi implements IQuizApi{
+    async CreateNewQuiz(quiz: QuizItem): Promise<RequesResult> {
+        const result = await fetch(`${apiPath}/CreateQuiz`, {
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(quiz)
+        });
+        const resultJSON = await result.json()
+        return {code:200, message:"all is ok"}    
+    }
+
     GetList(startIndex: number, endIndex: number): QuizListItem[] {
         const [items, setItems] = useState<QuizListItem[]>([])    
         useEffect(()=>{

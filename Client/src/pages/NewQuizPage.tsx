@@ -1,11 +1,14 @@
+import { useContext } from "react";
 import CreateQuizForm from "../components/CreateQuizForm";
 import { QuizLayout } from "../layouts/QuizLayout";
+import { AppContext } from "../services/app-context";
 
 export default function NewQuizPage() {
-    
+    const {api} = useContext(AppContext)
     const onCreate = (quiz:QuizItem) => {
-            // TODO: add to server here
-        console.log(quiz)
+        api.CreateNewQuiz(quiz).then((result)=>{
+            console.log(result)
+        })
     }
     
     return(<QuizLayout>
