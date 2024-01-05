@@ -18,38 +18,65 @@ namespace WebApi.BusinessLogic
         { 
             _repository = repository;
         }
+
+        public async Task AddQuizAsync(QuizModel quiz)
+        {
+            if(quiz == null) throw new ArgumentNullException(nameof(quiz));
+            if (!string.IsNullOrEmpty(quiz.Title))
+            {
+                try
+                {
+                    await _repository.AddAsync(Convert(quiz));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+            }
+            else throw new Exception("Question title is null or empty");
+        }
+
         public async Task<List<QuizModel>> GetAsync()
         {
-            var models = new List<QuizModel>();
-            var entities = await _repository.AsyncGet();
-            foreach (var entity in entities)
-                models.Add(Convert(entity));
+            var entities = await _repository.AsyncGet() ?? new List<Quiz>();
+            var models = ConvertEntitiesToModels(entities);
             return models;
         }
 
         public async Task<List<QuizModel>> GetAsync(int from, int to)
         {
-            var models = new List<QuizModel>();
-            var entities = await _repository.AsyncGet(from, to);
-            foreach (var entity in entities)
-                models.Add(Convert(entity));
-            return models;
+            if (from <= to)
+            {
+                var entities = await _repository.AsyncGet(from, to) ?? new List<Quiz>();
+                var models = ConvertEntitiesToModels(entities);
+                return models;
+            }
+            else throw new Exception("\"From\" cannot be larger that \"to\"");
         }
 
         public async Task<QuizModel> GetQuizAsync(string id)
         {
-            var entity = await _repository.AsyncGet(id);
-            return entity != null ? Convert(entity) : new QuizModel();
+            if (!string.IsNullOrEmpty(id))
+            {
+                var entity = await _repository.AsyncGet(id);
+                if (entity != null)
+                    return Convert(entity);
+                else 
+                    throw new Exception("Entity doesn't exist with id:" + id);
+            }
+            else throw new ArgumentNullException(nameof(id));
         }
 
-        public Task<List<QuizListItemModel>> GetTitlesAsync(int from, int to)
+        public async Task<List<QuizListItemModel>> GetTitlesAsync(int from, int to)
         {
-            throw new NotImplementedException();
+            var list = await GetAsync(from, to);
+            return GetTitles(list);
         }
 
-        public Task<List<QuizListItemModel>> GetTitlesAsync()
+        public async Task<List<QuizListItemModel>> GetTitlesAsync()
         {
-            throw new NotImplementedException();
+            var list = await GetAsync();
+            return GetTitles(list);
         }
 
         private QuizModel Convert(Quiz entity)
@@ -69,6 +96,55 @@ namespace WebApi.BusinessLogic
             }
             model.Questions = questions.ToArray();
             return model;
+        }
+
+        private List<QuizModel> ConvertEntitiesToModels(List<Quiz> entities)
+        {
+            var models = new List<QuizModel>();
+            foreach (var entity in entities)
+                models.Add(Convert(entity));
+            return models;
+        }
+        private Quiz Convert(QuizModel model)
+        {
+            try
+            {
+                var entity = new Quiz();
+                entity.Title = model.Title;
+                entity.Questions = new List<Question>();
+                foreach (var question in model.Questions)
+                {
+                    var entityOptions = new List<Option>();
+                    foreach (var option in question.Options)
+                        entityOptions.Add(new Option { Text = option.Text });
+
+                    entity.Questions.Add(new Question
+                    {
+                        Options = entityOptions,
+                        Title = question.Text,
+                        CorrectAnswerIndex = question.CorrectAnswerIndex
+                    });
+                }
+                return entity;
+            } catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        private List<QuizListItemModel> GetTitles(List<QuizModel> models)
+        {
+            var list = new List<QuizListItemModel>();
+            foreach (var item in models)
+            {
+                list.Add(new QuizListItemModel
+                {
+                    Title = item.Title,
+                    Id = item.Id,
+                    Rate = item.Rate
+                });
+            }
+            return list;
         }
     }
 }

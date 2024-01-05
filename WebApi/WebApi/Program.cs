@@ -33,7 +33,7 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddScoped<IQuizzesService, MockQuizzesService>();
+        builder.Services.AddScoped<IQuizzesService, QuizzesService>();
         builder.Services.AddScoped<IQuizzesRepository, QuizzesRepository>();
 
         var app = builder.Build();

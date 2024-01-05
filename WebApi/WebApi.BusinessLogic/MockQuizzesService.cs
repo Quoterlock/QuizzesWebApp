@@ -16,6 +16,11 @@ namespace WebApi.DataAccess
             quizzes = Init();
         }
 
+        public Task AddQuizAsync(QuizModel quiz)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<QuizModel>> GetAsync()
         {
             return quizzes;

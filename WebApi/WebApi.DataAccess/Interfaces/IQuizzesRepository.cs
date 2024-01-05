@@ -12,5 +12,6 @@ namespace WebApi.DataAccess.Interfaces
         Task<List<Quiz>> AsyncGet();
         Task<List<Quiz>> AsyncGet(int start, int end);
         Task<Quiz?> AsyncGet(string id);
+        Task AddAsync(Quiz quiz);
     }
 }

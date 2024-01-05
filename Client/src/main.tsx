@@ -8,9 +8,7 @@ import {
 import QuizPage from './pages/QuizPage.tsx';
 import QuizListPage from './pages/QuizListPage.tsx';
 import NewQuizPage from './pages/NewQuizPage.tsx';
-
-
-
+import NewQuizSuccessPage from './pages/NewQuizSuccessPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +22,10 @@ const router = createBrowserRouter([
   {
     path:"/new-quiz/",
     element: <NewQuizPage/>
+  },
+  {
+    path:"/new-quiz/success/",
+    element : <NewQuizSuccessPage/>
   }
 ])
 

@@ -15,5 +15,6 @@ namespace WebApi.BusinessLogic.Interfaces
         Task<QuizModel> GetQuizAsync(string id);
         Task<List<QuizListItemModel>> GetTitlesAsync(int from, int to);
         Task<List<QuizListItemModel>> GetTitlesAsync();
+        Task AddQuizAsync(QuizModel quiz);
     }
 }

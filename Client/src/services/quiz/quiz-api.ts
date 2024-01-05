@@ -4,13 +4,18 @@ const apiPath = "https://localhost:7181/api"
 
 export class QuizApi implements IQuizApi{
     async CreateNewQuiz(quiz: QuizItem): Promise<RequesResult> {
-        const result = await fetch(`${apiPath}/CreateQuiz`, {
+        const result = await fetch(`${apiPath}/Quizzes/CreateQuiz`, {
             method:"POST",
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify(quiz)
         });
-        const resultJSON = await result.json()
-        return {code:200, message:"all is ok"}    
+        if(result.ok)  {
+            //const resultJSON = await result.json();
+            return { code:200, message:"all is ok"}
+        } else {
+            //const errorResponce = await result.json();
+            return {code:result.status, message:"server error"}
+        }
     }
 
     GetList(startIndex: number, endIndex: number): QuizListItem[] {

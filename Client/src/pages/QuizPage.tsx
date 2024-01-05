@@ -9,8 +9,7 @@ export default function QuizPage(){
     const {id} = useParams()
     const [quiz, setQuiz] = useState<QuizItem>()
     const {api} = useContext(AppContext)   
-    //api.GetById(id as string, setQuiz);
-    //const quiz = api.GetByIdAsync(id as string)
+    
     api.GetByIdAsync(id as string)
         .then((quiz) => {
         setQuiz(quiz)

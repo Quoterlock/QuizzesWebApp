@@ -22,10 +22,13 @@ export default function CreateQuizForm({onCreate}:Props) {
             authorId:""
         }
 
-        if(ValidateQuiz(quiz))
+        if(ValidateQuiz(quiz)){
+            console.log("Quiz is valid")
             onCreate(quiz)
-        else
+        } else {
+            console.log("Quiz is not valid")
             setIsNotify(true)
+        }
     }
 
     function hQuestionChange(index:number, question:QuestionItem) {

@@ -63,5 +63,13 @@ namespace WebApi.Controllers
             }
             return NotFound();
         }
+
+        [HttpPost("CreateQuiz")]
+        public async Task<ActionResult> CreateQuiz([FromBody] QuizModel quiz)
+        {
+            if(quiz != null)
+                await _service.AddQuizAsync(quiz);
+            return Ok();
+        }
     }
 }

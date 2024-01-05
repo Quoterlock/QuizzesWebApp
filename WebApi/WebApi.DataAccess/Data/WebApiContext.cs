@@ -14,6 +14,8 @@ namespace WebApi.DataAccess.Data
         {
         }
 
-        public DbSet<WebApi.DataAccess.Entities.Quiz> Quiz { get; set; } = default!;
+        public DbSet<WebApi.DataAccess.Entities.Quiz> Quizzes { get; set; } = default!;
+        public DbSet<WebApi.DataAccess.Entities.Question> Questions { get; set; } = default!;
+        public DbSet<WebApi.DataAccess.Entities.Option> Options { get; set; } = default!;
     }
 }
