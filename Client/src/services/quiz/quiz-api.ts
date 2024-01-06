@@ -10,10 +10,8 @@ export class QuizApi implements IQuizApi{
             body: JSON.stringify(quiz)
         });
         if(result.ok)  {
-            //const resultJSON = await result.json();
             return { code:200, message:"all is ok"}
         } else {
-            //const errorResponce = await result.json();
             return {code:result.status, message:"server error"}
         }
     }

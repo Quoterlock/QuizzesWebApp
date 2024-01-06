@@ -1,6 +1,6 @@
 import { QuizLayout } from "../layouts/QuizLayout"
 import Quiz from '../components/Quiz'
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { useParams } from "react-router"
 import { AppContext } from "../services/app-context"
 import QuizResults from "../components/QuizResults"
@@ -10,15 +10,20 @@ export default function QuizPage(){
     const [quiz, setQuiz] = useState<QuizItem>()
     const {api} = useContext(AppContext)   
     
-    api.GetByIdAsync(id as string)
-        .then((quiz) => {
-        setQuiz(quiz)
-        console.log(quiz);
-        })
-        .catch((error) => {
-        // Handle errors
-        console.error(error);
-        });
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const response = await api.GetByIdAsync(id as string);
+            setQuiz(response);
+            console.log(response);
+          } catch (error) {
+            // Handle errors
+            console.error(error);
+          }
+        };
+    
+        fetchData();
+      }, []);
 
     const [isDone, setIsDone] = useState(false)
     const [userAnswers, setAnswers] = useState<number[]>([])
