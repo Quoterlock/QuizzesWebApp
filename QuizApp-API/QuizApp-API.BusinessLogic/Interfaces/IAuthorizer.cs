@@ -8,6 +8,6 @@ namespace QuizApp_API.BusinessLogic.Interfaces
 {
     public interface IAuthorizer
     {
-        public string Authorize(string username, string password);
+        Task<string> Authorize(string username, string password);
     }
 }

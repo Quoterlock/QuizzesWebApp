@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
@@ -14,33 +15,37 @@ namespace QuizApp_API.BusinessLogic.Services
 {
     public class JwtAuthorizer : IAuthorizer
     {
-        private readonly IUserManager _userManager;
         private readonly IConfiguration _config;
-        public JwtAuthorizer(IConfiguration configuration, IUserManager userManager) 
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        public JwtAuthorizer(IConfiguration configuration, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) 
         { 
-            _userManager = userManager;
             _config = configuration;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
-        public string Authorize(string username, string password)
+        public async Task<string> Authorize(string username, string password)
         {
-            try
+            var user = await _userManager.FindByNameAsync(username);
+            if(user != null)
             {
-                var user = _userManager.GetUser(u => u.Username == username && u.Password == password);
-                var token = GenerateToken(user);
-                return token;
+                var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+                if (result.Succeeded)
+                {
+                    var token = GenerateToken(user);
+                    return token;
+                }
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Authorizer: " + ex.Message);
-            }
+            throw new Exception("Authorizer: Wrong user credentials");
         }
 
-        private string GenerateToken(MockAppUser user)
+        private string GenerateToken(IdentityUser user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new Claim[] {
-                new Claim("UserId", user.Id)
+                new Claim("UserId", user.Id),
+                new Claim("Name", user.UserName)
             };
             var token = new JwtSecurityToken(
                 _config["Jwt:Issuer"], 
