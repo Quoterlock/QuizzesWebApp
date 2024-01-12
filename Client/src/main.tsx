@@ -8,6 +8,7 @@ import {
 import QuizPage from './pages/QuizPage.tsx';
 import QuizListPage from './pages/QuizListPage.tsx';
 import NewQuizPage from './pages/NewQuizPage.tsx';
+import LoginPage from './pages/LoginPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
     path:"/new-quiz/",
     element: <NewQuizPage/>
   },
+  {
+    path:"/login/",
+    element: <LoginPage/>
+  }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

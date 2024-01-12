@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.BusinessLogic;
 using WebApi.BusinessLogic.Interfaces;
@@ -35,6 +36,20 @@ internal class Program
 
         builder.Services.AddScoped<IQuizzesService, QuizzesService>();
         builder.Services.AddScoped<IQuizzesRepository, QuizzesRepository>();
+        builder.Services.AddDistributedMemoryCache(); // Use in-memory cache for development
+        builder.Services.AddSession(options =>
+        {
+            options.IdleTimeout = TimeSpan.FromMinutes(30); // Set your desired session timeout
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+        });
+        builder.Services.AddSession();
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+        {
+            options.Cookie.Name = "SizeAccess";
+            options.SlidingExpiration = true;
+        });
+
 
         var app = builder.Build();
 
@@ -45,9 +60,11 @@ internal class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
-
         app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseSession();
+
+        app.UseHttpsRedirection();
 
         app.MapControllers();
 
