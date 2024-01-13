@@ -10,7 +10,7 @@ using QuizApp_API.DataAccess.Data;
 
 namespace QuizApp_API.DataAccess.Migrations
 {
-    [DbContext(typeof(QuizAppAPI_Context))]
+    [DbContext(typeof(AppIdentityContext))]
     partial class QuizAppAPI_ContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

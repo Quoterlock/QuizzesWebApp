@@ -6,13 +6,20 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using QuizApp_API.DataAccess.Data;
+using QuizApp_API.DataAccess.Repositories;
+using QuizApp_API.DataAccess.Interfaces;
+using QuizApp_API.BusinessLogic;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("QuizAppAPI_ContextConnection") ?? throw new InvalidOperationException("Connection string 'QuizAppAPI_ContextConnection' not found.");
 
-builder.Services.AddDbContext<QuizAppAPI_Context>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<QuizAppAPI_Context>();
+// add db context for identities
+builder.Services.AddDbContext<AppIdentityContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppIdentityContext>();
+// add db context for other entities
+builder.Services.AddScoped<IQuizzesRepository, MongoDbQuizRepository>();
+builder.Services.AddScoped<IQuizzesService, QuizzesService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

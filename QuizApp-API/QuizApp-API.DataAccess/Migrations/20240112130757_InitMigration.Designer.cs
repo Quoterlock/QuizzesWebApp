@@ -11,7 +11,7 @@ using QuizApp_API.DataAccess.Data;
 
 namespace QuizApp_API.DataAccess.Migrations
 {
-    [DbContext(typeof(QuizAppAPI_Context))]
+    [DbContext(typeof(AppIdentityContext))]
     [Migration("20240112130757_InitMigration")]
     partial class InitMigration
     {
