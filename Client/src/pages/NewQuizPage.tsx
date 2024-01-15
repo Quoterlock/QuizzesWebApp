@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import CreateQuizForm from "../components/CreateQuizForm";
 import { QuizLayout } from "../layouts/QuizLayout";
-import { AppContext } from "../services/app-context";
+import { AppContext } from "../services/AppContext";
 import { useNavigate } from 'react-router-dom';
 import ErrorNotification from "../components/ErrorNotification";
 

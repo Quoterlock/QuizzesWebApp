@@ -2,7 +2,7 @@ import { QuizLayout } from "../layouts/QuizLayout"
 import Quiz from '../components/Quiz'
 import { useContext, useState, useEffect } from "react"
 import { useParams } from "react-router"
-import { AppContext } from "../services/app-context"
+import { AppContext } from "../services/AppContext"
 import QuizResults from "../components/QuizResults"
 
 export default function QuizPage(){
