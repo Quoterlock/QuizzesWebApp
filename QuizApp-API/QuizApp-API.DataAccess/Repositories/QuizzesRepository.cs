@@ -66,22 +66,32 @@ namespace QuizApp_API.DataAccess.Repositories
             return result;
         }
         */
-        public Task AddAsync(Quiz quiz)
+        public Task AddAsync(Quiz entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Quiz>> AsyncGet()
+        public Task DeleteAsync(Quiz entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Quiz>> AsyncGet(int start, int end)
+        public Task<IEnumerable<Quiz>> GetAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Quiz?> AsyncGet(string id)
+        public Task<Quiz> GetByIdAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Quiz>> GetRangeAsync(int start, int end)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Update(Quiz entity)
         {
             throw new NotImplementedException();
         }

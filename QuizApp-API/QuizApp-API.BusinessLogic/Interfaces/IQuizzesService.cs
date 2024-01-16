@@ -10,11 +10,11 @@ namespace QuizApp_API.BusinessLogic.Interfaces
 {
     public interface IQuizzesService
     {
-        Task<List<QuizModel>> GetAsync();
-        Task<List<QuizModel>> GetAsync(int from, int to);
+        Task<IEnumerable<QuizModel>> GetAsync();
+        Task<IEnumerable<QuizModel>> GetAsync(int from, int to);
         Task<QuizModel> GetQuizAsync(string id);
-        Task<List<QuizListItemModel>> GetTitlesAsync(int from, int to);
-        Task<List<QuizListItemModel>> GetTitlesAsync();
+        Task<IEnumerable<QuizListItemModel>> GetTitlesAsync(int from, int to);
+        Task<IEnumerable<QuizListItemModel>> GetTitlesAsync();
         Task AddQuizAsync(QuizModel quiz);
     }
 }

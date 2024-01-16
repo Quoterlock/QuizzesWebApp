@@ -16,7 +16,7 @@ namespace QuizApp_API.Controllers
 
         // GET: api/Quizzes/FullList
         [HttpGet("full-list")]
-        public async Task<List<QuizModel>> GetQuiz(int? startIndex, int? endIndex)
+        public async Task<IEnumerable<QuizModel>> GetQuiz(int? startIndex, int? endIndex)
         {
             if (startIndex == null || endIndex == null)
             {
@@ -31,7 +31,7 @@ namespace QuizApp_API.Controllers
 
         // GET: api/Quizzes/List
         [HttpGet("list")]
-        public async Task<List<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
+        public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
         {
             if (startIndex == null || endIndex == null)
             {

@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace QuizApp_API.DataAccess.Interfaces
 {
-    public interface IQuizzesRepository : IRepository<Quiz>
+    public interface IUserProfileRepository : IRepository<UserProfile>
     {
-        Task<IEnumerable<Quiz>> GetRangeAsync(int start, int end);
+        Task<UserProfile> GetByOwnerIdAsync(string id);
+        Task<bool> IsExistsAsync(string ownerId);
     }
 }

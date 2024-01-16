@@ -35,18 +35,18 @@ namespace QuizApp_API.BusinessLogic
             else throw new Exception("Question title is null or empty");
         }
 
-        public async Task<List<QuizModel>> GetAsync()
+        public async Task<IEnumerable<QuizModel>> GetAsync()
         {
-            var entities = await _repository.AsyncGet() ?? new List<Quiz>();
+            var entities = await _repository.GetAllAsync() ?? new List<Quiz>();
             var models = ConvertEntitiesToModels(entities);
             return models;
         }
 
-        public async Task<List<QuizModel>> GetAsync(int from, int to)
+        public async Task<IEnumerable<QuizModel>> GetAsync(int from, int to)
         {
             if (from <= to)
             {
-                var entities = await _repository.AsyncGet(from, to) ?? new List<Quiz>();
+                var entities = await _repository.GetRangeAsync(from, to) ?? new List<Quiz>();
                 var models = ConvertEntitiesToModels(entities);
                 return models;
             }
@@ -57,7 +57,7 @@ namespace QuizApp_API.BusinessLogic
         {
             if (!string.IsNullOrEmpty(id))
             {
-                var entity = await _repository.AsyncGet(id);
+                var entity = await _repository.GetByIdAsync(id);
                 if (entity != null)
                     return Convert(entity);
                 else 
@@ -66,13 +66,13 @@ namespace QuizApp_API.BusinessLogic
             else throw new ArgumentNullException(nameof(id));
         }
 
-        public async Task<List<QuizListItemModel>> GetTitlesAsync(int from, int to)
+        public async Task<IEnumerable<QuizListItemModel>> GetTitlesAsync(int from, int to)
         {
             var list = await GetAsync(from, to);
             return GetTitles(list);
         }
 
-        public async Task<List<QuizListItemModel>> GetTitlesAsync()
+        public async Task<IEnumerable<QuizListItemModel>> GetTitlesAsync()
         {
             var list = await GetAsync();
             return GetTitles(list);
@@ -97,7 +97,7 @@ namespace QuizApp_API.BusinessLogic
             return model;
         }
 
-        private List<QuizModel> ConvertEntitiesToModels(List<Quiz> entities)
+        private IEnumerable<QuizModel> ConvertEntitiesToModels(IEnumerable<Quiz> entities)
         {
             var models = new List<QuizModel>();
             foreach (var entity in entities)
@@ -131,7 +131,7 @@ namespace QuizApp_API.BusinessLogic
             }
         }
 
-        private List<QuizListItemModel> GetTitles(List<QuizModel> models)
+        private IEnumerable<QuizListItemModel> GetTitles(IEnumerable<QuizModel> models)
         {
             var list = new List<QuizListItemModel>();
             foreach (var item in models)

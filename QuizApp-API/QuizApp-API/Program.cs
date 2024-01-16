@@ -12,14 +12,18 @@ using QuizApp_API.BusinessLogic;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("QuizAppAPI_ContextConnection") ?? throw new InvalidOperationException("Connection string 'QuizAppAPI_ContextConnection' not found.");
-
+var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb_ConnectionString") ?? throw new InvalidOperationException("Connection string 'MongoDb_ConnectionString' not found.");
 
 // add db context for identities
 builder.Services.AddDbContext<AppIdentityContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppIdentityContext>();
 // add db context for other entities
-builder.Services.AddScoped<IQuizzesRepository, MongoDbQuizRepository>();
+builder.Services.AddSingleton(new MongoDbContext(mongoConnectionString));
+
+builder.Services.AddScoped<IQuizzesRepository, QuizRepository>();
 builder.Services.AddScoped<IQuizzesService, QuizzesService>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<IUserProfilesService, UserProfilesService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
