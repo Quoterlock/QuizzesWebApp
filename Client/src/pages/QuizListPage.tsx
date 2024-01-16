@@ -1,7 +1,7 @@
 import { QuizLayout } from "../layouts/QuizLayout";
 import QuizList from "../components/QuizList";
 import { useContext} from "react";
-import { AppContext } from "../services/app-context";
+import { AppContext } from "../services/AppContext";
 import { Link } from "react-router-dom";
 
 export default function QuizListPage() {

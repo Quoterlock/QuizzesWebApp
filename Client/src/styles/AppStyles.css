@@ -75,9 +75,10 @@
 
 .minor-btn {
     background-color: var(--minor-btn-color) !important;
+    border: 1px solid var(--border-color) !important;
     padding: 5px !important;
     min-width: 32px;
-    box-shadow: 0px 5px var(--block-shadow-color);
+    box-shadow: 0px 5px var(--block-shadow-color) !important;
 }
 
 .minor-btn:focus {
@@ -94,10 +95,16 @@
 .custom-navbar{
     padding: 10px;
     position: fixed;
+    display: flex;
+    justify-content: space-between;
     top: 0;
     right: 0;
     left: 0;
     background-color: var(--block-shadow-color);
+}
+
+.navbar-group-style {
+    display: flex;
 }
 
 .form-inputs input[type=text] {
@@ -169,4 +176,9 @@
     border-radius: 10px;
     padding: 10px;
     color: var(--background-color);
+}
+
+.icon-img {
+    height: 24px;
+    width: 24px;
 }

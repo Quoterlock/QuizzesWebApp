@@ -9,6 +9,9 @@ import QuizPage from './pages/QuizPage.tsx';
 import QuizListPage from './pages/QuizListPage.tsx';
 import NewQuizPage from './pages/NewQuizPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
+import UserProfilePage from './pages/UserProfilePage.tsx';
+import EditUserProfilePage from './pages/EditUserProfilePage.tsx';
+import RegisterPage from './pages/RegisterPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +29,22 @@ const router = createBrowserRouter([
   {
     path:"/login/",
     element: <LoginPage/>
+  },
+  {
+    path:"/register/",
+    element: <RegisterPage/>
+  },
+  {
+    path:"/profile/:id",
+    element: <UserProfilePage/>
+  },
+  {
+    path:"/profile",
+    element: <UserProfilePage/>
+  },
+  {
+    path:"/profile/edit",
+    element: <EditUserProfilePage/>
   }
 ])
 
