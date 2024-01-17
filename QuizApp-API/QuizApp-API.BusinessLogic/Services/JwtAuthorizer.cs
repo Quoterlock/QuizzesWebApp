@@ -24,9 +24,9 @@ namespace QuizApp_API.BusinessLogic.Services
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public async Task<string> Authorize(string username, string password)
+        public async Task<string> Authorize(string email, string password)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByEmailAsync(email);
             if(user != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);

@@ -1,6 +1,6 @@
 import { useState, FormEvent, ChangeEvent } from "react"
 import CreateQuestionForm from "./CreateQuestionForm"
-import Notification from "./Notfication"
+import Notification from "./Notification"
 
 interface Props {
     onCreate:(quiz:QuizItem) => void
@@ -77,7 +77,7 @@ export default function CreateQuizForm({onCreate}:Props) {
 }
 
 function GetDefaultQuestion():QuestionItem{
-    return({correctAnswerIndex:0, options:[{text:""}]})
+    return({correctAnswerIndex:0, options:[{text:""}], text:""})
 }
 
 function StringIsEmptyOrNull(value:string): boolean {

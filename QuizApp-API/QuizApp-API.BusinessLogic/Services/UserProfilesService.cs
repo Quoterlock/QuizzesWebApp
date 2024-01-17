@@ -16,11 +16,11 @@ namespace QuizApp_API.BusinessLogic.Services
             _userManager = userManager;
         }
 
-        public async Task CreateAsync(string userId)
+        public async Task CreateAsync(string username)
         {
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(username))
             {
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = await _userManager.FindByNameAsync(username);
                 if (user != null)
                 {
                     var profile = new UserProfileModel
@@ -28,15 +28,15 @@ namespace QuizApp_API.BusinessLogic.Services
                         DisplayName = user.NormalizedUserName ?? "Unknown",
                         Owner = new ProfileOwnerInfo
                         {
-                            Id = userId,
-                            Username = user.UserName
+                            Id = user.Id,
+                            Username = username
                         }
                     };
                     await _profileRepository.AddAsync(Convert(profile));
                 }
-                else throw new Exception("User not found with id:" + userId);
+                else throw new Exception("User not found with username:" + username);
             }
-            else throw new ArgumentNullException(nameof(userId));
+            else throw new ArgumentNullException(nameof(username));
         }
 
         public async Task<UserProfileModel> GetByIdAsync(string profileId)

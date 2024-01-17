@@ -28,7 +28,7 @@ export function QuizLayout({children}: Props) {
 
     return(
         <div className="bg-color">
-            <NavBar /*currentUser={currentUser}*//>
+            <NavBar currentUser={currentUser}/>
             <div className="mt-5">
                 {children}
             </div>

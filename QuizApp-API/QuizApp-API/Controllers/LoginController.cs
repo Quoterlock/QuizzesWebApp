@@ -24,7 +24,7 @@ namespace QuizApp_API.Controllers
         {
             try
             {
-                var token = await _authorizer.Authorize(userCredentials.Username, userCredentials.Password);
+                var token = await _authorizer.Authorize(userCredentials.Email, userCredentials.Password);
                 return Ok(token);
             }
             catch (Exception ex)
@@ -48,16 +48,15 @@ namespace QuizApp_API.Controllers
 
                 var result = await _userManager.CreateAsync(user, userCredentials.Password);
                 if (result.Succeeded)
-                {
                     return Ok(new { Message = "Successful" });
-                }
 
+                var errors = new List<string>();
                 foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                    errors.Add(error.Description);
+
+                return BadRequest(errors.ToArray());    
             }
-            return BadRequest(ModelState);
+            return BadRequest("Model is invalid");
         }
 
         [HttpGet("logout")]
@@ -82,7 +81,7 @@ namespace QuizApp_API.Controllers
 
     public class LoginModel
     { 
-        public string Username { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
 

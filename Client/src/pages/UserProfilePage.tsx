@@ -9,12 +9,12 @@ export default function UserProfilePage() {
     const {id} = useParams()
     const [userProfile, setUserProfile] = useState<UserProfile>()
     const [isOwner, setIsOwner] = useState(false)
-    const {userProfileService} = useContext(AppContext)
+    const {userProfileService, authorizationService} = useContext(AppContext)
 
     useEffect(() => {
         const fetchData = async () => {
           try {
-            var response:UserProfile
+            var response:UserProfile|undefined
             if(id === null || id === undefined){
                 response = await userProfileService.GetCurrentUserProfile()
                 setIsOwner(true)
@@ -24,8 +24,8 @@ export default function UserProfilePage() {
             }
 
             if(response !== undefined){
-                setUserProfile(response)
                 console.log(response);
+                setUserProfile(response)
             } else {
                 console.error("fetched profile in null or undefined")
             }
@@ -38,8 +38,9 @@ export default function UserProfilePage() {
       }, []);
     
     const onLogout = () => {
-        console.log(`Logout ${userProfile?.Username}...`)
-        // TODO: logout logic
+        authorizationService.Logout()
+        .then((result)=>console.log(result))
+        .catch((error)=>console.log(error))
     }
     
     return(<QuizLayout>

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QuizApp_API.BusinessLogic.Interfaces;
+using System.Security.Claims;
 
 namespace QuizApp_API.Controllers
 {
@@ -20,12 +21,11 @@ namespace QuizApp_API.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string? user)
         {
-            string username = user ?? string.Empty;
+           string username = user ?? string.Empty;
             if(string.IsNullOrEmpty(user))
             {
-                if(User.Identity != null && !string.IsNullOrEmpty(User.Identity.Name))
-                    username = User.Identity.Name;
-                else 
+                username = GetCurrentUserName();
+                if(string.IsNullOrEmpty(username))
                     throw new Exception("Current user has no username");
             }
 
@@ -34,7 +34,9 @@ namespace QuizApp_API.Controllers
                 if(!await _userProfilesService.IsExists(username))
                 {
                     if (!username.Equals(user))
+                    {
                         await _userProfilesService.CreateAsync(username);
+                    }
                     else 
                         return NotFound();
                 }
@@ -45,6 +47,14 @@ namespace QuizApp_API.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        private string GetCurrentUserName()
+        {
+            if (User.Claims != null && User.Claims.Any(c => c.Type == "Name"))
+                return User.Claims.FirstOrDefault(c => c.Type == "Name").Value;
+            else 
+                return string.Empty;
         }
     }
 }

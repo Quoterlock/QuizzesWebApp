@@ -1,4 +1,4 @@
-import Notification from "./Notfication"
+import Notification from "./Notification"
 
 interface Props {
     title:string

@@ -1,7 +1,7 @@
 import { createContext } from "react"
 import { MockQuizApi } from "./quiz/MockQuizApi"
 import { AuthorizationService } from "./authorization/AuthorizationService"
-import MockUserProfileService from "./profile/MockUserProfileService"
+import UserProfileService from "./profile/UserProfileService"
 //import { QuizApi } from "./quiz/quiz-api"
 
 interface ContextType{
@@ -13,5 +13,5 @@ interface ContextType{
 export const AppContext = createContext<ContextType>({
     api: new MockQuizApi,
     authorizationService : new AuthorizationService,
-    userProfileService : new MockUserProfileService
+    userProfileService : new UserProfileService
 })
