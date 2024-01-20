@@ -8,6 +8,8 @@ namespace QuizApp_API.DataAccess.Entities
     public class Quiz
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string AuthorId { get; set; } = string.Empty;
+        public string AuthorName { get; set; } = string.Empty;
         public string? Title { get; set; }
         public List<Question>? Questions { get; set; }
     }

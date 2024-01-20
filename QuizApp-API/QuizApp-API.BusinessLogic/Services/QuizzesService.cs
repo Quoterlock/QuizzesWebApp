@@ -80,7 +80,12 @@ namespace QuizApp_API.BusinessLogic
 
         private QuizModel Convert(Quiz entity)
         {
-            var model = new QuizModel { Id = entity.Id, Title = entity.Title };
+            var model = new QuizModel { 
+                Id = entity.Id, 
+                Title = entity.Title,
+                Author = entity.AuthorName,
+                AuthorId = entity.AuthorId
+            };
             var questions = new List<QuestionModel>();
             foreach(Question question in entity.Questions)
             {
@@ -111,6 +116,8 @@ namespace QuizApp_API.BusinessLogic
                 var entity = new Quiz();
                 entity.Title = model.Title;
                 entity.Questions = new List<Question>();
+                entity.AuthorName = model.Author;
+                entity.AuthorId = model.AuthorId;
                 foreach (var question in model.Questions)
                 {
                     var entityOptions = new List<Option>();
@@ -140,7 +147,9 @@ namespace QuizApp_API.BusinessLogic
                 {
                     Title = item.Title,
                     Id = item.Id,
-                    Rate = item.Rate
+                    Rate = item.Rate,
+                    AuthorId = item.AuthorId,
+                    Author = item.Author
                 });
             }
             return list;

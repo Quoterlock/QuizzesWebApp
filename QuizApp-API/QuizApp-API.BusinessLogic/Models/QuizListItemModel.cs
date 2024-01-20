@@ -11,7 +11,7 @@ namespace QuizApp_API.BusinessLogic.Models
         public string Id { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public double Rate { get; set; } = 0;
-        public string Autor { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
         public string AuthorId { get; set; } = string.Empty;
     }
 }

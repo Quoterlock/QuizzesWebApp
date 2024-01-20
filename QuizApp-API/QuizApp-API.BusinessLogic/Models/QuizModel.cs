@@ -9,6 +9,8 @@ namespace QuizApp_API.BusinessLogic.Models
     public class QuizModel
     {
         public string Id { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
+        public string AuthorId { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public QuestionModel[] Questions { get; set; } = new QuestionModel[0];
         public double Rate { get; set; } = 0;

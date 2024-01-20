@@ -31,7 +31,7 @@ namespace QuizApp_API.Controllers
             {
                 return Unauthorized("Wrong username or password");
             }
-        }
+            }
 
         [AllowAnonymous]
         [HttpPost("register")]
