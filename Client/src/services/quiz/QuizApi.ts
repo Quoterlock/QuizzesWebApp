@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 
-const apiPath = "https://localhost:7181/api"
+const apiPath = "https://192.168.0.102:5001/api"
 
 export class QuizApi implements IQuizApi{
     async CreateNewQuiz(quiz: QuizItem): Promise<RequesResult> {
-        const result = await fetch(`${apiPath}/Quizzes/CreateQuiz`, {
+        const result = await fetch(`${apiPath}/quizzes/create`, {
             method:"POST",
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify(quiz)

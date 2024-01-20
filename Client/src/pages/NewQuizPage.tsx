@@ -10,6 +10,9 @@ export default function NewQuizPage() {
     const {api} = useContext(AppContext)
     const navigate = useNavigate();
     const onCreate = (quiz:QuizItem) => {
+        quiz.author = localStorage.getItem("current-username") as string
+        quiz.authorId = localStorage.getItem("current-user-id") as string
+        
         api.CreateNewQuiz(quiz)
         .then((result)=>{
             console.log(result)

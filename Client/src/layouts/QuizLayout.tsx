@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
-import { AppContext } from "../services/AppContext";
+//import { AppContext } from "../services/AppContext";
 
 
 interface Props {
@@ -8,12 +8,11 @@ interface Props {
 }
 
 export function QuizLayout({children}: Props) {
-    const {userProfileService} = useContext(AppContext)
-    const [currentUser, setCurrentUser] = useState<UserProfile>();
-
+    //const {userProfileService} = useContext(AppContext)
+    const currentUsername = localStorage.getItem("current-username")
     useEffect(() => {
         const fetchData = async () => {
-          try {
+          /*try {
             const response = await userProfileService.GetCurrentUserProfile()
             setCurrentUser(response)
             console.log(response);
@@ -21,14 +20,15 @@ export function QuizLayout({children}: Props) {
             // Handle errors
             console.error(error);
           }
-        };
+          */
+        }
     
-        fetchData();
-      }, []);
+        fetchData()
+      }, [])
 
     return(
         <div className="bg-color">
-            <NavBar currentUser={currentUser}/>
+            <NavBar username={currentUsername as string}/>
             <div className="mt-5">
                 {children}
             </div>

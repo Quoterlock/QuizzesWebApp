@@ -1,5 +1,7 @@
+import { useContext, useState } from "react";
+import { AppContext } from "../AppContext";
 
-const apiPath = "https://localhost:7118/api/authorization"
+const apiPath = "https://192.168.0.102:5001/api/authorization"
 
 export class AuthorizationService implements IAuthorizationService {
     async Register(username: string, email: string, password: string): Promise<RequesResult> {
@@ -18,24 +20,25 @@ export class AuthorizationService implements IAuthorizationService {
     }
 
     async Login(email: string, password: string): Promise<RequesResult> {
-        const result = await fetch(`${apiPath}/login`, {
+        const response = await fetch(`${apiPath}/login`, {
             method:"POST",
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify({email:email, password:password})
         });
-        if(result.ok)  {
-            console.log(result.text);
-            const token = await result.text()
+        if(response.ok)  {
+            console.log(response.text);
+            const token = await response.text()
             console.log(`jwt-token:${token}`)
             localStorage.setItem("jwt-token", token)
-            //TODO save current user name and id to a local storage
             return { code:200, message:"all is ok"}
         } else {
-            return {code:result.status, message:"server error"}
+            return {code:response.status, message:"Incorrect username or password"}
         }
     }
     async Logout(): Promise<RequesResult> {
         localStorage.removeItem("jwt-token")
+        localStorage.removeItem("current-username")
+        localStorage.removeItem("current-user-id")
         return {code:200, message:"logged out"}
     }
 }

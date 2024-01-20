@@ -1,9 +1,14 @@
 type UserProfile = {
-    Id:string,
-    Username:string,
-    DisplayName:string,
+    id:string,
+    displayName:string,
+    owner:Owner
     //CreatedQuizzes: QuizListItem[],
     //CompletedQuizzes: QuizListItem[],
-    CreatedQuizzesCount: number,
-    CompletedQuizzesCount: number
+    createdQuizzesCount: number,
+    completedQuizzesCount: number
+}
+
+type Owner = {
+    id:string,
+    username:string,
 }

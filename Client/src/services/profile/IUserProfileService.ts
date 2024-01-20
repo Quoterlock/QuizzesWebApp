@@ -1,5 +1,5 @@
 interface IUserProfileService {
-    GetUserProfile:(id:string) => Promise<UserProfile|undefined>
-    GetCurrentUserProfile: () => Promise<UserProfile|undefined>
+    GetUserProfileAsync:(username:string) => Promise<UserProfile>
+    GetCurrentUserProfileAsync:() => Promise<UserProfile>
     UpdateProfile:(id:string, profile:UserProfile) => Promise<RequesResult>
 }

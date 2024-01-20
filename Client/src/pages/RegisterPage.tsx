@@ -1,39 +1,52 @@
 import { ChangeEvent, useContext, useState } from "react"
 import { AppContext } from "../services/AppContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Notification from "../components/Notification";
 
 export default function RegisterPage() {
-    const {authorizationService} = useContext(AppContext);
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmedPassword, setConfirmedPassword] = useState("");
-    const [isNotify, setIsNotify] = useState(false);
-    const [notificationText, setNotificationText] = useState(""); 
+    const navigate = useNavigate()
+    const {authorizationService} = useContext(AppContext)
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmedPassword, setConfirmedPassword] = useState("")
+    const [notification, setNotification] = useState({text:"",title:""})
+
     const onRegister = () => {
-        if(password === confirmedPassword)
-        {
-            authorizationService.Register(username, email, password)
-            .then((result)=> { console.log(result)
-                if(result.code !== 200) {
-                    setNotificationText(result.message)
-                    setIsNotify(true)
-                } else {
-                    setIsNotify(false)
+        const emailRegex: RegExp = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+        const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,}$/
+
+        if (emailRegex.test(email)) {
+            if(passwordRegex.test(password)) {
+                if(password === confirmedPassword && username !== "") {
+                    authorizationService.Register(username, email, password)
+                    .then((result)=> { console.log(result)
+                        if(result.code === 200) {
+                            navigate("/login")
+                        } else {
+                            setNotification({text:result.message, title:"Server: Input error"})
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        setNotification({text:error, title:"Server: Error"})
+                    });
                 }
-            })
-            .catch((error)=> console.log(error));
-        } 
+            } else {
+                setNotification({text:"Password must contain:\n- At least one lowercase letter.\n- At least one uppercase letter.\n- At least one digit.\n- At least one non-alphanumeric character.\n- Minimum length of 8 characters.\n", title:"Input error"})
+            }
+        } else {
+            setNotification({text:"Invalid email address!", title:"Input error"})
+        }  
     }
 
     return(<div className="col-lg-4 col-md-7 col-sm-12 mx-auto">
     <div className="block-style">
         <h5 className="text-center">Registration</h5>
-        { isNotify && <Notification title="Error" message={notificationText}/>}
+        { notification.text !== "" && <Notification title={notification.title} message={notification.text}/>}
         <div className="d-grid form-inputs mb-3 mt-3">
-                <label>Login</label>
-                <input type="text" onChange={(e:ChangeEvent<HTMLInputElement>)=>setUsername(e.currentTarget.value)} value={username}/>
+                <label>Username</label>
+                <input type="text" className={(username === "") ? "wrong-input":""} onChange={(e:ChangeEvent<HTMLInputElement>)=>setUsername(e.currentTarget.value)} value={username}/>
             </div>
             <div className="d-grid form-inputs mb-3">
                 <label>Email</label>
