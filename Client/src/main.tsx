@@ -5,13 +5,13 @@ import {
 	createBrowserRouter,
 	RouterProvider,
 } from "react-router-dom"
-import QuizPage from './pages/QuizPage.tsx';
-import QuizListPage from './pages/QuizListPage.tsx';
-import NewQuizPage from './pages/NewQuizPage.tsx';
-import LoginPage from './pages/LoginPage.tsx';
-import UserProfilePage from './pages/UserProfilePage.tsx';
-import EditUserProfilePage from './pages/EditUserProfilePage.tsx';
-import RegisterPage from './pages/RegisterPage.tsx';
+import QuizPage from './components/quiz/QuizPage.tsx';
+import QuizListPage from './components/quiz-list/QuizListPage.tsx';
+import LoginPage from './components/authorization/LoginPage.tsx';
+import UserProfilePage from './components/profile/UserProfilePage.tsx';
+import EditUserProfilePage from './components/profile/EditUserProfilePage.tsx';
+import RegisterPage from './components/authorization/RegisterPage.tsx';
+import NewQuizPage from './components/quiz/create/NewQuizPage.tsx';
 
 const router = createBrowserRouter([
   {

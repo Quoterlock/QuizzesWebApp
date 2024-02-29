@@ -1,17 +1,18 @@
 import { createContext } from "react"
-//import { MockQuizApi } from "./quiz/MockQuizApi"
-import { AuthorizationService } from "./authorization/AuthorizationService"
-import UserProfileService from "./profile/UserProfileService"
-import { QuizApi } from "./quiz/QuizApi"
+import { AuthorizationApi } from "./api/authorization/AuthorizationApi"
+import UserProfileApi from "./api/profile/UserProfileApi"
+import { QuizApi } from "./api/quiz/QuizApi"
 
 interface ContextType{
     api : IQuizApi
-    authorizationService : IAuthorizationService
-    userProfileService: IUserProfileService
+    authorizationApi : IAuthorizationApi
+    userProfileApi: IUserProfileApi
 }
 
+const apiRoute = "http://192.168.0.101:5000/api"
+
 export const AppContext = createContext<ContextType>({
-    api: new QuizApi,
-    authorizationService : new AuthorizationService,
-    userProfileService : new UserProfileService
+    api: new QuizApi(apiRoute),
+    authorizationApi : new AuthorizationApi(apiRoute),
+    userProfileApi : new UserProfileApi(apiRoute)
 })
