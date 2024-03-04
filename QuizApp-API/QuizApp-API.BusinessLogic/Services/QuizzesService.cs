@@ -35,14 +35,14 @@ namespace QuizApp_API.BusinessLogic
             else throw new Exception("Question title is null or empty");
         }
 
-        public async Task<IEnumerable<QuizModel>> GetAsync()
+        public async Task<IEnumerable<QuizModel>> GetAllAsync()
         {
             var entities = await _repository.GetAllAsync() ?? new List<Quiz>();
             var models = ConvertEntitiesToModels(entities);
             return models;
         }
 
-        public async Task<IEnumerable<QuizModel>> GetAsync(int from, int to)
+        public async Task<IEnumerable<QuizModel>> GetRangeAsync(int from, int to)
         {
             if (from <= to)
             {
@@ -53,7 +53,7 @@ namespace QuizApp_API.BusinessLogic
             else throw new Exception("\"From\" cannot be larger that \"to\"");
         }
 
-        public async Task<QuizModel> GetQuizAsync(string id)
+        public async Task<QuizModel> GetByIdAsync(string id)
         {
             if (!string.IsNullOrEmpty(id))
             {
@@ -68,14 +68,30 @@ namespace QuizApp_API.BusinessLogic
 
         public async Task<IEnumerable<QuizListItemModel>> GetTitlesAsync(int from, int to)
         {
-            var list = await GetAsync(from, to);
+            var list = await GetRangeAsync(from, to);
             return GetTitles(list);
         }
 
         public async Task<IEnumerable<QuizListItemModel>> GetTitlesAsync()
         {
-            var list = await GetAsync();
+            var list = await GetAllAsync();
             return GetTitles(list);
+        }
+
+        public async Task RemoveQuizAsync(string id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                try
+                {
+                    await _repository.DeleteAsync(id);
+                } catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+                
+            }
+            else throw new ArgumentNullException("quiz-id");
         }
 
         private QuizModel Convert(Quiz entity)

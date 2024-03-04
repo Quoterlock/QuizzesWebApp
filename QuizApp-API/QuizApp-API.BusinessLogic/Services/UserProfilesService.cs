@@ -85,7 +85,18 @@ namespace QuizApp_API.BusinessLogic.Services
 
         public async Task UpdateAsync(UserProfileModel profile)
         {
-            throw new NotImplementedException();
+            if (profile == null) throw new ArgumentNullException("profile");
+            if (string.IsNullOrEmpty(profile.Id)) throw new ArgumentNullException("profile.id");
+            if (profile.Owner == null) throw new ArgumentNullException("profile.owner");
+            if (profile.Owner.Id == null) throw new ArgumentNullException("profile.owner.id");
+
+            try
+            {
+                await _profileRepository.Update(Convert(profile));
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task DeleteAsync(UserProfileModel profile)
@@ -97,6 +108,7 @@ namespace QuizApp_API.BusinessLogic.Services
         {
             return new UserProfile
             {
+                Id = model.Id,
                 DisplayName = model.DisplayName,
                 OwnerId = model.Owner.Id,
             };

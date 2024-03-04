@@ -43,7 +43,21 @@ namespace QuizApp_API.DataAccess.Repositories
             throw new NotImplementedException();
         }
 
-        public Task DeleteAsync(Quiz entity)
+        public async Task DeleteAsync(string id)
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                await _context.Quizzes.DeleteOneAsync(q => q.Id == id);
+            }
+            else throw new ArgumentNullException("quiz-id");
+        }
+
+        public async Task SaveResultAsync(QuizResult quizResult)
+        {
+            await _context.Results.InsertOneAsync(quizResult);
+        }
+
+        public Task<IEnumerable<Quiz>> GetByAuthorAsync(string authorId)
         {
             throw new NotImplementedException();
         }

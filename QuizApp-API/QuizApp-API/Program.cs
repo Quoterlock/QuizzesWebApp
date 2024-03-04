@@ -24,6 +24,8 @@ builder.Services.AddScoped<IQuizzesRepository, QuizRepository>();
 builder.Services.AddScoped<IQuizzesService, QuizzesService>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<IUserProfilesService, UserProfilesService>();
+builder.Services.AddScoped<IQuizResultsRepository, QuizResultsRepository>();
+builder.Services.AddScoped<IQuizResultsService, QuizResultsService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -52,7 +54,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 builder.Services.AddScoped<IAuthorizer, JwtAuthorizer>();
-builder.Services.AddScoped<IUserManager, MockUserManager>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

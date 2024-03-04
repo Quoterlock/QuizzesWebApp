@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static MongoDB.Driver.WriteConcern;
 
 namespace QuizApp_API.DataAccess.Repositories
 {
@@ -58,12 +59,30 @@ namespace QuizApp_API.DataAccess.Repositories
             return (await _context.Profiles.FindAsync(q => q.OwnerId == id)).FirstOrDefault();
         }
 
-        public Task Update(UserProfile entity)
+        public async Task Update(UserProfile entity)
         {
-            throw new NotImplementedException();
+            if (entity != null)
+            {
+                if (entity.Id != null)
+                {
+                    if (entity.OwnerId != null)
+                    {
+                        try
+                        {
+                            await _context.Profiles.FindOneAndReplaceAsync(e => e.Id == entity.Id, entity);
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
+                        }
+                    }
+                }
+            }
+            throw new Exception("Invalid profile entity.");
         }
 
-        public Task DeleteAsync(UserProfile entity)
+        public Task DeleteAsync(string id)
         {
             throw new NotImplementedException();
         }

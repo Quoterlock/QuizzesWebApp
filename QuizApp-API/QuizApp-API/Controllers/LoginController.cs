@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using QuizApp_API.BusinessLogic.Interfaces;
 
@@ -10,11 +8,9 @@ namespace QuizApp_API.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly IAuthorizer _authorizer;
-        private readonly UserManager<IdentityUser> _userManager;
-        public LoginController(IAuthorizer authorizer, UserManager<IdentityUser> userManager)
+        private readonly IUserService _userManager;
+        public LoginController(IUserService userManager)
         {
-            _authorizer = authorizer;
             _userManager = userManager;
         }
 
@@ -24,12 +20,12 @@ namespace QuizApp_API.Controllers
         {
             try
             {
-                var token = await _authorizer.Authorize(userCredentials.Email, userCredentials.Password);
+                var token = await _userManager.Authorize(userCredentials.Email, userCredentials.Password);
                 return Ok(token);
             }
             catch (Exception ex)
             {
-                return Unauthorized("Wrong username or password");
+                return Unauthorized(ex.Message);
             }
             }
 
@@ -37,45 +33,19 @@ namespace QuizApp_API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel userCredentials)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var user = new IdentityUser
+                try
                 {
-                    UserName = userCredentials.Username,
-                    Email = userCredentials.Email,
-                    EmailConfirmed = true // just for testing
-                };
-
-                var result = await _userManager.CreateAsync(user, userCredentials.Password);
-                if (result.Succeeded)
+                    await _userManager.Register(userCredentials.Username, userCredentials.Email, userCredentials.Password);
                     return Ok(new { Message = "Successful" });
-
-                var errors = new List<string>();
-                foreach (var error in result.Errors)
-                    errors.Add(error.Description);
-
-                return BadRequest(errors.ToArray());    
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
-            return BadRequest("Model is invalid");
-        }
-
-        [HttpGet("logout")]
-        public IActionResult Logout()
-        {
-            // Jwt token authentication
-            // has no default mechanisms
-            // to expire token by hand
-            return NotFound();            
-        }
-
-        [HttpGet("profile")]
-        [Authorize]
-        public async Task<IActionResult> Profile() 
-        {
-            // get user by id
-            var user = await _userManager.FindByIdAsync(User.Claims.FirstOrDefault(u=>u.Type == "UserId").Value);
-            // return model
-            return Ok(user.UserName);
+            else return BadRequest("Model is invalid");
         }
     }
 

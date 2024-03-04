@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using QuizApp_API.BusinessLogic.Interfaces;
+using QuizApp_API.BusinessLogic.Models;
 using System.Security.Claims;
 
 namespace QuizApp_API.Controllers
@@ -47,6 +48,24 @@ namespace QuizApp_API.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Edit([FromBody] UserProfileModel profile)
+        {
+            if(profile.Owner.Username == GetCurrentUserName())
+            {
+                try
+                {
+                    await _userProfilesService.UpdateAsync(profile);
+                    return Ok();
+                } 
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            } return BadRequest("You are not an owner");
         }
 
         private string GetCurrentUserName()

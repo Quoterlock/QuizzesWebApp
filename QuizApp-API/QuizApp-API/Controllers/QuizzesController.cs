@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 
@@ -8,10 +9,12 @@ namespace QuizApp_API.Controllers
     public class QuizzesController : ControllerBase
     {
         private readonly IQuizzesService _service;
+        private readonly IQuizResultsService _results;
 
-        public QuizzesController(IQuizzesService service)
+        public QuizzesController(IQuizzesService service, IQuizResultsService results)
         {
             _service = service;
+            _results = results;
         }
 
         // GET: api/Quizzes/FullList
@@ -20,11 +23,11 @@ namespace QuizApp_API.Controllers
         {
             if (startIndex == null || endIndex == null)
             {
-                return await _service.GetAsync();
+                return await _service.GetAllAsync();
             }
             if (startIndex == 0 && startIndex == endIndex)
             {
-                return await _service.GetAsync();
+                return await _service.GetAllAsync();
             }
             return new List<QuizModel>();
         }
@@ -46,21 +49,83 @@ namespace QuizApp_API.Controllers
 
         // GET: api/Quizzes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<QuizModel>> GetQuiz(string id)
+        public async Task<ActionResult<QuizAndResult>> GetQuiz(string id)
         {
             if (!string.IsNullOrEmpty(id))
             {
-                return await _service.GetQuizAsync(id);
+                try
+                {
+                    var quiz = await _service.GetByIdAsync(id);
+                    var results = await _results.GetResultsByQuizIdAsync(quiz.Id);
+                    return new QuizAndResult
+                    {
+                        Quiz = quiz,
+                        Results = results
+                    };
+                } catch(Exception ex)
+                {
+                    return NotFound(ex.Message);
+                }
             }
             return NotFound();
         }
 
         [HttpPost("create")]
+        [Authorize]
         public async Task<ActionResult> CreateQuiz([FromBody] QuizModel quiz)
         {
             if (quiz != null)
                 await _service.AddQuizAsync(quiz);
             return Ok();
         }
+
+        [HttpPost("save-result")]
+        [Authorize]
+        public async Task<ActionResult> SaveResult([FromBody] QuizResultModel result)
+        {
+            try
+            {
+                await _results.SaveResultAsync(result);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("delete/{id}")]
+        [Authorize]
+        public async Task<ActionResult> DeleteQuiz(string id)
+        {
+            try
+            {
+                var quiz = await _service.GetByIdAsync(id);
+                if (quiz.AuthorId == GetCurrentUserId())
+                {
+                    await _service.RemoveQuizAsync(id);
+                    return Ok();
+                }
+                else return BadRequest("You are not an author!");
+            } 
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private string GetCurrentUserId()
+        {
+            if (User.Claims != null && User.Claims.Any(c => c.Type == "UserId"))
+                return User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
+            else
+                return string.Empty;
+        }
+    }
+
+    public class QuizAndResult
+    {
+        public QuizModel Quiz { get; set; }
+        public IEnumerable<QuizResultModel> Results { get; set; }
     }
 }
