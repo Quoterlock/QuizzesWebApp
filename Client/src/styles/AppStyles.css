@@ -73,6 +73,17 @@
     box-shadow: 0px 0px var(--active-color-shadow);
 }
 
+.danger-btn {
+    background-color: var(--danger-color) !important;
+    box-shadow: 0px 5px var(--danger-color-shadow);
+}
+
+.danger-btn:focus {
+    transform: translateY(5px);
+    box-shadow: 0px 0px var(--danger-color-shadow);
+}
+
+
 .minor-btn {
     background-color: var(--minor-btn-color) !important;
     border: 1px solid var(--border-color) !important;

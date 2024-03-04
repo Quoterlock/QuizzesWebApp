@@ -78,4 +78,24 @@ export class QuizApi implements IQuizApi{
             throw error;
         }
     }
+
+    async DeleteQuiz(id: string): Promise<RequesResult> {
+        const token = localStorage.getItem("jwt-token")
+        try {
+            const responce = await fetch(`${apiPath}/delete/${id}`,{
+                method:"POST",
+                headers: {
+                    "Content-Type":"application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            })
+            if(!responce.ok) {
+                throw new Error("failed to delete quiz")
+            }
+            return {code:200, message:"quiz deleted"}
+        } catch(error) {
+            console.error("Error fetching data:", error)
+            throw error;
+        } 
+    }
 }

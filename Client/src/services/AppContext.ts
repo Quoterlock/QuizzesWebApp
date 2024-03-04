@@ -9,7 +9,7 @@ interface ContextType{
     userProfileApi: IUserProfileApi
 }
 
-const apiRoute = "http://192.168.0.101:5000/api"
+const apiRoute = "http://192.168.0.103:5000/api"
 
 export const AppContext = createContext<ContextType>({
     api: new QuizApi(apiRoute),

@@ -3,4 +3,5 @@ interface IQuizApi {
     GetByIdAsync(id:string): Promise<QuizAndResults>
     SaveResultAsync(result:QuizResult):Promise<RequesResult>
     CreateNewQuiz(quiz:QuizItem): Promise<RequesResult>
+    DeleteQuiz(id:string) : Promise<RequesResult>
 }

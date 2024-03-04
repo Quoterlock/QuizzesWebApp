@@ -53,7 +53,26 @@ export default class UserProfileApi implements IUserProfileApi {
     }
    
     async UpdateProfile(id:string, profile:UserProfile): Promise<RequesResult> {
-        return {code:500, message:"not implemented"}
+        const token = localStorage.getItem("jwt-token")
+        try{
+            const response = await fetch(`${apiPath}`, {
+                method:"POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(profile)
+            })
+            if(!response.ok) {
+                return { code: response.status, message: "Error" }
+            }
+            else {
+                return { code: 200, message:"Saved" }
+            }
+        } catch (error) {
+            console.error("Error fetching data", error)
+            return { code: 0, message : "Error" }
+        }
     }
 
 }

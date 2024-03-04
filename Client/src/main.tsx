@@ -12,6 +12,7 @@ import UserProfilePage from './components/profile/UserProfilePage.tsx';
 import EditUserProfilePage from './components/profile/EditUserProfilePage.tsx';
 import RegisterPage from './components/authorization/RegisterPage.tsx';
 import NewQuizPage from './components/quiz/create/NewQuizPage.tsx';
+import { RemoveQuizPage } from './components/quiz/RemoveQuizPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
   {
     path:"/profile/edit",
     element: <EditUserProfilePage/>
+  },
+  {
+    path:"/delete-quiz/:id",
+    element: <RemoveQuizPage/>
   }
 ])
 
