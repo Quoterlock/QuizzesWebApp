@@ -77,5 +77,10 @@ namespace UnitTests.ServicesTests
         {
             throw new NotImplementedException();
         }
+
+        public Task DeleteAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

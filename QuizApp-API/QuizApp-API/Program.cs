@@ -5,6 +5,7 @@ using QuizApp_API.BusinessLogic.Services;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore;
 using QuizApp_API.DataAccess.Data;
 using QuizApp_API.DataAccess.Repositories;
 using QuizApp_API.DataAccess.Interfaces;
@@ -15,7 +16,7 @@ var connectionString = builder.Configuration.GetConnectionString("QuizAppAPI_Con
 var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb_ConnectionString") ?? throw new InvalidOperationException("Connection string 'MongoDb_ConnectionString' not found.");
 
 // add db context for identities
-builder.Services.AddDbContext<AppIdentityContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<AppIdentityContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppIdentityContext>();
 // add db context for other entities
 builder.Services.AddSingleton(new MongoDbContext(mongoConnectionString));
@@ -35,6 +36,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder.WithOrigins("http://localhost:5173")
+                          //.AllowAnyOrigin()
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
