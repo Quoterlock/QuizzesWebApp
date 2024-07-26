@@ -2,55 +2,34 @@
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QuizApp_API.BusinessLogic
 {
     public class QuizzesService : IQuizzesService
     {
         private readonly IQuizzesRepository _repository;
-        public QuizzesService(IQuizzesRepository repository)
+        private readonly IQuizResultsService _resultsService;
+        public QuizzesService(IQuizzesRepository repository, IQuizResultsService resultsService)
         { 
             _repository = repository;
+            _resultsService = resultsService;
         }
 
         public async Task AddQuizAsync(QuizModel quiz)
         {
-            if(quiz == null) throw new ArgumentNullException(nameof(quiz));
-            if (!string.IsNullOrEmpty(quiz.Title))
-            {
-                try
-                {
-                    await _repository.AddAsync(Convert(quiz));
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-            }
-            else throw new Exception("Question title is null or empty");
-        }
+            if(quiz == null) 
+                throw new ArgumentNullException(nameof(quiz));
+            if(string.IsNullOrEmpty(quiz.Title))
+                throw new ArgumentException("Question title is null or empty");
 
-        public async Task<IEnumerable<QuizModel>> GetAllAsync()
-        {
-            var entities = await _repository.GetAllAsync() ?? new List<Quiz>();
-            var models = ConvertEntitiesToModels(entities);
-            return models;
-        }
-
-        public async Task<IEnumerable<QuizModel>> GetRangeAsync(int from, int to)
-        {
-            if (from <= to)
+            try
             {
-                var entities = await _repository.GetRangeAsync(from, to) ?? new List<Quiz>();
-                var models = ConvertEntitiesToModels(entities);
-                return models;
+                await _repository.AddAsync(Convert(quiz));
             }
-            else throw new Exception("\"From\" cannot be larger that \"to\"");
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<QuizModel> GetByIdAsync(string id)
@@ -58,10 +37,13 @@ namespace QuizApp_API.BusinessLogic
             if (!string.IsNullOrEmpty(id))
             {
                 var entity = await _repository.GetByIdAsync(id);
-                if (entity != null)
-                    return Convert(entity);
-                else 
+                if (entity == null)
                     throw new Exception("Entity doesn't exist with id:" + id);
+                
+                var model = Convert(entity);
+                model.Results = await _resultsService.GetResultsByQuizIdAsync(model.Id);
+                
+                return model;
             }
             else throw new ArgumentNullException(nameof(id));
         }
@@ -92,6 +74,24 @@ namespace QuizApp_API.BusinessLogic
                 
             }
             else throw new ArgumentNullException("quiz-id");
+        }
+
+        private async Task<IEnumerable<QuizModel>> GetAllAsync()
+        {
+            var entities = await _repository.GetAllAsync() ?? new List<Quiz>();
+            var models = ConvertEntitiesToModels(entities);
+            return models;
+        }
+
+        private async Task<IEnumerable<QuizModel>> GetRangeAsync(int from, int to)
+        {
+            if (from <= to)
+            {
+                var entities = await _repository.GetRangeAsync(from, to) ?? new List<Quiz>();
+                var models = ConvertEntitiesToModels(entities);
+                return models;
+            }
+            else throw new Exception("\"From\" cannot be larger that \"to\"");
         }
 
         private QuizModel Convert(Quiz entity)
@@ -125,6 +125,7 @@ namespace QuizApp_API.BusinessLogic
                 models.Add(Convert(entity));
             return models;
         }
+        
         private Quiz Convert(QuizModel model)
         {
             try

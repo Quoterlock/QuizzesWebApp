@@ -49,19 +49,16 @@ namespace QuizApp_API.Controllers
 
         // GET: api/Quizzes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<QuizAndResult>> GetQuiz(string id)
+        public async Task<ActionResult<QuizModel>> GetQuiz(string id)
         {
             if (!string.IsNullOrEmpty(id))
             {
                 try
                 {
                     var quiz = await _service.GetByIdAsync(id);
-                    var results = await _results.GetResultsByQuizIdAsync(quiz.Id);
-                    return new QuizAndResult
-                    {
-                        Quiz = quiz,
-                        Results = results
-                    };
+                    return quiz;
+                    //TODO:Add Quiz results to QuizModel
+                    
                 } catch(Exception ex)
                 {
                     return NotFound(ex.Message);
