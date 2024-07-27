@@ -42,13 +42,23 @@ namespace UnitTests
                 .Setup(m => m.GetResultsByQuizIdAsync(quizId))
                 .ReturnsAsync([new QuizResultModel { Id = "3", QuizId = quizId }]);
 
-            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object);
+            var mockRatesService = new Mock<IRatesService>();
+            mockRatesService.Setup(m => m.GetRatesAsync(quizId))
+                .ReturnsAsync(new List<QuizRateModel>()
+                {
+                    new QuizRateModel {Id = "1", Rate = 15, QuizId = quizId, UserId = "0"},
+                    new QuizRateModel {Id = "2", Rate = 5, QuizId = quizId, UserId = "0"},
+                    new QuizRateModel {Id = "3", Rate = 10, QuizId = "another", UserId = "0"},
+                    new QuizRateModel {Id = "4", Rate = 10, QuizId = "another", UserId = "0"},
+                });
+
+            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object, mockRatesService.Object);
             var expected = new QuizModel
             {
                 Author = "user",
                 AuthorId = "0",
                 Id = "1",
-                Rate = 0,
+                Rate = 10,
                 Title = "Quiz",
                 Results = [new QuizResultModel { Id = "3", QuizId = quizId }],
                 Questions = new[]
@@ -79,7 +89,9 @@ namespace UnitTests
             string quizId = "1";
             var mockRepo = new Mock<IQuizzesRepository>();
             var mockResultsService = new Mock<IQuizResultsService>();
-            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object);
+            var mockRatesService = new Mock<IRatesService>();
+
+            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object, mockRatesService.Object);
 
             // Assert
             await Assert.ThrowsAsync<Exception>(() => sut.GetByIdAsync(quizId));
@@ -91,7 +103,9 @@ namespace UnitTests
             // Arrange
             var mockRepo = new Mock<IQuizzesRepository>();
             var mockResultsService = new Mock<IQuizResultsService>();
-            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object);
+            var mockRatesService = new Mock<IRatesService>();
+
+            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object, mockRatesService.Object);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentNullException>(() => sut.GetByIdAsync(null));
@@ -101,25 +115,35 @@ namespace UnitTests
         public async Task Get_quiz_list_test()
         {
             // Arrange
-            var mockRepo = new Mock<IQuizzesRepository>();
-            mockRepo.Setup(m => m.GetAllAsync()).ReturnsAsync([
+            Quiz[] quizzes = [
                     new Quiz {Id = "1", AuthorId = "2", AuthorName = "Name", Title = "Quiz1", Questions = []},
                     new Quiz {Id = "2", AuthorId = "3", AuthorName = "Name1", Title = "Quiz2",Questions = []},
                     new Quiz {Id = "3", AuthorId = "4", AuthorName = "Name2", Title = "Quiz3",Questions = []},
                     new Quiz {Id = "4", AuthorId = "5", AuthorName = "Name3", Title = "Quiz4",Questions = []},
-                    new Quiz {Id = "5", AuthorId = "6", AuthorName = "Name4", Title = "Quiz5",Questions = []},
-                    new Quiz {Id = "6", AuthorId = "7", AuthorName = "Name5", Title = "Quiz6",Questions = []},
-                ]);
+                ];
+            var ids = quizzes.Select(q => q.Id).ToArray();
+
+            var mockRepo = new Mock<IQuizzesRepository>();
+            mockRepo.Setup(m => m.GetAllAsync()).ReturnsAsync(quizzes);
+
             var mockResultsService = new Mock<IQuizResultsService>();
-            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object);
+            
+            var mockRatesService = new Mock<IRatesService>();
+            mockRatesService.Setup(m => m.GetRatesAsync(ids)).ReturnsAsync(new List<QuizRateModel> { 
+                new QuizRateModel { Id = "1", QuizId="1", Rate=4, UserId="0"},
+                new QuizRateModel { Id = "2", QuizId="1", Rate=4, UserId="0"},
+                new QuizRateModel { Id = "3", QuizId="2", Rate=4, UserId="0"},
+                new QuizRateModel { Id = "4", QuizId="2", Rate=8, UserId="0"},
+                new QuizRateModel { Id = "5", QuizId="3", Rate=10, UserId="0"},
+            });
+            
+            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object, mockRatesService.Object);
             var expected = new List<QuizListItemModel>()
             {
-                new QuizListItemModel { Id = "1", Author = "Name", AuthorId = "2", Title = "Quiz1", Rate = 0},
-                new QuizListItemModel { Id = "2", Author = "Name1", AuthorId = "3", Title = "Quiz2", Rate = 1},
-                new QuizListItemModel { Id = "3", Author = "Name2", AuthorId = "4", Title = "Quiz3", Rate = 2},
-                new QuizListItemModel { Id = "4", Author = "Name3", AuthorId = "5", Title = "Quiz4", Rate = 3},
-                new QuizListItemModel { Id = "5", Author = "Name4", AuthorId = "6", Title = "Quiz5", Rate = 4},
-                new QuizListItemModel { Id = "6", Author = "Name5", AuthorId = "7", Title = "Quiz6", Rate = 5},
+                new QuizListItemModel { Id = "1", Author = "Name", AuthorId = "2", Title = "Quiz1", Rate = 4},
+                new QuizListItemModel { Id = "2", Author = "Name1", AuthorId = "3", Title = "Quiz2", Rate = 6},
+                new QuizListItemModel { Id = "3", Author = "Name2", AuthorId = "4", Title = "Quiz3", Rate = 10},
+                new QuizListItemModel { Id = "4", Author = "Name3", AuthorId = "5", Title = "Quiz4", Rate = 0},
             };
 
             // Act

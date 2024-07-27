@@ -17,21 +17,6 @@ namespace QuizApp_API.Controllers
             _results = results;
         }
 
-        // GET: api/Quizzes/FullList
-        [HttpGet("full-list")]
-        public async Task<IEnumerable<QuizModel>> GetQuiz(int? startIndex, int? endIndex)
-        {
-            if (startIndex == null || endIndex == null)
-            {
-                return await _service.GetAllAsync();
-            }
-            if (startIndex == 0 && startIndex == endIndex)
-            {
-                return await _service.GetAllAsync();
-            }
-            return new List<QuizModel>();
-        }
-
         // GET: api/Quizzes/List
         [HttpGet("list")]
         public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)

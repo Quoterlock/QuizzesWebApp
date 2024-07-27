@@ -1,4 +1,6 @@
-﻿using QuizApp_API.BusinessLogic.Interfaces;
+﻿using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver.Linq;
+using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
@@ -9,10 +11,12 @@ namespace QuizApp_API.BusinessLogic
     {
         private readonly IQuizzesRepository _repository;
         private readonly IQuizResultsService _resultsService;
-        public QuizzesService(IQuizzesRepository repository, IQuizResultsService resultsService)
+        private readonly IRatesService _ratesService;
+        public QuizzesService(IQuizzesRepository repository, IQuizResultsService resultsService, IRatesService ratesService)
         { 
             _repository = repository;
             _resultsService = resultsService;
+            _ratesService = ratesService;
         }
 
         public async Task AddQuizAsync(QuizModel quiz)
@@ -41,8 +45,13 @@ namespace QuizApp_API.BusinessLogic
                     throw new Exception("Entity doesn't exist with id:" + id);
                 
                 var model = Convert(entity);
+                // get results
                 model.Results = await _resultsService.GetResultsByQuizIdAsync(model.Id);
-                
+                // get rates
+                var rates = await _ratesService.GetRatesAsync([model.Id]);
+                if (!rates.IsNullOrEmpty())
+                    model.Rate = rates.Average(e => e.Rate);
+
                 return model;
             }
             else throw new ArgumentNullException(nameof(id));
@@ -78,8 +87,21 @@ namespace QuizApp_API.BusinessLogic
 
         private async Task<IEnumerable<QuizModel>> GetAllAsync()
         {
+            // get quizzes
             var entities = await _repository.GetAllAsync() ?? new List<Quiz>();
             var models = ConvertEntitiesToModels(entities);
+
+            // add rates
+            var rates = await _ratesService.GetRatesAsync(
+                entities.Select(e => e.Id).ToArray());
+            foreach (var model in models)
+            {
+                var quizRates = rates.Where(r => r.QuizId == model.Id);
+                if (quizRates.IsNullOrEmpty())
+                    model.Rate = 0;
+                else 
+                    model.Rate = quizRates.Average(e => e.Rate); 
+            }
             return models;
         }
 

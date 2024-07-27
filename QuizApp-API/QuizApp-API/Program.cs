@@ -41,11 +41,16 @@ namespace QuizApp_API
 
         private static void ConfigureServices(WebApplicationBuilder builder)
         {
-            var connectionString = builder.Configuration.GetConnectionString("QuizAppAPI_ContextConnection") ?? throw new InvalidOperationException("Connection string 'QuizAppAPI_ContextConnection' not found.");
-            var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb_ConnectionString") ?? throw new InvalidOperationException("Connection string 'MongoDb_ConnectionString' not found.");
+            var identitiesDbConnectionString = builder.Configuration.GetConnectionString("QuizAppIdentitiesDb") 
+                ?? throw new InvalidOperationException("Connection string 'QuizAppAPI_ContextConnection' not found.");
+            var mongoConnectionString = builder.Configuration.GetConnectionString("MongoDb_ConnectionString") 
+                ?? throw new InvalidOperationException("Connection string 'MongoDb_ConnectionString' not found.");
+            var quizAppDbConnectionString = builder.Configuration.GetConnectionString("QuizAppDb") 
+                ?? throw new InvalidOperationException("Connection string 'MongoDb_ConnectionString' not found.");
 
             // add db context for identities
-            builder.Services.AddDbContext<AppIdentityContext>(options => options.UseNpgsql(connectionString));
+            builder.Services.AddDbContext<AppIdentityContext>(options => options.UseNpgsql(identitiesDbConnectionString));
+            builder.Services.AddDbContext<QuizAppDbContext>(options => options.UseNpgsql(quizAppDbConnectionString));
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppIdentityContext>();
             // add db context for other entities
             builder.Services.AddSingleton(new MongoDbContext(mongoConnectionString));
@@ -56,6 +61,8 @@ namespace QuizApp_API
             builder.Services.AddScoped<IUserProfilesService, UserProfilesService>();
             builder.Services.AddScoped<IQuizResultsRepository, QuizResultsRepository>();
             builder.Services.AddScoped<IQuizResultsService, QuizResultsService>();
+            builder.Services.AddScoped<IRatesRepository, RatesRepository>();
+            builder.Services.AddScoped<IRatesService, RatesService>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

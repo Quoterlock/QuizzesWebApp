@@ -2,13 +2,12 @@
 
 namespace QuizApp_API.DataAccess.Entities
 {
-    public class QuizResult
+    public class UserQuizRate
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; } = string.Empty;
-        public int Result { get; set; } = 0;
         public string QuizId { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
-        public string TimeStamp { get; set; } = DateTime.Now.ToString();
+        public double Rate { get; set; } = 0;
     }
 }
