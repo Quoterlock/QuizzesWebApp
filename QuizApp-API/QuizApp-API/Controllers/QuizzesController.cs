@@ -41,10 +41,9 @@ namespace QuizApp_API.Controllers
                 try
                 {
                     var quiz = await _service.GetByIdAsync(id);
-                    return quiz;
-                    //TODO:Add Quiz results to QuizModel
-                    
-                } catch(Exception ex)
+                    return quiz;                    
+                } 
+                catch(Exception ex)
                 {
                     return NotFound(ex.Message);
                 }
@@ -56,9 +55,18 @@ namespace QuizApp_API.Controllers
         [Authorize]
         public async Task<ActionResult> CreateQuiz([FromBody] QuizModel quiz)
         {
-            if (quiz != null)
+            if (quiz == null)
+                return BadRequest();
+
+            try
+            {
                 await _service.AddQuizAsync(quiz);
-            return Ok();
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("save-result")]
@@ -103,11 +111,5 @@ namespace QuizApp_API.Controllers
             else
                 return string.Empty;
         }
-    }
-
-    public class QuizAndResult
-    {
-        public QuizModel Quiz { get; set; }
-        public IEnumerable<QuizResultModel> Results { get; set; }
     }
 }

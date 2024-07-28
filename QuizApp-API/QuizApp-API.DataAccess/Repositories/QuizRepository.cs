@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using QuizApp_API.DataAccess.Data;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
@@ -50,11 +49,6 @@ namespace QuizApp_API.DataAccess.Repositories
                 await _context.Quizzes.DeleteOneAsync(q => q.Id == id);
             }
             else throw new ArgumentNullException("quiz-id");
-        }
-
-        public async Task SaveResultAsync(QuizResult quizResult)
-        {
-            await _context.Results.InsertOneAsync(quizResult);
         }
 
         public Task<IEnumerable<Quiz>> GetByAuthorAsync(string authorId)

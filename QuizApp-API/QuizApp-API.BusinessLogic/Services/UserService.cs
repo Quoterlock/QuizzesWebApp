@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using QuizApp_API.BusinessLogic.Interfaces;
+using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,26 @@ namespace QuizApp_API.BusinessLogic.Services
             return await _authorizer.Authorize(email, password);
         }
 
+        public async Task<IdentityUser> GetByIdAsync(string id)
+        {
+            if(string.IsNullOrEmpty(id))
+                throw new ArgumentNullException("id");
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) 
+                throw new Exception($"User with id:{id} doesn't exsit");
+
+            return user;
+        }
+
+        public async Task<IdentityUser> GetByNameAsync(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if(user == null)
+                throw new Exception($"User with username:{username} doesn't exsit");
+            return user;
+        }
+
         public async Task Register(string username, string email, string password)
         {
             var user = new IdentityUser
@@ -33,7 +54,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 EmailConfirmed = true // just for testing
             };
 
-            if (!await emailIsUsed(user.Email))
+            if (!await EmailIsUsed(user.Email))
             {
                 var result = await _userManager.CreateAsync(user, password);
                 if (!result.Succeeded)
@@ -52,7 +73,7 @@ namespace QuizApp_API.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
-        private async Task<bool> emailIsUsed(string email)
+        private async Task<bool> EmailIsUsed(string email)
         {
             return await _userManager.FindByEmailAsync(email) != null;
         }

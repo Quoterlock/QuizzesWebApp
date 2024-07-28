@@ -7,7 +7,7 @@ namespace QuizApp_API.BusinessLogic.Interfaces
         Task<UserProfileModel> GetByIdAsync(string profileId);
         Task<UserProfileModel> GetByUsernameAsync(string username);
         Task<bool> IsExists(string username);
-        Task CreateAsync(string userId);
+        Task CreateAsync(string username);
         Task UpdateAsync(UserProfileModel profile);
         Task DeleteAsync(UserProfileModel profile);
 

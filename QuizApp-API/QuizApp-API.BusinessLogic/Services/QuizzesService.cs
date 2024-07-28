@@ -85,24 +85,37 @@ namespace QuizApp_API.BusinessLogic
             else throw new ArgumentNullException("quiz-id");
         }
 
-        private async Task<IEnumerable<QuizModel>> GetAllAsync()
+        public async Task<IEnumerable<QuizListItemModel>> GetAllTitlesByAuthorId(string profileId)
         {
             // get quizzes
-            var entities = await _repository.GetAllAsync() ?? new List<Quiz>();
+            var entities = await _repository.GetByAuthorAsync(profileId) ?? new List<Quiz>();
             var models = ConvertEntitiesToModels(entities);
 
             // add rates
+            models = await AddRatesForQuizzes(models);
+            return GetTitles(models);
+        }
+
+        private async Task<IEnumerable<QuizModel>> AddRatesForQuizzes(IEnumerable<QuizModel> quizzes)
+        {
             var rates = await _ratesService.GetRatesAsync(
-                entities.Select(e => e.Id).ToArray());
-            foreach (var model in models)
+                quizzes.Select(e => e.Id).ToArray());
+            foreach (var quiz in quizzes)
             {
-                var quizRates = rates.Where(r => r.QuizId == model.Id);
+                var quizRates = rates.Where(r => r.QuizId == quiz.Id);
                 if (quizRates.IsNullOrEmpty())
-                    model.Rate = 0;
-                else 
-                    model.Rate = quizRates.Average(e => e.Rate); 
+                    quiz.Rate = 0;
+                else
+                    quiz.Rate = quizRates.Average(e => e.Rate);
             }
-            return models;
+            return quizzes;
+        }
+
+        private async Task<IEnumerable<QuizModel>> GetAllAsync()
+        {
+            var entities = await _repository.GetAllAsync() ?? new List<Quiz>();
+            var models = ConvertEntitiesToModels(entities);
+            return await AddRatesForQuizzes(models);
         }
 
         private async Task<IEnumerable<QuizModel>> GetRangeAsync(int from, int to)

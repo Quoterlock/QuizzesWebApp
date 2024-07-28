@@ -31,10 +31,13 @@ namespace QuizApp_API.BusinessLogic.Services
 
         public async Task SaveResultAsync(QuizResultModel quizResult)
         {
-            if(quizResult != null)
-                await _repository.SaveResultAsync(Convert(quizResult));
-            else 
+            if(quizResult == null)
                 throw new ArgumentNullException(nameof(quizResult));
+
+            var entity = Convert(quizResult);
+            entity.TimeStamp = DateTime.Now.ToString();
+
+            await _repository.SaveResultAsync(entity);
         }
 
         private QuizResult Convert(QuizResultModel model)
@@ -47,6 +50,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 Result = model.Result,
             };
         }
+
         private QuizResultModel Convert(QuizResult entity)
         {
             return new QuizResultModel
@@ -57,6 +61,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 QuizId = entity.QuizId,
             };
         }
+
         private IEnumerable<QuizResultModel> ConvertEntitiesToModels(IEnumerable<QuizResult> entities)
         {
             var models = new List<QuizResultModel>();

@@ -3,97 +3,110 @@ using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
+using System.Net.WebSockets;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
     public class UserProfilesService : IUserProfilesService
     {
         private readonly IUserProfileRepository _profileRepository;
-        private readonly UserManager<IdentityUser> _userManager;
-        public UserProfilesService(IUserProfileRepository userProfileRepository, UserManager<IdentityUser> userManager)
+        private readonly IUserService _userService;
+        private readonly IQuizzesService _quizzesService;
+
+        public UserProfilesService(
+            IUserProfileRepository userProfileRepository,
+            IUserService userService,
+            IQuizzesService quizzesService
+            )
         { 
             _profileRepository = userProfileRepository;
-            _userManager = userManager;
+            _userService = userService;
+            _quizzesService = quizzesService;
         }
 
         public async Task CreateAsync(string username)
         {
-            if (!string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+            
+            var user = await _userService.GetByNameAsync(username) 
+                ?? throw new Exception("User not found with username:" + username);
+
+            var profile = new UserProfileModel
             {
-                var user = await _userManager.FindByNameAsync(username);
-                if (user != null)
+                DisplayName = user.NormalizedUserName ?? "Unknown",
+                Owner = new ProfileOwnerInfo
                 {
-                    var profile = new UserProfileModel
-                    {
-                        DisplayName = user.NormalizedUserName ?? "Unknown",
-                        Owner = new ProfileOwnerInfo
-                        {
-                            Id = user.Id,
-                            Username = username
-                        }
-                    };
-                    await _profileRepository.AddAsync(Convert(profile));
+                    Id = user.Id,
+                    Username = username
                 }
-                else throw new Exception("User not found with username:" + username);
-            }
-            else throw new ArgumentNullException(nameof(username));
+            };
+
+            await _profileRepository.AddAsync(Convert(profile));
         }
 
         public async Task<UserProfileModel> GetByIdAsync(string profileId)
         {
-            if (!string.IsNullOrEmpty(profileId))
+            if (string.IsNullOrEmpty(profileId))
+                throw new ArgumentNullException(nameof(profileId));
+
+            try
             {
-                try
-                {
-                    var entity = await _profileRepository.GetByIdAsync(profileId);
-                    var user = await _userManager.FindByIdAsync(entity.OwnerId);
-                    var profile = Convert(entity);
-                    if (user != null && !string.IsNullOrEmpty(user.UserName))
-                        profile.Owner.Username = user.UserName;
-                    else
-                        profile.Owner.Username = "Unknown";
-                    return profile;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
+                var entity = await _profileRepository.GetByIdAsync(profileId);
+                var user = await _userService.GetByIdAsync(entity.OwnerId);
+                var profile = Convert(entity);
+        
+                if (user != null && !string.IsNullOrEmpty(user.UserName))
+                    profile.Owner.Username = user.UserName;
+                else
+                    profile.Owner.Username = "Unknown";
+
+                profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByAuthorId(profileId)).ToList();
+
+                return profile;
             }
-            else throw new ArgumentNullException(nameof(profileId));
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<UserProfileModel> GetByUsernameAsync(string username)
         {
-            if(!string.IsNullOrEmpty(username))
-            {
-                var user = await _userManager.FindByNameAsync(username);
-                if (user != null)
-                {
-                    var entity = await _profileRepository.GetByOwnerIdAsync(user.Id);
-                    if (entity != null)
-                    {
-                        var profile = Convert(entity);
-                        profile.Owner.Username = username;
-                        return profile;
-                    }
-                    else throw new Exception("User profile not found");
-                }
-                else throw new Exception("User not found with username:" + username);
-            }
-            else throw new ArgumentNullException(nameof(username));
+            if(string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+
+            var user = await _userService.GetByNameAsync(username);
+            if (user == null)
+                throw new Exception("User not found with username:" + username);
+
+            var entity = await _profileRepository.GetByOwnerIdAsync(user.Id);
+            if (entity == null)
+                throw new Exception("User profile not found");
+
+            var profile = Convert(entity);
+            profile.Owner.Username = username;
+            profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByAuthorId(profile.Id)).ToList();
+
+            return profile;
         }
 
         public async Task UpdateAsync(UserProfileModel profile)
         {
-            if (profile == null) throw new ArgumentNullException("profile");
-            if (string.IsNullOrEmpty(profile.Id)) throw new ArgumentNullException("profile.id");
-            if (profile.Owner == null) throw new ArgumentNullException("profile.owner");
-            if (profile.Owner.Id == null) throw new ArgumentNullException("profile.owner.id");
+            if (profile == null) 
+                throw new ArgumentNullException("profile");
+            if (string.IsNullOrEmpty(profile.Id)) 
+                throw new ArgumentNullException("profile.id");
+            if (profile.Owner == null) 
+                throw new ArgumentNullException("profile.owner");
+            if (profile.Owner.Id == null) 
+                throw new ArgumentNullException("profile.owner.id");
 
             try
             {
                 await _profileRepository.Update(Convert(profile));
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -132,7 +145,7 @@ namespace QuizApp_API.BusinessLogic.Services
         {
             try
             {
-                var user = await _userManager.FindByNameAsync(username);
+                var user = await _userService.GetByNameAsync(username);
                 if (user != null)
                     return await _profileRepository.IsExistsAsync(user.Id);
                 else

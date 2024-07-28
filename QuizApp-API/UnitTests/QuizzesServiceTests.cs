@@ -14,8 +14,8 @@ namespace UnitTests
         {
             // Arrange
             var quizId = "1";
-            var mockRepo = new Mock<IQuizzesRepository>();
-            mockRepo
+            var mockQuizzesRepo = new Mock<IQuizzesRepository>();
+            mockQuizzesRepo
                 .Setup(m => m.GetByIdAsync(quizId))
                 .ReturnsAsync(new Quiz
                 {
@@ -52,7 +52,7 @@ namespace UnitTests
                     new QuizRateModel {Id = "4", Rate = 10, QuizId = "another", UserId = "0"},
                 });
 
-            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object, mockRatesService.Object);
+            var sut = new QuizzesService(mockQuizzesRepo.Object, mockResultsService.Object, mockRatesService.Object);
             var expected = new QuizModel
             {
                 Author = "user",
