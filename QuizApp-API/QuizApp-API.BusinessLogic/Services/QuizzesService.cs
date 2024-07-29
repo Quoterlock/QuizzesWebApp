@@ -22,9 +22,14 @@ namespace QuizApp_API.BusinessLogic
 
             if (string.IsNullOrEmpty(quiz.Title))
                 throw new ArgumentException("Question title is null or empty");
+            if (string.IsNullOrEmpty(quiz.Author))
+                throw new ArgumentException("Question author is null or empty");
+            if (string.IsNullOrEmpty(quiz.AuthorId))
+                throw new ArgumentException("Question authorId is null or empty");
 
             try
             {
+                quiz.Id = Guid.NewGuid().ToString();
                 quiz.CreationDate = DateTime.Now.ToString();
                 await _repository.AddAsync(Convert(quiz));
             }
@@ -152,7 +157,8 @@ namespace QuizApp_API.BusinessLogic
                     Title = model.Title,
                     Questions = [],
                     AuthorName = model.Author,
-                    AuthorId = model.AuthorId
+                    AuthorId = model.AuthorId,
+                    CreationDate = model.CreationDate,
                 };
 
                 foreach (var question in model.Questions)

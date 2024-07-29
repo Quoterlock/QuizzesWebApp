@@ -6,13 +6,10 @@ namespace QuizApp_API.Controllers
 {
     [Route("api/authorization")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginController(IUserService userManager) 
+        : ControllerBase
     {
-        private readonly IUserService _userManager;
-        public LoginController(IUserService userManager)
-        {
-            _userManager = userManager;
-        }
+        private readonly IUserService _userManager = userManager;
 
         [AllowAnonymous]
         [HttpPost("login")]

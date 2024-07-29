@@ -49,8 +49,8 @@ namespace QuizApp_API.BusinessLogic.Services
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new Claim[] {
-                new Claim("UserId", user.Id),
-                new Claim("Name", user.UserName)
+                new("UserId", user.Id),
+                new("Name", user.UserName)
             };
             var token = new JwtSecurityToken(
                 _config["Jwt:Issuer"], 

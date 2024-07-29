@@ -145,5 +145,191 @@ namespace UnitTests
             // Assert
             Assert.Equal(expected, result);
         }
+
+        [Fact]
+        public async Task Get_quiz_by_author_id_list_test()
+        {
+            // Arrange
+            string authorId = "1";
+            Quiz[] quizzes = [
+                    new() {Id = "1", AuthorId = authorId, AuthorName = "Name", Title = "Quiz1", Questions = []},
+                    new() {Id = "2", AuthorId = authorId, AuthorName = "Name1", Title = "Quiz2",Questions = []},
+                ];
+            var ids = quizzes
+                .Where(q=>q.AuthorId == authorId)
+                .Select(q => q.Id).ToArray();
+
+            var mockRepo = new Mock<IQuizzesRepository>();
+            mockRepo.Setup(m => m.GetByAuthorAsync(authorId)).ReturnsAsync(quizzes);
+
+            var mockResultsService = new Mock<IQuizResultsService>();
+
+            var mockRatesService = new Mock<IRatesService>();
+            mockRatesService.Setup(m => m.GetRatesAsync(ids)).ReturnsAsync([
+                new() { Id = "1", QuizId="1", Rate=4, UserId="0"},
+                new() { Id = "2", QuizId="1", Rate=4, UserId="0"},
+                new() { Id = "3", QuizId="2", Rate=4, UserId="0"},
+                new() { Id = "4", QuizId="2", Rate=8, UserId="0"},
+            ]);
+
+            var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object, mockRatesService.Object);
+            var expected = new List<QuizListItemModel>()
+            {
+                new() { Id = "1", Author = "Name", AuthorId = authorId, Title = "Quiz1", Rate = 4},
+                new() { Id = "2", Author = "Name1", AuthorId = authorId, Title = "Quiz2", Rate = 6},
+            };
+
+            // Act
+            var result = await sut.GetAllTitlesByAuthorId(authorId);
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public async Task Remove_quiz_test()
+        {
+            // Arrange
+            var repoMock = new Mock<IQuizzesRepository>();
+            var ratesService = new Mock<IRatesService>();
+            var resultsService = new Mock<IQuizResultsService>();
+            var sut = new QuizzesService(
+                repoMock.Object,
+                resultsService.Object,
+                ratesService.Object);
+            var id = "1";
+
+            // Act
+            await sut.RemoveQuizAsync(id);
+
+            // Assert
+            repoMock.Verify(m => m.DeleteAsync(id), Times.Once());
+        }
+
+        [Fact]
+        public async Task Add_quiz_test()
+        {
+            // Arrange
+            var repoMock = new Mock<IQuizzesRepository>();
+            var ratesService = new Mock<IRatesService>();
+            var resultsService = new Mock<IQuizResultsService>();
+            var sut = new QuizzesService(
+                repoMock.Object, 
+                resultsService.Object, 
+                ratesService.Object);
+            var quizModel = new QuizModel()
+            {
+                Author = "name",
+                AuthorId = "1",
+                Title = "title",
+                Rate = 1,
+                Results = [],
+                Questions = [
+                    new QuestionModel {
+                        Options = [ new OptionModel { Text = "option" }],
+                        CorrectAnswerIndex = 1,
+                        Text = "Q1"
+                    },
+                    new QuestionModel {
+                        Options = [ new OptionModel { Text = "option1" }],
+                        CorrectAnswerIndex = 1,
+                        Text = "Q2"
+                    },
+                ],
+            };
+            var expected = new Quiz
+            {
+                AuthorId = "1",
+                AuthorName = "name",
+                Title = "title",
+                Questions = [
+                    new Question {
+                        Title = "Q1",
+                        CorrectAnswerIndex = 1,
+                        Options = [
+                            new Option { Text = "option" }
+                        ]
+                    },
+                    new Question {
+                        Title = "Q2",
+                        CorrectAnswerIndex = 1,
+                        Options = [
+                            new Option { Text = "option1"}
+                        ]
+                    },
+                ]
+            };
+
+            // Act
+            await sut.AddQuizAsync(quizModel);
+
+            // Assert
+            repoMock.Verify(
+                x => x.AddAsync(It.Is<Quiz>(
+                    e => MatchesQuizIgnoringIdAndCreationDate(expected, e))),
+                Times.Once());
+        }
+
+        private static bool MatchesQuizIgnoringIdAndCreationDate(Quiz expected, Quiz actual)
+        {
+            if (expected == null || actual == null)
+                return false;
+
+            return expected.AuthorId == actual.AuthorId &&
+                   expected.AuthorName == actual.AuthorName &&
+                   expected.Title == actual.Title &&
+                   expected.Questions.SequenceEqual(actual.Questions);
+        }
+
+        [Fact]
+        public async Task Add_quiz_with_no_title_test()
+        {
+            // Arrange
+            var repoMock = new Mock<IQuizzesRepository>();
+            var ratesService = new Mock<IRatesService>();
+            var resultsService = new Mock<IQuizResultsService>();
+            var sut = new QuizzesService(
+                repoMock.Object,
+                resultsService.Object,
+                ratesService.Object);
+            var quiz = new QuizModel { Author = "1", AuthorId = "1" };
+            
+            // Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.AddQuizAsync(quiz));
+        }
+
+        [Fact]
+        public async Task Add_quiz_with_no_authorId_test()
+        {
+            // Arrange
+            var repoMock = new Mock<IQuizzesRepository>();
+            var ratesService = new Mock<IRatesService>();
+            var resultsService = new Mock<IQuizResultsService>();
+            var sut = new QuizzesService(
+                repoMock.Object,
+                resultsService.Object,
+                ratesService.Object);
+            var quiz = new QuizModel { Title = "1", Author = "1" };
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.AddQuizAsync(quiz));
+        }
+
+        [Fact]
+        public async Task Add_quiz_with_no_author_test()
+        {
+            // Arrange
+            var repoMock = new Mock<IQuizzesRepository>();
+            var ratesService = new Mock<IRatesService>();
+            var resultsService = new Mock<IQuizResultsService>();
+            var sut = new QuizzesService(
+                repoMock.Object,
+                resultsService.Object,
+                ratesService.Object);
+            var quiz = new QuizModel { Title = "1", AuthorId = "1" };
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentException>(() => sut.AddQuizAsync(quiz));
+        }
     }
 }

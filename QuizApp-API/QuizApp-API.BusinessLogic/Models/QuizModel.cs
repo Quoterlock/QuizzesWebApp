@@ -8,7 +8,7 @@ namespace QuizApp_API.BusinessLogic.Models
         public string Author { get; set; } = string.Empty;
         public string AuthorId { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
-        public QuestionModel[] Questions { get; set; } = new QuestionModel[0];
+        public QuestionModel[] Questions { get; set; } = [];
         public double Rate { get; set; } = 0;
         public IEnumerable<QuizResultModel> Results { get; set; } = [];
         public string CreationDate { get; set; } = string.Empty;
@@ -58,7 +58,7 @@ namespace QuizApp_API.BusinessLogic.Models
     {
         public string Text { get; set; } = string.Empty;
         public int CorrectAnswerIndex { get; set; } = 0;
-        public List<OptionModel> Options { get; set; } = new List<OptionModel>();
+        public List<OptionModel> Options { get; set; } = [];
 
         public override bool Equals(object? obj)
         {

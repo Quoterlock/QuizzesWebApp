@@ -107,7 +107,7 @@ namespace QuizApp_API.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
-        private UserProfile Convert(UserProfileModel model)
+        private static UserProfile Convert(UserProfileModel model)
         {
             return new UserProfile
             {
@@ -117,7 +117,7 @@ namespace QuizApp_API.BusinessLogic.Services
             };
         }
 
-        private UserProfileModel Convert(UserProfile entity)
+        private static UserProfileModel Convert(UserProfile entity)
         {
             return new UserProfileModel
             {
