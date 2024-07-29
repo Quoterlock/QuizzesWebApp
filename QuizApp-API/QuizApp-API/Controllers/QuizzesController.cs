@@ -17,7 +17,6 @@ namespace QuizApp_API.Controllers
             _results = results;
         }
 
-        // GET: api/Quizzes/List
         [HttpGet("list")]
         public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
         {
@@ -32,7 +31,6 @@ namespace QuizApp_API.Controllers
             return new List<QuizListItemModel>();
         }
 
-        // GET: api/Quizzes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<QuizModel>> GetQuiz(string id)
         {
@@ -49,6 +47,23 @@ namespace QuizApp_API.Controllers
                 }
             }
             return NotFound();
+        }
+
+        [HttpGet("search")]
+        public async Task<IEnumerable<QuizListItemModel>> SearchQuizzes(string value)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(value))
+                    return await _service.GetTitlesAsync();
+                else
+                    return await _service.SearchAsync(value);
+            } 
+            catch(Exception ex)
+            {
+                // TODO: Log this error
+                return [];
+            }
         }
 
         [HttpPost("create")]

@@ -5,6 +5,7 @@ namespace QuizApp_API.BusinessLogic.Interfaces
     public interface IQuizzesService
     {
         Task<QuizModel> GetByIdAsync(string id);
+        Task<IEnumerable<QuizListItemModel>> SearchAsync(string value);
         Task<IEnumerable<QuizListItemModel>> GetTitlesAsync(int from, int to);
         Task<IEnumerable<QuizListItemModel>> GetTitlesAsync();
         Task RemoveQuizAsync(string id);

@@ -1,9 +1,4 @@
 ﻿using QuizApp_API.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QuizApp_API.DataAccess.Interfaces
 {
@@ -11,5 +6,6 @@ namespace QuizApp_API.DataAccess.Interfaces
     {
         Task<IEnumerable<Quiz>> GetRangeAsync(int start, int end);
         Task<IEnumerable<Quiz>> GetByAuthorAsync(string authorId);
+        Task<IEnumerable<Quiz>> SearchAsync(string value);
     }
 }

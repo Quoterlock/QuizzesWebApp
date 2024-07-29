@@ -21,10 +21,20 @@ namespace QuizApp_API.DataAccess.Repositories
 
         public async Task<IEnumerable<Quiz>> GetRangeAsync(int start, int end)
         {
+            int takeCount;
+            int count = (int) await _context.Quizzes.EstimatedDocumentCountAsync();
+
+            if (end >= count)
+                takeCount = count - start;
+            else
+                takeCount = end - start;
+
             return _context.Quizzes
                 .Find(_ => true)
-                .Skip(start - 1)
-                .Limit(end - start + 1).ToEnumerable();
+                .SortBy(x => x.CreationDate)
+                .Skip(start)
+                .Limit(takeCount)
+                .ToEnumerable();
         }
 
         public async Task<IEnumerable<Quiz>> GetAllAsync()
@@ -51,9 +61,18 @@ namespace QuizApp_API.DataAccess.Repositories
             else throw new ArgumentNullException("quiz-id");
         }
 
-        public Task<IEnumerable<Quiz>> GetByAuthorAsync(string authorId)
+        public async Task<IEnumerable<Quiz>> GetByAuthorAsync(string authorId)
         {
-            throw new NotImplementedException();
+            var entities = await _context.Quizzes
+                .FindAsync(q => q.AuthorId == authorId);
+            return entities.ToEnumerable();
+        }
+
+        public async Task<IEnumerable<Quiz>> SearchAsync(string value)
+        {
+            var entities = await _context.Quizzes
+                .FindAsync(q => q.Title.ToLower().Contains(value.ToLower()));
+            return entities.ToEnumerable();
         }
     }
 }

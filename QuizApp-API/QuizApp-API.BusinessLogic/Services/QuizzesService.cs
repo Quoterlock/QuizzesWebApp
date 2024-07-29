@@ -28,6 +28,7 @@ namespace QuizApp_API.BusinessLogic
 
             try
             {
+                quiz.CreationDate = DateTime.Now.ToString();
                 await _repository.AddAsync(Convert(quiz));
             }
             catch (Exception ex)
@@ -93,6 +94,16 @@ namespace QuizApp_API.BusinessLogic
 
             // add rates
             models = await AddRatesForQuizzes(models);
+            return GetTitles(models);
+        }
+
+        public async Task<IEnumerable<QuizListItemModel>> SearchAsync(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                throw new ArgumentNullException(nameof(value));
+
+            var entities = await _repository.SearchAsync(value);
+            var models = ConvertEntitiesToModels(entities);
             return GetTitles(models);
         }
 
