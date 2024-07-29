@@ -91,7 +91,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public async Task Get_quiz_with_null_id_test()
+        public async Task Get_quiz_with_no_id_test()
         {
             // Arrange
             var mockRepo = new Mock<IQuizzesRepository>();
@@ -101,7 +101,7 @@ namespace UnitTests
             var sut = new QuizzesService(mockRepo.Object, mockResultsService.Object, mockRatesService.Object);
 
             // Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.GetByIdAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.GetByIdAsync(string.Empty));
         }
 
         [Fact]
@@ -204,6 +204,24 @@ namespace UnitTests
 
             // Assert
             repoMock.Verify(m => m.DeleteAsync(id), Times.Once());
+        }
+
+        [Fact]
+        public async Task Remove_quiz_with_empty_id_test()
+        {
+            // Arrange
+            var repoMock = new Mock<IQuizzesRepository>();
+            var ratesService = new Mock<IRatesService>();
+            var resultsService = new Mock<IQuizResultsService>();
+            var sut = new QuizzesService(
+                repoMock.Object,
+                resultsService.Object,
+                ratesService.Object);
+            string id = string.Empty;
+
+            // Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(() => sut.RemoveQuizAsync(id));
+
         }
 
         [Fact]
