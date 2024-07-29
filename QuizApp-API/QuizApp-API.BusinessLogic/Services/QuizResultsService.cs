@@ -5,13 +5,10 @@ using QuizApp_API.DataAccess.Interfaces;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
-    public class QuizResultsService : IQuizResultsService
+    public class QuizResultsService(IQuizResultsRepository repository) 
+        : IQuizResultsService
     {
-        private readonly IQuizResultsRepository _repository;
-        public QuizResultsService(IQuizResultsRepository repository)
-        { 
-            _repository = repository;
-        }
+        private readonly IQuizResultsRepository _repository = repository;
 
         public async Task<IEnumerable<QuizResultModel>> GetResultsByQuizIdAsync(string quizId)
         {
@@ -31,8 +28,7 @@ namespace QuizApp_API.BusinessLogic.Services
 
         public async Task SaveResultAsync(QuizResultModel quizResult)
         {
-            if(quizResult == null)
-                throw new ArgumentNullException(nameof(quizResult));
+            ArgumentNullException.ThrowIfNull(quizResult);
 
             var entity = Convert(quizResult);
             entity.TimeStamp = DateTime.Now.ToString();
@@ -40,18 +36,18 @@ namespace QuizApp_API.BusinessLogic.Services
             await _repository.SaveResultAsync(entity);
         }
 
-        private QuizResult Convert(QuizResultModel model)
+        private static QuizResult Convert(QuizResultModel model)
         {
             return new QuizResult
             {
-                Id = model.Id,
-                QuizId = model.QuizId,
-                UserId = model.UserId,
+                Id = model.Id ?? string.Empty,
+                QuizId = model.QuizId ?? string.Empty,
+                UserId = model.UserId ?? string.Empty,
                 Result = model.Result,
             };
         }
 
-        private QuizResultModel Convert(QuizResult entity)
+        private static QuizResultModel Convert(QuizResult entity)
         {
             return new QuizResultModel
             {
@@ -62,12 +58,12 @@ namespace QuizApp_API.BusinessLogic.Services
             };
         }
 
-        private IEnumerable<QuizResultModel> ConvertEntitiesToModels(IEnumerable<QuizResult> entities)
+        private static IEnumerable<QuizResultModel> ConvertEntitiesToModels(IEnumerable<QuizResult> entities)
         {
             var models = new List<QuizResultModel>();
             foreach (var entity in entities)
                 models.Add(Convert(entity));
-            return models;
+            return models.AsEnumerable();
         }
     }
 }

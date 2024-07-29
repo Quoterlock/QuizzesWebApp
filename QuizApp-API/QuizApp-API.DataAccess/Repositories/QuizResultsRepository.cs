@@ -4,17 +4,15 @@ using QuizApp_API.DataAccess.Interfaces;
 
 namespace QuizApp_API.DataAccess.Repositories
 {
-    public class QuizResultsRepository : IQuizResultsRepository
+    public class QuizResultsRepository(QuizAppDbContext context) 
+        : IQuizResultsRepository
     {
-        private readonly QuizAppDbContext _context;
-        public QuizResultsRepository(QuizAppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly QuizAppDbContext _context = context;
+
         public async Task<IEnumerable<QuizResult>> GetByQuizIdAsync(string quizId)
         {
             return _context.Results.Where(e => e.QuizId == quizId);
-;       }
+        }
 
         public async Task<IEnumerable<QuizResult>> GetByUserIdAsync(string userId)
         {

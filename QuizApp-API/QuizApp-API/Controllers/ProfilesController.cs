@@ -10,14 +10,10 @@ namespace QuizApp_API.Controllers
     [Route("api/profile")]
     [ApiController]
     [Authorize]
-    public class ProfilesController : ControllerBase
+    public class ProfilesController(IUserProfilesService userProfilesService) 
+        : ControllerBase
     {
-        private readonly IUserProfilesService _userProfilesService;
-
-        public ProfilesController(IUserProfilesService userProfilesService)
-        {
-            _userProfilesService = userProfilesService;
-        }
+        private readonly IUserProfilesService _userProfilesService = userProfilesService;
 
         [HttpGet]
         public async Task<IActionResult> Index(string? user)
@@ -71,9 +67,13 @@ namespace QuizApp_API.Controllers
         private string GetCurrentUserName()
         {
             if (User.Claims != null && User.Claims.Any(c => c.Type == "Name"))
-                return User.Claims.FirstOrDefault(c => c.Type == "Name").Value;
-            else 
+            {
+                var userNameClaim = User.Claims.FirstOrDefault(c => c.Type == "Name");
+                if(userNameClaim != null)
+                    return userNameClaim.Value;
                 return string.Empty;
+            }
+            else return string.Empty;
         }
     }
 }

@@ -13,17 +13,15 @@ using System.Threading.Tasks;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
-    public class JwtAuthorizer : IAuthorizer
+    public class JwtAuthorizer(IConfiguration configuration, 
+        UserManager<IdentityUser> userManager, 
+        SignInManager<IdentityUser> signInManager) 
+        : IAuthorizer
     {
-        private readonly IConfiguration _config;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        public JwtAuthorizer(IConfiguration configuration, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager) 
-        { 
-            _config = configuration;
-            _userManager = userManager;
-            _signInManager = signInManager;
-        }
+        private readonly IConfiguration _config = configuration;
+        private readonly UserManager<IdentityUser> _userManager = userManager;
+        private readonly SignInManager<IdentityUser> _signInManager = signInManager;
+
         public async Task<string> Authorize(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -41,7 +39,14 @@ namespace QuizApp_API.BusinessLogic.Services
 
         private string GenerateToken(IdentityUser user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var key = _config["Jwt:Key"];
+
+            if (string.IsNullOrEmpty(key))
+                throw new Exception("Jwt:key is null or empty");
+            if(string.IsNullOrEmpty(user.UserName))
+                throw new Exception("user.UserName is null or empty");
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new Claim[] {
                 new Claim("UserId", user.Id),

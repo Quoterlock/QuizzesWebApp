@@ -2,20 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
+using System.Security.Claims;
 
 namespace QuizApp_API.Controllers
 {
     [Route("api/quizzes")]
-    public class QuizzesController : ControllerBase
+    public class QuizzesController(IQuizzesService service,
+        IQuizResultsService results) 
+        : ControllerBase
     {
-        private readonly IQuizzesService _service;
-        private readonly IQuizResultsService _results;
-
-        public QuizzesController(IQuizzesService service, IQuizResultsService results)
-        {
-            _service = service;
-            _results = results;
-        }
+        private readonly IQuizzesService _service = service;
+        private readonly IQuizResultsService _results = results;
 
         [HttpGet("list")]
         public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
@@ -28,7 +25,7 @@ namespace QuizApp_API.Controllers
             {
                 return await _service.GetTitlesAsync();
             }
-            return new List<QuizListItemModel>();
+            return [];
         }
 
         [HttpGet("{id}")]
@@ -59,9 +56,8 @@ namespace QuizApp_API.Controllers
                 else
                     return await _service.SearchAsync(value);
             } 
-            catch(Exception ex)
+            catch(Exception)
             {
-                // TODO: Log this error
                 return [];
             }
         }
@@ -122,9 +118,13 @@ namespace QuizApp_API.Controllers
         private string GetCurrentUserId()
         {
             if (User.Claims != null && User.Claims.Any(c => c.Type == "UserId"))
-                return User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            else
+            {
+                var userClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
+                if(userClaim != null)
+                    return userClaim.Value;
                 return string.Empty;
+            }
+            else return string.Empty;
         }
     }
 }

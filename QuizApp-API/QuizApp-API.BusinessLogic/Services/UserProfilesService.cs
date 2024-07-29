@@ -7,22 +7,15 @@ using System.Net.WebSockets;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
-    public class UserProfilesService : IUserProfilesService
+    public class UserProfilesService(
+        IUserProfileRepository userProfileRepository,
+        IUserService userService,
+        IQuizzesService quizzesService
+            ) : IUserProfilesService
     {
-        private readonly IUserProfileRepository _profileRepository;
-        private readonly IUserService _userService;
-        private readonly IQuizzesService _quizzesService;
-
-        public UserProfilesService(
-            IUserProfileRepository userProfileRepository,
-            IUserService userService,
-            IQuizzesService quizzesService
-            )
-        { 
-            _profileRepository = userProfileRepository;
-            _userService = userService;
-            _quizzesService = quizzesService;
-        }
+        private readonly IUserProfileRepository _profileRepository = userProfileRepository;
+        private readonly IUserService _userService = userService;
+        private readonly IQuizzesService _quizzesService = quizzesService;
 
         public async Task CreateAsync(string username)
         {
@@ -76,13 +69,10 @@ namespace QuizApp_API.BusinessLogic.Services
             if(string.IsNullOrEmpty(username))
                 throw new ArgumentNullException(nameof(username));
 
-            var user = await _userService.GetByNameAsync(username);
-            if (user == null)
-                throw new Exception("User not found with username:" + username);
-
-            var entity = await _profileRepository.GetByOwnerIdAsync(user.Id);
-            if (entity == null)
-                throw new Exception("User profile not found");
+            var user = await _userService.GetByNameAsync(username) 
+                ?? throw new Exception("User not found with username:" + username);
+            var entity = await _profileRepository.GetByOwnerIdAsync(user.Id) 
+                ?? throw new Exception("User profile not found");
 
             var profile = Convert(entity);
             profile.Owner.Username = username;
@@ -93,8 +83,8 @@ namespace QuizApp_API.BusinessLogic.Services
 
         public async Task UpdateAsync(UserProfileModel profile)
         {
-            if (profile == null) 
-                throw new ArgumentNullException("profile");
+            ArgumentNullException.ThrowIfNull(profile);
+
             if (string.IsNullOrEmpty(profile.Id)) 
                 throw new ArgumentNullException("profile.id");
             if (profile.Owner == null) 
@@ -151,7 +141,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 else
                     return false;
             } 
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
