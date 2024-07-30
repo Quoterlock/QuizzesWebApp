@@ -86,10 +86,10 @@ namespace QuizApp_API.BusinessLogic
             }
         }
 
-        public async Task<IEnumerable<QuizListItemModel>> GetAllTitlesByAuthorId(string profileId)
+        public async Task<IEnumerable<QuizListItemModel>> GetAllTitlesByUserId(string profileId)
         {
             // get quizzes
-            var entities = await _repository.GetByAuthorAsync(profileId) ?? [];
+            var entities = await _repository.GetByUserIdAsync(profileId) ?? [];
             var models = ConvertEntitiesToModels(entities);
 
             // add rates
@@ -109,8 +109,8 @@ namespace QuizApp_API.BusinessLogic
 
         private async Task<IEnumerable<QuizModel>> AddRatesForQuizzes(IEnumerable<QuizModel> quizzes)
         {
-            var rates = await _ratesService.GetRatesAsync(
-                quizzes.Select(e => e.Id).ToArray());
+            string[] ids = quizzes.Select(e => e.Id).ToArray();
+            var rates = await _ratesService.GetRatesAsync(ids);
             foreach (var quiz in quizzes)
             {
                 var quizRates = rates.Where(r => r.QuizId == quiz.Id);

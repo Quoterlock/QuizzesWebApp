@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { IconButton } from "../shared/IconButton";
+import { IconButton } from "./IconButton";
 
 interface Props{
     items: QuizListItem[]

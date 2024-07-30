@@ -9,7 +9,7 @@ namespace QuizApp_API.Controllers
 {
     [Route("api/profile")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ProfilesController(IUserProfilesService userProfilesService) 
         : ControllerBase
     {

@@ -10,7 +10,6 @@ import QuizResultsList from "./QuizResultsList"
 export default function QuizPage(){
     const {id} = useParams()
     const [quiz, setQuiz] = useState<QuizItem>()
-    const [results, setResults] = useState<QuizResult[]>([])
     const [isDone, setIsDone] = useState(false)
     const [userAnswers, setAnswers] = useState<number[]>([])
     const {api} = useContext(AppContext)   
@@ -18,13 +17,11 @@ export default function QuizPage(){
     const [isError, setIsError] = useState(false)
 
 
-
     useEffect(() => {
         const fetchData = async () => {
           try {
             const response = await api.GetByIdAsync(id as string);
-            setQuiz(response.quiz);
-            setResults(response.results);
+            setQuiz(response);
             console.log(response);
             setIsError(false);
           } catch (error) {
@@ -77,7 +74,8 @@ export default function QuizPage(){
     return (<QuizLayout>
         <div className="col-lg-4 col-md-7 col-sm-12 mx-auto">
           { isError ? <Notification message={errorMessage} title="Warning"/>
-          : <div> { quiz?
+          : <div> { quiz!
+            ?
                 (!isDone 
                     ? <Quiz quiz={quiz} onDone={hOnDone}></Quiz> 
                     : <div>
@@ -87,7 +85,7 @@ export default function QuizPage(){
                         questions={quiz.questions} 
                         onRestart={onReset}/>
                         <h5 className="text-center">Results</h5>
-                        <QuizResultsList results={results}/>
+                        <QuizResultsList results={quiz.results}/>
                     </div>)
                 : (<h1>Loading...</h1>)
             }

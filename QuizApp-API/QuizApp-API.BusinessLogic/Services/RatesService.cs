@@ -50,8 +50,9 @@ namespace QuizApp_API.BusinessLogic.Services
 
         public async Task<List<QuizRateModel>> GetRatesAsync(params string[] quizIds)
         {
-            if (quizIds.IsNullOrEmpty())
-                throw new ArgumentNullException(nameof(quizIds));
+            ArgumentNullException.ThrowIfNull(quizIds);
+            if(quizIds.Length == 0)
+                return [];
 
             var entities = await _ratesRepository.Get(quizIds);
             var models = new List<QuizRateModel>();

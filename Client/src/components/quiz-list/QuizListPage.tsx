@@ -1,5 +1,5 @@
 import { QuizLayout } from "../layout/QuizLayout";
-import QuizList from "./QuizList";
+import QuizList from "../shared/QuizList";
 import { useContext} from "react";
 import { AppContext } from "../../services/AppContext";
 import { Link } from "react-router-dom";

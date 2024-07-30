@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { getCurrentProfile, getProfile } from "../../services/userProfileService";
 import { logoutUser } from "../../services/authService";
 import { AppContext } from "../../services/AppContext";
+import QuizList from "../shared/QuizList";
 
 export default function UserProfilePage() {
     const navigate = useNavigate()
@@ -49,7 +50,7 @@ export default function UserProfilePage() {
                 <Link to="/" className="styless-link">{"< Home"}</Link>
                 {/*<Link to="/" className="styless-link">{"Logout"}</Link>*/}
             </div> 
-              <div className="block-style d-flex justify-content-between">                
+              <div className="block-style d-flex justify-content-between mb-3">                
                 <div className="d-flex">
                     <img height={150} width={150}/>
                     <div className="ms-4">
@@ -70,7 +71,7 @@ export default function UserProfilePage() {
                             </div>
                             <div className="d-flex ms-3">
                                 <img height={28} width={28} src="./src/assets/icons/plus-icon.png"/>
-                                <p className="ms-2">{profile.createdQuizzesCount ?? "99"}</p>
+                                <p className="ms-2">{"99"}</p>
                             </div>
                         </div>
                     </div>
@@ -81,6 +82,7 @@ export default function UserProfilePage() {
                     </div>
                 }
             </div>
+            <QuizList items={profile.createdQuizzes}/>
           </div>
         }
       </div>

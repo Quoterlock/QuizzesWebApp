@@ -160,7 +160,7 @@ namespace UnitTests
                 .Select(q => q.Id).ToArray();
 
             var mockRepo = new Mock<IQuizzesRepository>();
-            mockRepo.Setup(m => m.GetByAuthorAsync(authorId)).ReturnsAsync(quizzes);
+            mockRepo.Setup(m => m.GetByUserIdAsync(authorId)).ReturnsAsync(quizzes);
 
             var mockResultsService = new Mock<IQuizResultsService>();
 
@@ -180,7 +180,7 @@ namespace UnitTests
             };
 
             // Act
-            var result = await sut.GetAllTitlesByAuthorId(authorId);
+            var result = await sut.GetAllTitlesByUserId(authorId);
 
             // Assert
             Assert.Equal(expected, result);

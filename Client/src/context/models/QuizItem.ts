@@ -5,4 +5,6 @@ type QuizItem = {
     title: string,
     author: string,
     authorId: string
+    creationDate:string,
+    results: QuizResult[]
 }

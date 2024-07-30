@@ -61,7 +61,7 @@ namespace UnitTests
                 .ReturnsAsync(userIdentity);
 
             var quizzesServiceMock = new Mock<IQuizzesService>();
-            quizzesServiceMock.Setup(m => m.GetAllTitlesByAuthorId(profileId))
+            quizzesServiceMock.Setup(m => m.GetAllTitlesByUserId(profileId))
                 .ReturnsAsync(quizzes);
 
             var sut = new UserProfilesService(
@@ -130,7 +130,7 @@ namespace UnitTests
                 .ReturnsAsync(userIdentity);
 
             var quizzesServiceMock = new Mock<IQuizzesService>();
-            quizzesServiceMock.Setup(m => m.GetAllTitlesByAuthorId(profileId))
+            quizzesServiceMock.Setup(m => m.GetAllTitlesByUserId(profileId))
                 .ReturnsAsync(quizzes);
 
             var sut = new UserProfilesService(

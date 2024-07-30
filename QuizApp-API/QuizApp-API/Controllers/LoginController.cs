@@ -24,7 +24,7 @@ namespace QuizApp_API.Controllers
             {
                 return Unauthorized(ex.Message);
             }
-            }
+        }
 
         [AllowAnonymous]
         [HttpPost("register")]
