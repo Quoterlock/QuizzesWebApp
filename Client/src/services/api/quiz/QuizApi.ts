@@ -44,27 +44,36 @@ export class QuizApi implements IQuizApi{
         }
     }
 
-    GetList(startIndex: number, endIndex: number): QuizListItem[] {
-        const [items, setItems] = useState<QuizListItem[]>([])    
-        useEffect(()=>{
-            const fetchData = async () => {
-                try{
-                    console.log(`${apiPath}/list?startIndex=${startIndex}&endIndex=${endIndex}`)
-                    const responce = await fetch(`${apiPath}/list?startIndex=${startIndex}&endIndex=${endIndex}`)
-                    const jsonResponce = await responce.json()
-                    console.log(jsonResponce)
-                    setItems(jsonResponce)
-                }
-                catch(error){
-                    console.error("Error fetching data: ", error)
-                }
+    async GetList(startIndex: number, endIndex: number): Promise<QuizListItem[]> {
+        try{
+            const responce = await fetch(`${apiPath}/list?startIndex=${startIndex}&endIndex=${endIndex}`)
+            if(!responce.ok) {
+                throw new Error ("failed to fetch data");
             }
-            fetchData()
-        }, [])
-        console.log(items)
-        return items
+            const data: QuizListItem[] = await responce.json()
+            return data
+        } catch (error) {
+            console.error("Error fetching data:",error);
+            throw error;
+        }
     }
-    
+
+
+    async SearchAsync(searchValue: string): Promise<QuizListItem[]> {
+        try{
+            const responce = await fetch(`${apiPath}/search?value=${searchValue}`)
+            if(!responce.ok) {
+                throw new Error ("failed to fetch data");
+            }
+            const data: QuizListItem[] = await responce.json()
+            return data
+        } catch (error) {
+            console.error("Error fetching data:",error);
+            throw error;
+        }
+    }
+
+
     async GetByIdAsync(id: string): Promise<QuizItem> {
         try{
             const responce = await fetch(`${apiPath}/${id}`)
