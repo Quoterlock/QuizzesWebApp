@@ -7,6 +7,7 @@ interface Props {
 
 export function QuizLayout({children}: Props) {
     const currentUsername = localStorage.getItem("current-username")
+    console.log("Layout updated")
     return(
         <div className="bg-color">
             <NavBar username={currentUsername as string}/>

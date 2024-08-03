@@ -69,7 +69,7 @@
     box-shadow: 0px 5px var(--active-color-shadow);
 }
 
-.active-btn:focus {
+.active-btn:active {
     transform: translateY(5px);
     box-shadow: 0px 0px var(--active-color-shadow);
 }
@@ -79,7 +79,7 @@
     box-shadow: 0px 5px var(--danger-color-shadow);
 }
 
-.danger-btn:focus {
+.danger-btn:active {
     transform: translateY(5px);
     box-shadow: 0px 0px var(--danger-color-shadow);
 }
@@ -93,7 +93,7 @@
     box-shadow: 0px 5px var(--block-shadow-color) !important;
 }
 
-.minor-btn:focus {
+.minor-btn:active {
     transform: translateY(5px);
     box-shadow: 0px 0px var(--active-color-shadow);
 }

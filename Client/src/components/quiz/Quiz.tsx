@@ -7,10 +7,8 @@ interface Props {
 }
 
 export default function Quiz({quiz, onDone}:Props) {
-    
     const [selectedQuestion, setSelectedQuestion] = useState(0)
     const [userAnswers, setAnswer] = useState<number[]>(new Array(quiz.questions.length))
-    const [showAnswer, setShowAnswer] = useState(false)
     
     const hNextQuestion = () => {
         if(selectedQuestion < quiz.questions.length-1)
@@ -31,10 +29,6 @@ export default function Quiz({quiz, onDone}:Props) {
             })
     }
 
-    const hShowAnswerChange = () => {
-        setShowAnswer(!showAnswer)
-    }
-
     return(
         <div>
             <h1>{"Quiz: " + quiz.title}</h1>
@@ -46,14 +40,8 @@ export default function Quiz({quiz, onDone}:Props) {
                     onAnswerChange={hOnAnswerChange} 
                     question={quiz.questions[selectedQuestion]} 
                     userAnswer={userAnswers[selectedQuestion]}/>
-                
-                { showAnswer && <div>
-                    { quiz.questions[selectedQuestion].correctAnswerIndex === userAnswers[selectedQuestion] 
-                    ? <p className="correct-answer-label-style text-center">Correct!</p> 
-                    : <p className="wrong-answer-label-style text-center">Wrong!</p> }
-                    </div>
-                } 
             </div>
+
             <div className="container-flex">
                 <div className="row g-2 mb-3">
                     <div className="d-grid col">

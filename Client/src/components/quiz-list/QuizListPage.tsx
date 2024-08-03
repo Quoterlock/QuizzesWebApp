@@ -6,10 +6,10 @@ import { Link } from "react-router-dom";
 import { SearchBox } from "../shared/SearchBox";
 
 export default function QuizListPage() {
-
     const [items, setItems] = useState<QuizListItem[]>([])
     const [searchValue, setSearchValue] = useState<string>("")
     const {api} = useContext(AppContext)
+    const userName = localStorage.getItem("current-username")
 
     useEffect(() => {
         if(searchValue == null || searchValue == ""){
@@ -23,24 +23,16 @@ export default function QuizListPage() {
         }
     }, [api, searchValue])
 
-    const userName = localStorage.getItem("current-username")
-
     const onSearch = (value:string) => {
         setSearchValue(value)
-        /*
-        api.SearchAsync(value)
-            .then((values)=>setItems(values))
-            .catch((error) => console.log(error))
-        */
     } 
-
 
     return (<QuizLayout>
         <div className="col-sm-12 col-md-9 col-lg-6 mx-auto">
+            <SearchBox onSearch={onSearch}/>
             {
                 userName &&
                 <div className="d-grid">
-                    <SearchBox onSearch={onSearch}/>
                     <Link to="/new-quiz/" className="btn active-btn mb-3">+ Create</Link>
                 </div>
             }

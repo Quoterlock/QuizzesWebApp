@@ -63,17 +63,19 @@ export default function UserProfilePage() {
                             }
                             
                         </div>
+                        
                         <h5>{profile.owner.username}</h5>
+                        
                         <div className="d-flex">
                             <div className="d-flex">
                                 <img height={28} width={28} src="./src/assets/icons/star-icon.png"/>
-                                <p className="ms-2">{profile.completedQuizzesCount ?? "99"}</p>
+                                <p className="ms-2">{profile.completedQuizzesCount ?? "none"}</p>
                             </div>
                             <div className="d-flex ms-3">
                                 <img height={28} width={28} src="./src/assets/icons/plus-icon.png"/>
-                                <p className="ms-2">{"99"}</p>
+                                <p className="ms-2">{profile.createdQuizzes.length ?? "none"}</p>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                 </div>
                 {
