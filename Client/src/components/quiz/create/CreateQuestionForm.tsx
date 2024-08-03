@@ -2,7 +2,7 @@ import { ChangeEvent } from "react"
 
 interface Props {
     onChange:(question:QuestionItem) => void
-    onRemove:()=>void
+    onRemove:() => void
     question:QuestionItem
 }
 

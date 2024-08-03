@@ -1,4 +1,4 @@
-import { useState, FormEvent, ChangeEvent } from "react"
+import { useState, ChangeEvent } from "react"
 import CreateQuestionForm from "./CreateQuestionForm"
 import Notification from "../../shared/Notification"
 
@@ -12,14 +12,16 @@ export default function CreateQuizForm({onCreate}:Props) {
     const [title, setTitle] = useState("")
     const [isNotify, setIsNotify] = useState(false);
     
-    function hCreateQuiz(){
+    const hCreateQuiz = () => {
         const quiz: QuizItem = {
             id:"",
             questions:[...questions],
             rate:0,
             title:title,
             author:"",
-            authorId:""
+            authorId:"",
+            creationDate:"",
+            results:[]
         }
 
         if(ValidateQuiz(quiz)){
@@ -31,15 +33,17 @@ export default function CreateQuizForm({onCreate}:Props) {
         }
     }
 
-    function hQuestionChange(index:number, question:QuestionItem) {
+    const hQuestionChange = (index:number, question:QuestionItem) =>  {
         const newArray = [...questions];
         newArray[index] = question
         setQuestions(newArray)
         setIsNotify(false)
     }
 
-    function hOnRemove(index:number) {
-        setQuestions(questions.filter((item, curIndex)=>curIndex !== index))
+    const hOnRemove = (index:number) => {
+        setQuestions(questions
+            .filter((item, curIndex)=>curIndex !== index)
+        )
     }
 
 
