@@ -3,7 +3,6 @@ type UserProfile = {
     displayName:string,
     owner:Owner
     createdQuizzes: QuizListItem[],
-    //CompletedQuizzes: QuizListItem[],
     completedQuizzesCount: number
 }
 

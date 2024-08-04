@@ -17,6 +17,7 @@ export default function QuizPage(){
     const {api} = useContext(AppContext)   
     const [errorMessage, setErrorMessage] = useState("")
     const [isError, setIsError] = useState(false)
+    const username = localStorage.getItem("current-username") as string
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,11 +41,18 @@ export default function QuizPage(){
         setIsDone(true)
         setAnswers(answers)
 
+        var correctAnswersCount = 0;
+        quiz?.questions.map((q, index)=> {
+          if(q.correctAnswerIndex === userAnswers[index])
+            correctAnswersCount++
+        })
+        const finalResult = correctAnswersCount*100/(quiz?.questions.length??correctAnswersCount)
+
         const result:QuizResult = {
           id:"", 
           quizId:quiz?.id ?? "", 
-          userId:localStorage.getItem("current-user-id") as string,
-          result:0
+          username:username,
+          result:finalResult
         }
         console.log(result)
         api.SaveResultAsync(result)

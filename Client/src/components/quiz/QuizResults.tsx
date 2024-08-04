@@ -11,7 +11,7 @@ export default function QuizResults({userAnswers, questions, onRestart}: Props) 
           if(q.correctAnswerIndex === userAnswers[index])
             correctAnswersCount++
         })
-        return userAnswers.length/100*correctAnswersCount
+        return correctAnswersCount*100/(questions.length??correctAnswersCount)
     }
     const result = CalculateResult()
     

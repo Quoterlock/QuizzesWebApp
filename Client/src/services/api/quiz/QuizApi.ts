@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react"
-
 var apiPath:string
 
 export class QuizApi implements IQuizApi{
@@ -16,7 +14,6 @@ export class QuizApi implements IQuizApi{
                 "Content-Type":"application/json",
                 "Authorization": `Bearer ${token}`
             },
-            
             body: JSON.stringify(result)
         });
         if(response.ok)  {

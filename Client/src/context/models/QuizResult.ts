@@ -1,6 +1,6 @@
 type QuizResult = {
     id:string
     quizId:string
-    userId:string
+    username:string
     result:number
 }
