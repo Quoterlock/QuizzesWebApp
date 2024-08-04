@@ -154,6 +154,7 @@ namespace QuizApp_API.BusinessLogic
             {
                 var entity = new Quiz
                 {
+                    Id = model.Id,
                     Title = model.Title,
                     Questions = [],
                     AuthorName = model.Author,
@@ -223,6 +224,14 @@ namespace QuizApp_API.BusinessLogic
                 });
             }
             return list.AsEnumerable();
+        }
+
+        public async Task<int> GetAllUserCompleted(string profileId)
+        {
+            if (string.IsNullOrEmpty(profileId))
+                throw new ArgumentNullException(nameof(profileId));
+
+            return (await _resultsService.GetResultsByUsernameAsync(profileId)).GroupBy(r => r.QuizId).Select(v => v.Key).Count();
         }
     }
 }

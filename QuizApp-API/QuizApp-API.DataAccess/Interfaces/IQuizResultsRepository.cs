@@ -6,6 +6,6 @@ namespace QuizApp_API.DataAccess.Interfaces
     {
         Task SaveResultAsync(QuizResult quizResult);
         Task<IEnumerable<QuizResult>> GetByQuizIdAsync(string quizId);
-        Task<IEnumerable<QuizResult>> GetByUserIdAsync(string userId);
+        Task<IEnumerable<QuizResult>> GetByUsernameAsync(string username);
     }
 }

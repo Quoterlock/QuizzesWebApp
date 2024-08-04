@@ -11,5 +11,6 @@ namespace QuizApp_API.BusinessLogic.Interfaces
         Task RemoveQuizAsync(string id);
         Task AddQuizAsync(QuizModel quiz);
         Task<IEnumerable<QuizListItemModel>> GetAllTitlesByUserId(string userId);
+        Task<int> GetAllUserCompleted(string profileId);
     }
 }

@@ -55,7 +55,7 @@ namespace QuizApp_API.BusinessLogic.Services
                     profile.Owner.Username = "Unknown";
 
                 profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(profileId)).ToList();
-
+                profile.CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(user.UserName??"");
                 return profile;
             }
             catch (Exception ex)
@@ -77,6 +77,8 @@ namespace QuizApp_API.BusinessLogic.Services
             var profile = Convert(entity);
             profile.Owner.Username = username;
             profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(profile.Owner.Id)).ToList();
+            profile.CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(username);
+
 
             return profile;
         }

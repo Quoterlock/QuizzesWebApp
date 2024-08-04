@@ -18,12 +18,12 @@ namespace QuizApp_API.BusinessLogic.Services
                 throw new ArgumentNullException(nameof(quizId));
         }
 
-        public async Task<IEnumerable<QuizResultModel>> GetResultsByUserIdAsync(string userId)
+        public async Task<IEnumerable<QuizResultModel>> GetResultsByUsernameAsync(string username)
         {
-            if (!string.IsNullOrEmpty(userId))
-                return ConvertEntitiesToModels(await _repository.GetByUserIdAsync(userId));
+            if (!string.IsNullOrEmpty(username))
+                return ConvertEntitiesToModels(await _repository.GetByUsernameAsync(username));
             else
-                throw new ArgumentNullException(nameof(userId));
+                throw new ArgumentNullException(nameof(username));
         }
 
         public async Task SaveResultAsync(QuizResultModel quizResult)
@@ -32,6 +32,7 @@ namespace QuizApp_API.BusinessLogic.Services
 
             var entity = Convert(quizResult);
             entity.TimeStamp = DateTime.Now.ToString();
+            entity.Id = Guid.NewGuid().ToString();
 
             await _repository.SaveResultAsync(entity);
         }
@@ -42,7 +43,7 @@ namespace QuizApp_API.BusinessLogic.Services
             {
                 Id = model.Id ?? string.Empty,
                 QuizId = model.QuizId ?? string.Empty,
-                UserId = model.UserId ?? string.Empty,
+                Username = model.Username ?? string.Empty,
                 Result = model.Result,
             };
         }
@@ -52,7 +53,7 @@ namespace QuizApp_API.BusinessLogic.Services
             return new QuizResultModel
             {
                 Id = entity.Id,
-                UserId = entity.UserId,
+                Username = entity.Username,
                 Result = entity.Result,
                 QuizId = entity.QuizId,
             };

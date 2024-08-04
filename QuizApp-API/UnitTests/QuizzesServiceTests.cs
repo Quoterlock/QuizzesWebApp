@@ -10,6 +10,35 @@ namespace UnitTests
     public class QuizzesServiceTests
     {
         [Fact]
+        public async Task Get_user_completed_quizzes_count_test()
+        {
+            // Arrange
+            string username = "user";
+            var results = new List<QuizResultModel>
+            {
+                new() { Id = "1", QuizId = "2", Result = 4, Username = username },
+                new() { Id = "2", QuizId = "2", Result = 4, Username = username },
+                new() { Id = "3", QuizId = "3", Result = 4, Username = username },
+                new() { Id = "4", QuizId = "4", Result = 4, Username = username },
+                new() { Id = "5", QuizId = "4", Result = 4, Username = username },
+            };
+            int expected = 3;
+
+            var mockRepo = new Mock<IQuizzesRepository>();
+            var resultsService = new Mock<IQuizResultsService>();
+            resultsService.Setup(m => m.GetResultsByUsernameAsync(username))
+                .ReturnsAsync(results);
+            var ratesService = new Mock<IRatesService>();
+            var sut = new QuizzesService(mockRepo.Object, resultsService.Object, ratesService.Object);
+
+            // Act
+            var actual = await sut.GetAllUserCompleted(username);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public async Task Get_full_quiz_info_by_id_test()
         {
             // Arrange

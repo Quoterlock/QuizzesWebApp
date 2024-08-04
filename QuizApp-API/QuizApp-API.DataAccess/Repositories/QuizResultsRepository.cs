@@ -14,9 +14,9 @@ namespace QuizApp_API.DataAccess.Repositories
             return _context.Results.Where(e => e.QuizId == quizId);
         }
 
-        public async Task<IEnumerable<QuizResult>> GetByUserIdAsync(string userId)
+        public async Task<IEnumerable<QuizResult>> GetByUsernameAsync(string username)
         {
-            return _context.Results.Where(e => e.UserId == userId);
+            return _context.Results.Where(e => e.Username == username);
         }
 
         public async Task SaveResultAsync(QuizResult quizResult)

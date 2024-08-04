@@ -24,7 +24,7 @@ namespace QuizApp_API.Controllers
             if (string.IsNullOrEmpty(username))
                 return BadRequest("There is no username");
             else
-                return Ok(new { username = username});
+                return Ok(new { username });
         }
 
         [HttpGet]
