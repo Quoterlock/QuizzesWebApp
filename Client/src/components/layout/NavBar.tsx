@@ -17,11 +17,13 @@ export default function NavBar({username}:Props) {
         navigate("/login")
     }
     
+    console.log("[Nav] username:" + username as string)
+
     return(<div className="custom-navbar">
         <div className="col ms-2">
             <IconButton iconSrc="./src/assets/icons/home-icon.png" onClick={()=>{navigate("/")}}/>
         </div>
-        { (username === null || username === "")
+        { !(username as string)
             ? <div className="col-4 d-flex justify-content-end align-items-center">
                 <Button onClick={toLogin} type="active">Log-in</Button>
             </div>

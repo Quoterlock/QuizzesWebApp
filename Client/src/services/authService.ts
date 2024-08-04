@@ -1,7 +1,7 @@
 import { IsEmailValid, IsPasswordValid } from "../utils/UserCredentialsCheck";
 
 
-async function loginUser(email:string, password:string, authorizationApi:IAuthorizationApi, userProfileApi:IUserProfileApi) {    
+async function loginUser(email:string, password:string, authorizationApi:IAuthorizationApi) {    
     if(!IsEmailValid(email)) {
         throw new Error("Invalid email address!")
     }
@@ -9,13 +9,7 @@ async function loginUser(email:string, password:string, authorizationApi:IAuthor
     const result = await authorizationApi.Login(email, password)
     console.log(result);
     if(result.code === 200) {
-        const profileResult = await userProfileApi.GetCurrentUserProfileAsync()
-        if(profileResult.profile != null){
-            localStorage.setItem("current-username", profileResult.profile.owner.username)
-            localStorage.setItem("current-user-id", profileResult.profile.owner.id)
-            return { success:true }
-        }
-        return { success:false, message: "Can't find user profile"}
+        return { success:true } 
     } else {
         return { success:false, message: result.message }
     }

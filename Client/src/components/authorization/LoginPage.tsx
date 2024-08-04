@@ -10,11 +10,11 @@ export default function LoginPage(){
     const navigate = useNavigate()
     const [notification, setNotification] = useState({text:"", title:""}); 
     const [inputs, setInputs] = useState({email:"", password:""})
-    const {authorizationApi, userProfileApi} = useContext(AppContext);
+    const {authorizationApi} = useContext(AppContext);
 
     const hOnLogin = async () => {
         try{
-            const result = await loginUser(inputs.email, inputs.password, authorizationApi, userProfileApi)
+            const result = await loginUser(inputs.email, inputs.password, authorizationApi)
             if(result.success){
                 navigate('/');
             } else {

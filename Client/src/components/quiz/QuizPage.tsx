@@ -44,7 +44,7 @@ export default function QuizPage(){
           id:"", 
           quizId:quiz?.id ?? "", 
           userId:localStorage.getItem("current-user-id") as string,
-          result:CalculateResult()
+          result:0
         }
         console.log(result)
         api.SaveResultAsync(result)

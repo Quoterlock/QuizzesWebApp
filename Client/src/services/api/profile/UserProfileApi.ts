@@ -29,6 +29,30 @@ export default class UserProfileApi implements IUserProfileApi {
         }
     }
     
+
+    async GetCurrentUserNameAsync(): Promise<{code: number, username: string}> {
+        const token = localStorage.getItem("jwt-token")
+        try{
+            const response = await fetch(`${apiPath}/current-username`, {
+                method:"GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            })
+            if(!response.ok) {
+                return { code: response.status, username: "" }
+            }
+            else {
+                const data: {username : string} = await response.json()
+                return { code: 200, username:data.username || "" }
+            }
+        } catch (error) {
+            console.error("Error fetching data", error)
+            return { code: 0, username: "" }
+        }
+    }
+
     async GetCurrentUserProfileAsync(): Promise<{code: number, profile?: UserProfile}> {
         const token = localStorage.getItem("jwt-token")
         try{
