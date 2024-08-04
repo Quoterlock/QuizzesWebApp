@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
@@ -9,11 +10,22 @@ namespace QuizApp_API.Controllers
 {
     [Route("api/profile")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ProfilesController(IUserProfilesService userProfilesService) 
         : ControllerBase
     {
         private readonly IUserProfilesService _userProfilesService = userProfilesService;
+
+
+        [HttpGet("current-username")]
+        public IActionResult GetCurrentUser()
+        {
+            var username = GetCurrentUserName();
+            if (string.IsNullOrEmpty(username))
+                return BadRequest("There is no username");
+            else
+                return Ok(new { username = username});
+        }
 
         [HttpGet]
         public async Task<IActionResult> Index(string? user)
