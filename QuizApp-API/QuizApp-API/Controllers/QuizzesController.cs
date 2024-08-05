@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
-using System.Security.Claims;
 
 namespace QuizApp_API.Controllers
 {
@@ -68,9 +67,9 @@ namespace QuizApp_API.Controllers
         {
             if (quiz == null)
                 return BadRequest();
-
             try
             {
+                quiz.Author.Owner.Id = GetCurrentUserId();
                 await _service.AddQuizAsync(quiz);
                 return Ok();
             }
@@ -86,6 +85,7 @@ namespace QuizApp_API.Controllers
         {
             try
             {
+                result.UserProfile.Owner.Id = GetCurrentUserId();
                 await _results.SaveResultAsync(result);
                 return Ok();
             }
@@ -102,7 +102,7 @@ namespace QuizApp_API.Controllers
             try
             {
                 var quiz = await _service.GetByIdAsync(id);
-                if (quiz.AuthorId == GetCurrentUserId())
+                if (quiz.Author.Owner.Id == GetCurrentUserId())
                 {
                     await _service.RemoveQuizAsync(id);
                     return Ok();

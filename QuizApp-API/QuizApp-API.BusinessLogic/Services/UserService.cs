@@ -45,6 +45,12 @@ namespace QuizApp_API.BusinessLogic.Services
             return user;
         }
 
+        public async Task<IEnumerable<IdentityUser>> GetRangeByIdAsync(params string[] userIds)
+        {
+            var users = _userManager.Users.Where(u => userIds.Contains(u.Id));
+            return users;
+        }
+
         public async Task Register(string username, string email, string password)
         {
             var user = new IdentityUser

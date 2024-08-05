@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.IdentityModel.Tokens;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
-using System.Net.WebSockets;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
@@ -38,15 +37,15 @@ namespace QuizApp_API.BusinessLogic.Services
             await _profileRepository.AddAsync(Convert(profile));
         }
 
-        public async Task<UserProfileModel> GetByIdAsync(string profileId)
+        public async Task<UserProfileModel> GetByOwnerId(string ownerUserId)
         {
-            if (string.IsNullOrEmpty(profileId))
-                throw new ArgumentNullException(nameof(profileId));
+            if (string.IsNullOrEmpty(ownerUserId))
+                throw new ArgumentNullException(nameof(ownerUserId));
 
             try
             {
-                var entity = await _profileRepository.GetByIdAsync(profileId);
-                var user = await _userService.GetByIdAsync(entity.OwnerId);
+                var user = await _userService.GetByIdAsync(ownerUserId);
+                var entity = await _profileRepository.GetByOwnerIdAsync(ownerUserId);
                 var profile = Convert(entity);
         
                 if (user != null && !string.IsNullOrEmpty(user.UserName))
@@ -54,14 +53,37 @@ namespace QuizApp_API.BusinessLogic.Services
                 else
                     profile.Owner.Username = "Unknown";
 
-                profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(profileId)).ToList();
-                profile.CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(user.UserName??"");
+                profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(ownerUserId)).ToList();
+                profile.CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(ownerUserId);
                 return profile;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
+        }
+        
+        public async Task<List<UserProfileInfo>> GetRangeAsync(params string[] ownerIds)
+        {
+            if (ownerIds.IsNullOrEmpty())
+                throw new ArgumentNullException(nameof(ownerIds));
+
+            var profiles = await _profileRepository.GetRangeByOwnerIdsAsync(ownerIds);
+            var owners = await _userService.GetRangeByIdAsync(ownerIds);
+            var profilesInfos = new List<UserProfileInfo>();
+            foreach(var profile in profiles)
+            {
+                var owner = owners.FirstOrDefault(o => o.Id == profile.OwnerId)
+                    ?? throw new ArgumentException($"Owner withId:{profile.OwnerId} doesn't exist");
+                profilesInfos.Add(new UserProfileInfo
+                {
+                    Id = profile.Id,
+                    DisplayName = profile.DisplayName,
+                    ImageBytes = profile.ImageBytes,
+                    Owner = new ProfileOwnerInfo { Id = owner.Id, Username = owner.UserName ?? "none" }
+                });
+            }
+            return profilesInfos;
         }
 
         public async Task<UserProfileModel> GetByUsernameAsync(string username)
@@ -78,7 +100,6 @@ namespace QuizApp_API.BusinessLogic.Services
             profile.Owner.Username = username;
             profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(profile.Owner.Id)).ToList();
             profile.CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(username);
-
 
             return profile;
         }

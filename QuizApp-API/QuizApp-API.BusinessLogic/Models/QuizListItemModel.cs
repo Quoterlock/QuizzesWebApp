@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QuizApp_API.BusinessLogic.Models
+﻿namespace QuizApp_API.BusinessLogic.Models
 {
     public class QuizListItemModel
     {
         public string Id { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public double Rate { get; set; } = 0;
-        public string Author { get; set; } = string.Empty;
-        public string AuthorId { get; set; } = string.Empty;
+        public UserProfileInfo Author { get; set; } = new();    
 
         public override bool Equals(object? obj)
         {
@@ -21,8 +14,7 @@ namespace QuizApp_API.BusinessLogic.Models
                 return Id == other.Id &&
                        Title == other.Title &&
                        Rate.Equals(other.Rate) &&
-                       Author == other.Author &&
-                       AuthorId == other.AuthorId;
+                       Author == other.Author;
             }
 
             return false;
@@ -37,7 +29,6 @@ namespace QuizApp_API.BusinessLogic.Models
                 hash = hash * 23 + (Title?.GetHashCode() ?? 0);
                 hash = hash * 23 + Rate.GetHashCode();
                 hash = hash * 23 + (Author?.GetHashCode() ?? 0);
-                hash = hash * 23 + (AuthorId?.GetHashCode() ?? 0);
                 return hash;
             }
         }

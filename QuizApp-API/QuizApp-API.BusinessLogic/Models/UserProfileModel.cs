@@ -50,6 +50,38 @@
         }
     }
 
+    public class UserProfileInfo
+    {
+        public string Id { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public ProfileOwnerInfo Owner { get; set; } = new();
+        public byte[] ImageBytes { get; set; } = [];
+
+        public override bool Equals(object? obj)
+        {
+            if(obj is UserProfileInfo other)
+            {
+                return Id == other.Id &&
+                    DisplayName == other.DisplayName &&
+                    Owner == other.Owner &&
+                    ImageBytes == other.ImageBytes;
+            }
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 27;
+                hash = hash * 27 + (DisplayName?.GetHashCode() ?? 0);
+                hash = hash * 27 + (Id?.GetHashCode() ?? 0);
+                hash = hash * 27 + (Owner?.GetHashCode() ?? 0);
+                hash = hash * 27 + (ImageBytes?.GetHashCode() ?? 0);
+                return hash;
+            }
+        }
+    }
+
     public class ProfileOwnerInfo
     {
         public string Id { get; set; } = string.Empty;

@@ -5,25 +5,27 @@ using QuizApp_API.DataAccess.Interfaces;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
-    public class QuizResultsService(IQuizResultsRepository repository) 
+    public class QuizResultsService(
+        IQuizResultsRepository repository,
+        IUserProfilesService profilesService) 
         : IQuizResultsService
     {
         private readonly IQuizResultsRepository _repository = repository;
+        private readonly IUserProfilesService _profilesService = profilesService;
 
         public async Task<IEnumerable<QuizResultModel>> GetResultsByQuizIdAsync(string quizId)
         {
             if (!string.IsNullOrEmpty(quizId))
-                return ConvertEntitiesToModels(await _repository.GetByQuizIdAsync(quizId));
+                return await ConvertEntitiesToModels(await _repository.GetByQuizIdAsync(quizId));
             else
                 throw new ArgumentNullException(nameof(quizId));
         }
 
-        public async Task<IEnumerable<QuizResultModel>> GetResultsByUsernameAsync(string username)
+        public async Task<IEnumerable<QuizResultModel>> GetResultsByUserIdAsync(string userId)
         {
-            if (!string.IsNullOrEmpty(username))
-                return ConvertEntitiesToModels(await _repository.GetByUsernameAsync(username));
-            else
-                throw new ArgumentNullException(nameof(username));
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
+            return await ConvertEntitiesToModels(await _repository.GetByUserIdAsync(userId));
         }
 
         public async Task SaveResultAsync(QuizResultModel quizResult)
@@ -43,7 +45,7 @@ namespace QuizApp_API.BusinessLogic.Services
             {
                 Id = model.Id ?? string.Empty,
                 QuizId = model.QuizId ?? string.Empty,
-                Username = model.Username ?? string.Empty,
+                UserId = model.UserProfile.Owner.Id ?? string.Empty,
                 Result = model.Result,
             };
         }
@@ -53,17 +55,21 @@ namespace QuizApp_API.BusinessLogic.Services
             return new QuizResultModel
             {
                 Id = entity.Id,
-                Username = entity.Username,
                 Result = entity.Result,
                 QuizId = entity.QuizId,
             };
         }
 
-        private static IEnumerable<QuizResultModel> ConvertEntitiesToModels(IEnumerable<QuizResult> entities)
+        private async Task<IEnumerable<QuizResultModel>> ConvertEntitiesToModels(IEnumerable<QuizResult> entities)
         {
             var models = new List<QuizResultModel>();
+            var profiles = await _profilesService.GetRangeAsync(entities.Select(e => e.UserId).ToArray());
             foreach (var entity in entities)
-                models.Add(Convert(entity));
+            {
+                var model = Convert(entity);
+                model.UserProfile = profiles.Find(p => p.Owner.Id == entity.UserId)??new();
+                models.Add(model);
+            }
             return models.AsEnumerable();
         }
     }

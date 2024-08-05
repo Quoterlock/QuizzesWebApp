@@ -61,10 +61,10 @@ namespace QuizApp_API.DataAccess.Repositories
             else throw new ArgumentNullException("quiz-id");
         }
 
-        public async Task<IEnumerable<Quiz>> GetByUserIdAsync(string authorId)
+        public async Task<IEnumerable<Quiz>> GetByUserIdAsync(string userId)
         {
             var entities = await _context.Quizzes
-                .FindAsync(q => q.AuthorId == authorId);
+                .FindAsync(q => q.AuthorUserId == userId);
             return entities.ToEnumerable();
         }
 

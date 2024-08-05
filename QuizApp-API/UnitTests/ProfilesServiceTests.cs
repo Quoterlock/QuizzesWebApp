@@ -11,138 +11,127 @@ namespace UnitTests
     public class ProfilesServiceTests
     {
         [Fact]
-        public async Task Get_user_profile_info_by_id()
+        public async Task Get_user_profile_by_username_test()
         {
             // Arrange
-            string profileId = "11";
-            string userId = "1";
-            var userProfile = new UserProfile() { 
-                 DisplayName = "name",
-                 Id = profileId,
-                 OwnerId = userId
-            };
-            var userIdentity = new IdentityUser { 
-                UserName = "username", 
-                Id = userId 
-            };
-            var quizzes = new List<QuizListItemModel>() {
-                new QuizListItemModel {
-                    Author = "username", AuthorId = profileId,
-                    Id = "123", Rate = 10, Title = "none"
-                },
-                new QuizListItemModel {
-                    Author = "username", AuthorId = profileId,
-                    Id = "1234", Rate = 10, Title = "none"
-                },
-                new QuizListItemModel {
-                    Author = "username1", AuthorId = "another",
-                    Id = "12345", Rate = 10, Title = "none"
-                },
-            };
-            var expected = new UserProfileModel()
-            {
-                DisplayName = "name",
-                Id = profileId,
-                Owner = new ProfileOwnerInfo()
+            var profileId = "profileId";
+            var ownerUserId = "ownerId";
+            var profilesRepo = new Mock<IUserProfileRepository>();
+            profilesRepo.Setup(m => m.GetByOwnerIdAsync(ownerUserId))
+                .ReturnsAsync(new UserProfile { 
+                    DisplayName = "Name",
+                    Id = profileId,
+                    ImageBytes = [],
+                    OwnerId = ownerUserId,
+                });
+
+            var userService = new Mock<IUserService>();
+            userService.Setup(m => m.GetByIdAsync(ownerUserId))
+                .ReturnsAsync(new IdentityUser
                 {
-                    Username = "username",
-                    Id = userId
-                },
-                CreatedQuizzes = quizzes
-            }; 
+                    Id = ownerUserId,
+                    UserName = "username"
+                });
 
-            // mock services
-            var userProfilesRepoMock = new Mock<IUserProfileRepository>();
-            userProfilesRepoMock.Setup(m => m.GetByIdAsync(profileId))
-                .ReturnsAsync(userProfile);
+            var quizzesService = new Mock<IQuizzesService>();
 
-            var userServiceMock = new Mock<IUserService>();
-            userServiceMock.Setup(m => m.GetByIdAsync(userId))
-                .ReturnsAsync(userIdentity);
+            var quizzes = new List<QuizListItemModel>
+                {
+                    new QuizListItemModel() {
+                        Author = { Id = profileId, DisplayName = "Name", ImageBytes = [], Owner = new ProfileOwnerInfo() { Id = ownerUserId, Username = "username" }},
+                        Id = "1",
+                        Rate = 100,
+                        Title = "Title",
+                    },
+                }.AsEnumerable();
 
-            var quizzesServiceMock = new Mock<IQuizzesService>();
-            quizzesServiceMock.Setup(m => m.GetAllTitlesByUserId(profileId))
+            quizzesService.Setup(m => m.GetAllTitlesByUserId(ownerUserId))
                 .ReturnsAsync(quizzes);
+            quizzesService.Setup(m => m.GetAllUserCompleted(ownerUserId))
+                .ReturnsAsync(100);
 
-            var sut = new UserProfilesService(
-                userProfilesRepoMock.Object, 
-                userServiceMock.Object,
-                quizzesServiceMock.Object);
+            var sut = new UserProfilesService(profilesRepo.Object, userService.Object, quizzesService.Object);
+
+            var expected = new UserProfileModel
+            {
+                Id = profileId,
+                DisplayName = "Name",
+                CreatedQuizzes = quizzes.ToList(),
+                CompletedQuizzesCount = 100,
+                Owner = new ProfileOwnerInfo { Id = ownerUserId, Username = "username" }
+            };
 
             // Act
-            var actual = await sut.GetByIdAsync(profileId);
+            var actual = await sut.GetByOwnerId(ownerUserId);
 
             // Assert
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public async Task Get_user_profile_info_by_username()
+        public async Task Get_user_profile_by_owner_id_test()
         {
             // Arrange
-            string profileId = "11";
-            string userId = "1";
-            string username = "username";
-            var userProfile = new UserProfile()
-            {
-                DisplayName = "name",
-                Id = profileId,
-                OwnerId = userId
-            };
-            var userIdentity = new IdentityUser
-            {
-                UserName = username,
-                Id = userId
-            };
-            var quizzes = new List<QuizListItemModel>() {
-                new QuizListItemModel {
-                    Author = username, AuthorId = profileId,
-                    Id = "123", Rate = 10, Title = "none"
-                },
-                new QuizListItemModel {
-                    Author = username, AuthorId = profileId,
-                    Id = "1234", Rate = 10, Title = "none"
-                },
-                new QuizListItemModel {
-                    Author = "username1", AuthorId = "another",
-                    Id = "12345", Rate = 10, Title = "none"
-                },
-            };
-            var expected = new UserProfileModel()
-            {
-                DisplayName = "name",
-                Id = profileId,
-                Owner = new ProfileOwnerInfo()
+            var profileId = "profileId";
+            var ownerUserId = "ownerId";
+            var username = "username";
+            var profilesRepo = new Mock<IUserProfileRepository>();
+            profilesRepo.Setup(m => m.GetByOwnerIdAsync(ownerUserId))
+                .ReturnsAsync(new UserProfile
                 {
-                    Username = username,
-                    Id = userId
-                },
-                CreatedQuizzes = quizzes
-            };
+                    DisplayName = "Name",
+                    Id = profileId,
+                    ImageBytes = [],
+                    OwnerId = ownerUserId,
+                });
 
-            // mock services
-            var userProfilesRepoMock = new Mock<IUserProfileRepository>();
-            userProfilesRepoMock.Setup(m => m.GetByOwnerIdAsync(userId))
-                .ReturnsAsync(userProfile);
+            var userService = new Mock<IUserService>();
+            userService.Setup(m => m.GetByNameAsync(username))
+                .ReturnsAsync(new IdentityUser
+                {
+                    Id = ownerUserId,
+                    UserName = username
+                });
 
-            var userServiceMock = new Mock<IUserService>();
-            userServiceMock.Setup(m => m.GetByNameAsync(username))
-                .ReturnsAsync(userIdentity);
+            var quizzesService = new Mock<IQuizzesService>();
 
-            var quizzesServiceMock = new Mock<IQuizzesService>();
-            quizzesServiceMock.Setup(m => m.GetAllTitlesByUserId(profileId))
+            var quizzes = new List<QuizListItemModel>
+                {
+                    new QuizListItemModel() {
+                        Author = { Id = profileId, DisplayName = "Name", ImageBytes = [], Owner = new ProfileOwnerInfo() { Id = ownerUserId, Username = "username" }},
+                        Id = "1",
+                        Rate = 100,
+                        Title = "Title",
+                    },
+                }.AsEnumerable();
+
+            quizzesService.Setup(m => m.GetAllTitlesByUserId(ownerUserId))
                 .ReturnsAsync(quizzes);
+            quizzesService.Setup(m => m.GetAllUserCompleted(ownerUserId))
+                .ReturnsAsync(100);
 
-            var sut = new UserProfilesService(
-                userProfilesRepoMock.Object,
-                userServiceMock.Object,
-                quizzesServiceMock.Object);
+            var sut = new UserProfilesService(profilesRepo.Object, userService.Object, quizzesService.Object);
+
+            var expected = new UserProfileModel
+            {
+                Id = profileId,
+                DisplayName = "Name",
+                CreatedQuizzes = quizzes.ToList(),
+                CompletedQuizzesCount = 100,
+                Owner = new ProfileOwnerInfo { Id = ownerUserId, Username = "username" }
+            };
 
             // Act
-            var actual = await sut.GetByUsernameAsync(username);
+            var actual = await sut.GetByUsernameAsync(ownerUserId);
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public async Task Get_user_profiles_info_for_multiple_users_test()
+        {
+            Assert.True(false);
         }
     }
 }
