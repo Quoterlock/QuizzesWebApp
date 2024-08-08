@@ -50,7 +50,7 @@ namespace UnitTests
             quizzesService.Setup(m => m.GetAllUserCompleted(ownerUserId))
                 .ReturnsAsync(100);
 
-            var sut = new UserProfilesService(profilesRepo.Object, userService.Object, quizzesService.Object);
+            var sut = new UserProfilesService(profilesRepo.Object, userService.Object);
 
             var expected = new UserProfileModel
             {
@@ -110,7 +110,7 @@ namespace UnitTests
             quizzesService.Setup(m => m.GetAllUserCompleted(ownerUserId))
                 .ReturnsAsync(100);
 
-            var sut = new UserProfilesService(profilesRepo.Object, userService.Object, quizzesService.Object);
+            var sut = new UserProfilesService(profilesRepo.Object, userService.Object);
 
             var expected = new UserProfileModel
             {

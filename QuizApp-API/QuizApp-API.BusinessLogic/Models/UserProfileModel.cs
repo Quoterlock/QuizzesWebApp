@@ -7,6 +7,7 @@
         public ProfileOwnerInfo Owner { get; set; } = new ProfileOwnerInfo();
         public List<QuizListItemModel> CreatedQuizzes { get; set; } = [];
         public int CompletedQuizzesCount { get; set; } = 0;
+        public byte[] ImageBytes { get; set; } = [];
         public override bool Equals(object? obj)
         {
             if (obj is UserProfileModel other)
@@ -15,6 +16,7 @@
                                 DisplayName == other.DisplayName &&
                                 Equals(Owner, other.Owner) &&
                                 CreatedQuizzes.Count == other.CreatedQuizzes.Count &&
+                                ImageBytes == other.ImageBytes &&
                                 CompletedQuizzesCount == other.CompletedQuizzesCount;
                 for (int i = 0; i < CreatedQuizzes.Count; i++)
                 {
@@ -38,6 +40,7 @@
                 hash = hash * 23 + (Id?.GetHashCode() ?? 0);
                 hash = hash * 23 + (DisplayName?.GetHashCode() ?? 0);
                 hash = hash * 23 + (Owner?.GetHashCode() ?? 0);
+                hash = hash * 23 + (ImageBytes?.GetHashCode() ?? 0);
                 hash = hash * 23 + (CompletedQuizzesCount.GetHashCode());
 
                 foreach (var quiz in CreatedQuizzes)

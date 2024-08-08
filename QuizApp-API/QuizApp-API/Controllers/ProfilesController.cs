@@ -1,21 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using Microsoft.IdentityModel.Tokens;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
-using System.Security.Claims;
 
 namespace QuizApp_API.Controllers
 {
     [Route("api/profile")]
     [ApiController]
     [Authorize]
-    public class ProfilesController(IUserProfilesService userProfilesService) 
+    public class ProfilesController(IUserProfilesService userProfilesService, IFullUserProfileService fullUserProfileService) 
         : ControllerBase
     {
         private readonly IUserProfilesService _userProfilesService = userProfilesService;
-
+        private readonly IFullUserProfileService _fullUserProfileService = fullUserProfileService;
 
         [HttpGet("current-username")]
         public IActionResult GetCurrentUser()
@@ -26,6 +23,25 @@ namespace QuizApp_API.Controllers
             else
                 return Ok(new { username });
         }
+
+
+        [HttpGet("info")]
+        public async Task<IActionResult> GetCurrentUserProfileInfo()
+        {
+            var username = GetCurrentUserName();
+            if (string.IsNullOrEmpty(username))
+                return BadRequest("User id not found");
+            try
+            {
+                var profileInfo = await _userProfilesService.GetByUsernameAsync(username);
+                return Ok(profileInfo);
+            } 
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Index(string? user)
@@ -49,7 +65,7 @@ namespace QuizApp_API.Controllers
                     else 
                         return NotFound();
                 }
-                var profile = await _userProfilesService.GetByUsernameAsync(username);
+                var profile = await _fullUserProfileService.GetFullUserProfile(username);
                 return Ok(profile);
             }
             catch (Exception ex)
@@ -60,7 +76,7 @@ namespace QuizApp_API.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Edit([FromBody] UserProfileModel profile)
+        public async Task<IActionResult> Edit([FromBody] UserProfileInfo profile)
         {
             if(profile.Owner.Username == GetCurrentUserName())
             {

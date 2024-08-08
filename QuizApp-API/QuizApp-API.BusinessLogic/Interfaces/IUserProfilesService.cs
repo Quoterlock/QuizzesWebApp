@@ -4,13 +4,13 @@ namespace QuizApp_API.BusinessLogic.Interfaces
 {
     public interface IUserProfilesService
     {
-        Task<UserProfileModel> GetByOwnerId(string ownerUserId);
+        Task<UserProfileInfo> GetByOwnerId(string ownerUserId);
         Task<List<UserProfileInfo>> GetRangeAsync(params string[] userIds);
-        Task<UserProfileModel> GetByUsernameAsync(string username);
+        Task<UserProfileInfo> GetByUsernameAsync(string username);
         Task<bool> IsExists(string username);
         Task CreateAsync(string username);
-        Task UpdateAsync(UserProfileModel profile);
-        Task DeleteAsync(UserProfileModel profile);
+        Task UpdateAsync(UserProfileInfo profile);
+        Task DeleteAsync(UserProfileInfo profile);
 
     }
 }

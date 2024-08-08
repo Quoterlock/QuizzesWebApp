@@ -2,20 +2,31 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
+using QuizApp_API.BusinessLogic.Services;
 
 namespace QuizApp_API.Controllers
 {
     [Route("api/quizzes")]
     public class QuizzesController(IQuizzesService service,
-        IQuizResultsService results) 
+        IQuizResultsService results,
+        RedisService cache) 
         : ControllerBase
     {
+        private readonly RedisService _cache = cache;
         private readonly IQuizzesService _service = service;
         private readonly IQuizResultsService _results = results;
 
         [HttpGet("list")]
         public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
         {
+            // check cache
+            var key = $"quiz-list-{startIndex}-{endIndex}";
+            if (await _cache.IsExistsAsync(key))
+            {
+                var list = await _cache.Get<List<QuizListItemModel>>(key);
+                return list ?? [];
+            }
+            // get list items
             if (startIndex == null || endIndex == null)
             {
                 return await _service.GetTitlesAsync();
@@ -50,10 +61,23 @@ namespace QuizApp_API.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(value))
-                    return await _service.GetTitlesAsync();
+                List<QuizListItemModel> list;
+                var key = $"quiz-search-{value}";
+                if (!await _cache.IsExistsAsync(key))
+                {
+                    if (string.IsNullOrEmpty(value))
+                        list = await _service.GetTitlesAsync();
+                    else
+                        list = await _service.SearchAsync(value);
+
+                    await _cache.Set(key, list ?? []);
+                    return list ?? [];
+                }
                 else
-                    return await _service.SearchAsync(value);
+                {
+                    list = (await _cache.Get<List<QuizListItemModel>>(key)) ?? [];
+                    return list;
+                }
             } 
             catch(Exception)
             {

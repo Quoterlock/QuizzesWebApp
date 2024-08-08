@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using QuizApp_API.BusinessLogic.Interfaces;
+﻿using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
@@ -8,13 +7,10 @@ namespace QuizApp_API.BusinessLogic.Services
 {
     public class UserProfilesService(
         IUserProfileRepository userProfileRepository,
-        IUserService userService,
-        IQuizzesService quizzesService
-            ) : IUserProfilesService
+        IUserService userService) : IUserProfilesService
     {
         private readonly IUserProfileRepository _profileRepository = userProfileRepository;
         private readonly IUserService _userService = userService;
-        private readonly IQuizzesService _quizzesService = quizzesService;
 
         public async Task CreateAsync(string username)
         {
@@ -24,7 +20,7 @@ namespace QuizApp_API.BusinessLogic.Services
             var user = await _userService.GetByNameAsync(username) 
                 ?? throw new Exception("User not found with username:" + username);
 
-            var profile = new UserProfileModel
+            var profile = new UserProfileInfo
             {
                 DisplayName = user.NormalizedUserName ?? "Unknown",
                 Owner = new ProfileOwnerInfo
@@ -37,7 +33,7 @@ namespace QuizApp_API.BusinessLogic.Services
             await _profileRepository.AddAsync(Convert(profile));
         }
 
-        public async Task<UserProfileModel> GetByOwnerId(string ownerUserId)
+        public async Task<UserProfileInfo> GetByOwnerId(string ownerUserId)
         {
             if (string.IsNullOrEmpty(ownerUserId))
                 throw new ArgumentNullException(nameof(ownerUserId));
@@ -53,8 +49,6 @@ namespace QuizApp_API.BusinessLogic.Services
                 else
                     profile.Owner.Username = "Unknown";
 
-                profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(ownerUserId)).ToList();
-                profile.CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(ownerUserId);
                 return profile;
             }
             catch (Exception ex)
@@ -65,8 +59,7 @@ namespace QuizApp_API.BusinessLogic.Services
         
         public async Task<List<UserProfileInfo>> GetRangeAsync(params string[] ownerIds)
         {
-            if (ownerIds.IsNullOrEmpty())
-                throw new ArgumentNullException(nameof(ownerIds));
+            ArgumentNullException.ThrowIfNull(ownerIds);
 
             var profiles = await _profileRepository.GetRangeByOwnerIdsAsync(ownerIds);
             var owners = await _userService.GetRangeByIdAsync(ownerIds);
@@ -86,7 +79,7 @@ namespace QuizApp_API.BusinessLogic.Services
             return profilesInfos;
         }
 
-        public async Task<UserProfileModel> GetByUsernameAsync(string username)
+        public async Task<UserProfileInfo> GetByUsernameAsync(string username)
         {
             if(string.IsNullOrEmpty(username))
                 throw new ArgumentNullException(nameof(username));
@@ -98,13 +91,10 @@ namespace QuizApp_API.BusinessLogic.Services
 
             var profile = Convert(entity);
             profile.Owner.Username = username;
-            profile.CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(profile.Owner.Id)).ToList();
-            profile.CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(username);
-
             return profile;
         }
 
-        public async Task UpdateAsync(UserProfileModel profile)
+        public async Task UpdateAsync(UserProfileInfo profile)
         {
             ArgumentNullException.ThrowIfNull(profile);
 
@@ -125,12 +115,12 @@ namespace QuizApp_API.BusinessLogic.Services
             }
         }
 
-        public async Task DeleteAsync(UserProfileModel profile)
+        public async Task DeleteAsync(UserProfileInfo profile)
         {
             throw new NotImplementedException();
         }
 
-        private static UserProfile Convert(UserProfileModel model)
+        private static UserProfile Convert(UserProfileInfo model)
         {
             return new UserProfile
             {
@@ -140,9 +130,9 @@ namespace QuizApp_API.BusinessLogic.Services
             };
         }
 
-        private static UserProfileModel Convert(UserProfile entity)
+        private static UserProfileInfo Convert(UserProfile entity)
         {
-            return new UserProfileModel
+            return new UserProfileInfo
             {
                 DisplayName = entity.DisplayName,
                 Id = entity.Id,
