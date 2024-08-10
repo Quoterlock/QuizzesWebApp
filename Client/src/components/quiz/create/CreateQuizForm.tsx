@@ -18,10 +18,7 @@ export default function CreateQuizForm({onCreate}:Props) {
             questions:[...questions],
             rate:0,
             title:title,
-            author:"",
-            authorId:"",
             creationDate:"",
-            results:[]
         }
 
         if(ValidateQuiz(quiz)){

@@ -5,6 +5,7 @@ import { getCurrentProfile, getProfile } from "../../services/userProfileService
 import { logoutUser } from "../../services/authService";
 import { AppContext } from "../../services/AppContext";
 import QuizList from "../shared/QuizList";
+import { Button } from "../shared/Button";
 
 export default function UserProfilePage() {
     const navigate = useNavigate()
@@ -12,7 +13,7 @@ export default function UserProfilePage() {
     const isOwner = (id === null || id === undefined || id === "")
     const [profile, setUserProfile] = useState<UserProfile>()
     const { userProfileApi } = useContext(AppContext)
-
+    const [image, setProfileImage] = useState<string | undefined>()
 
     useEffect(() => {
       const loadProfile = async () => {
@@ -29,7 +30,19 @@ export default function UserProfilePage() {
           setUserProfile(await getProfile(id, userProfileApi))
         }
       }
+
+      const loadProfileImage = async () => {
+        try{
+          const url = "http://192.168.0.104:5000/api/profile/profile-photo?username=user"
+          setProfileImage(url);
+        } catch (error) {
+          console.error("Error fetching data", error)
+          return { code: 0 }
+      }
+      }
+
       loadProfile()
+      loadProfileImage()
     },[])
     
     useEffect(()=> {
@@ -52,7 +65,11 @@ export default function UserProfilePage() {
             </div> 
               <div className="block-style d-flex justify-content-between mb-3">                
                 <div className="d-flex">
-                    <img height={150} width={150}/>
+                  <div>
+                    <img src={image}/>
+                    <Button type="minor" onClick={()=>navigate("/profile/update-photo")}>Change Photo</Button>
+                  </div>
+                  
                     <div className="ms-4">
                         <div className="d-flex">
                             <h2>{profile.displayName || "null"}</h2>

@@ -1,10 +1,9 @@
 type QuizItem = {
     id: string
-    questions: QuestionItem[],
     rate: number,
     title: string,
-    author: string,
-    authorId: string
     creationDate:string,
-    results: QuizResult[]
+    author?:UserProfileInfo,
+    questions: QuestionItem[],
+    results?: QuizResult[]
 }

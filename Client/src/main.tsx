@@ -13,6 +13,7 @@ import EditUserProfilePage from './components/profile/EditUserProfilePage.tsx';
 import RegisterPage from './components/authorization/RegisterPage.tsx';
 import NewQuizPage from './components/quiz/create/NewQuizPage.tsx';
 import { RemoveQuizPage } from './components/quiz/RemoveQuizPage.tsx';
+import { ChangeProfilePhotoPage } from './components/profile/ChangeProfilePhotoPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
   {
     path:"/delete-quiz/:id",
     element: <RemoveQuizPage/>
+  },
+  {
+    path:"/profile/update-photo",
+    element: <ChangeProfilePhotoPage/>
   }
 ])
 

@@ -1,3 +1,5 @@
+import UserProfileApi from "./api/profile/UserProfileApi"
+
 async function getCurrentProfile(userProfileApi:IUserProfileApi) : Promise<UserProfile> {
     const result = await userProfileApi.GetCurrentUserProfileAsync()
     if(result.code === 200){

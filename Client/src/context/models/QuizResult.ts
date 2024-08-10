@@ -1,6 +1,7 @@
 type QuizResult = {
     id:string
     quizId:string
-    username:string
     result:number
+    userProfile?:UserProfileInfo
+    timeStamp?:string
 }

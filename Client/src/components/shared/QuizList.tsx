@@ -18,10 +18,10 @@ export default function QuizList({items}:Props) {
             <Link to={`/quiz/${item.id}`} className="styless-link">
                 <div>
                     <h5>{item.title}</h5>
-                    <p>{`author: ${item.author}`}</p>
+                    <p>{`Created by ${item.author.displayName} (@${item.author.owner.username})`}</p>
                 </div>
             </Link>   
-            { item.authorId === localStorage.getItem("current-user-id") &&
+            { item.author.owner.id === localStorage.getItem("current-user-id") &&
                 <div>
                     <IconButton iconSrc="./src/assets/icons/delete-icon.png" onClick={()=>{hOnDelete(item.id)}}/>
                 </div>

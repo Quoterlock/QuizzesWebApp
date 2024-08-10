@@ -17,7 +17,6 @@ export default function QuizPage(){
     const {api} = useContext(AppContext)   
     const [errorMessage, setErrorMessage] = useState("")
     const [isError, setIsError] = useState(false)
-    const username = localStorage.getItem("current-username") as string
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,7 +32,6 @@ export default function QuizPage(){
             setErrorMessage("Server error: Something goes wrong");
           }
         };
-    
         fetchData();
       }, []);
 
@@ -51,7 +49,6 @@ export default function QuizPage(){
         const result:QuizResult = {
           id:"", 
           quizId:quiz?.id ?? "", 
-          username:username,
           result:finalResult
         }
         console.log(result)
@@ -85,7 +82,7 @@ export default function QuizPage(){
                 <div className="d-grid mb-3">
                   <Button type="active" onClick={hOnStart}>Start Quiz</Button>
                 </div>
-                { PrintTestResults(quiz.results) }
+                { PrintTestResults(quiz.results??[]) }
               </>)
               : (!isDone 
                 ? <Quiz quiz={quiz} onDone={hOnDone}></Quiz> 
@@ -94,7 +91,7 @@ export default function QuizPage(){
                     userAnswers={userAnswers} 
                     questions={quiz.questions} 
                     onRestart={onReset}/>
-                    { PrintTestResults(quiz.results) }
+                    { PrintTestResults(quiz.results??[]) }
                 </div>
                 )
             )
