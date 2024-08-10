@@ -1,4 +1,5 @@
-﻿using QuizApp_API.BusinessLogic.Models;
+﻿using Microsoft.AspNetCore.Http;
+using QuizApp_API.BusinessLogic.Models;
 
 namespace QuizApp_API.BusinessLogic.Interfaces
 {
@@ -11,6 +12,7 @@ namespace QuizApp_API.BusinessLogic.Interfaces
         Task CreateAsync(string username);
         Task UpdateAsync(UserProfileInfo profile);
         Task DeleteAsync(UserProfileInfo profile);
+        Task UpdateProfilePhoto(IFormFile img, string username);
 
     }
 }

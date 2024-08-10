@@ -2,6 +2,7 @@
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
+using QuizApp_API.DataAccess.Repositories;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
@@ -31,11 +32,7 @@ namespace QuizApp_API.BusinessLogic.Services
         public async Task SaveResultAsync(QuizResultModel quizResult)
         {
             ArgumentNullException.ThrowIfNull(quizResult);
-
             var entity = Convert(quizResult);
-            entity.TimeStamp = DateTime.Now.ToString();
-            entity.Id = Guid.NewGuid().ToString();
-
             await _repository.SaveResultAsync(entity);
         }
 
@@ -47,6 +44,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 QuizId = model.QuizId ?? string.Empty,
                 UserId = model.UserProfile.Owner.Id ?? string.Empty,
                 Result = model.Result,
+                TimeStamp = model.TimeStamp
             };
         }
 
@@ -57,6 +55,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 Id = entity.Id,
                 Result = entity.Result,
                 QuizId = entity.QuizId,
+                TimeStamp = entity.TimeStamp,
             };
         }
 
@@ -71,6 +70,13 @@ namespace QuizApp_API.BusinessLogic.Services
                 models.Add(model);
             }
             return models.AsEnumerable();
+        }
+
+        public async Task RemoveByQuizIdAsync(string quizId)
+        {
+            if (string.IsNullOrEmpty(quizId))
+                throw new ArgumentNullException(nameof(quizId));
+            await _repository.RemoveByQuizIdAsync(quizId);
         }
     }
 }

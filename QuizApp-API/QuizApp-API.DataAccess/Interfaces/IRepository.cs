@@ -10,7 +10,7 @@ namespace QuizApp_API.DataAccess.Interfaces
     {
         Task AddAsync(T entity);
         Task DeleteAsync(string id);
-        Task Update(T entity);
+        Task UpdateAsync(T entity);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(string id);
     }

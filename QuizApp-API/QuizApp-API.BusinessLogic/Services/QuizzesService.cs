@@ -79,6 +79,8 @@ namespace QuizApp_API.BusinessLogic
             try
             {
                 await _repository.DeleteAsync(id);
+                await _resultsService.RemoveByQuizIdAsync(id);
+                await _ratesService.RemoveByQuizIdAsync(id);
             }
             catch (Exception ex)
             {

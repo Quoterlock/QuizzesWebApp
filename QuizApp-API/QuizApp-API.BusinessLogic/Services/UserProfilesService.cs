@@ -1,7 +1,9 @@
-﻿using QuizApp_API.BusinessLogic.Interfaces;
+﻿using Microsoft.AspNetCore.Http;
+using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
+using System.Drawing.Imaging;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
@@ -42,7 +44,7 @@ namespace QuizApp_API.BusinessLogic.Services
             {
                 var user = await _userService.GetByIdAsync(ownerUserId);
                 var entity = await _profileRepository.GetByOwnerIdAsync(ownerUserId);
-                var profile = Convert(entity);
+                var profile = await Convert(entity);
         
                 if (user != null && !string.IsNullOrEmpty(user.UserName))
                     profile.Owner.Username = user.UserName;
@@ -68,13 +70,12 @@ namespace QuizApp_API.BusinessLogic.Services
             {
                 var owner = owners.FirstOrDefault(o => o.Id == profile.OwnerId)
                     ?? throw new ArgumentException($"Owner withId:{profile.OwnerId} doesn't exist");
-                profilesInfos.Add(new UserProfileInfo
-                {
-                    Id = profile.Id,
-                    DisplayName = profile.DisplayName,
-                    ImageBytes = profile.ImageBytes,
-                    Owner = new ProfileOwnerInfo { Id = owner.Id, Username = owner.UserName ?? "none" }
-                });
+                var profileModel = await Convert(profile);
+                profileModel.Owner = new ProfileOwnerInfo { 
+                    Id = owner.Id, 
+                    Username = owner.UserName ?? "none" 
+                };
+                profilesInfos.Add(profileModel);
             }
             return profilesInfos;
         }
@@ -89,7 +90,7 @@ namespace QuizApp_API.BusinessLogic.Services
             var entity = await _profileRepository.GetByOwnerIdAsync(user.Id) 
                 ?? throw new Exception("User profile not found");
 
-            var profile = Convert(entity);
+            var profile = await Convert(entity);
             profile.Owner.Username = username;
             return profile;
         }
@@ -107,7 +108,10 @@ namespace QuizApp_API.BusinessLogic.Services
 
             try
             {
-                await _profileRepository.Update(Convert(profile));
+                var entity = await _profileRepository.GetByIdAsync(profile.Id);
+                var profileEntity = Convert(profile);
+                profileEntity.ImageBytes = entity.ImageBytes;
+                await _profileRepository.UpdateAsync(Convert(profile));
             } 
             catch (Exception ex)
             {
@@ -130,9 +134,9 @@ namespace QuizApp_API.BusinessLogic.Services
             };
         }
 
-        private static UserProfileInfo Convert(UserProfile entity)
+        private async Task<UserProfileInfo> Convert(UserProfile entity)
         {
-            return new UserProfileInfo
+            var profile = new UserProfileInfo
             {
                 DisplayName = entity.DisplayName,
                 Id = entity.Id,
@@ -140,8 +144,10 @@ namespace QuizApp_API.BusinessLogic.Services
                 {
                     Id = entity.OwnerId,
                     Username = ""
-                }
-            };
+                },
+                Image = entity.ImageBytes ?? []
+        };
+            return profile;
         }
 
         public async Task<bool> IsExists(string username)
@@ -158,6 +164,75 @@ namespace QuizApp_API.BusinessLogic.Services
             {
                 return false;
             }
+        }
+
+        public async Task UpdateProfilePhoto(IFormFile img, string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+            string[] types = ["image/png", "image/jpeg"];
+            if (!types.Contains(img.ContentType))
+                throw new ArgumentException(nameof(img), "type is not supported");
+
+            var userId = (await _userService.GetByNameAsync(username)).Id;
+            var profile = await _profileRepository.GetByOwnerIdAsync(userId);
+
+            profile.ImageBytes = await ConvertIFormFileToJpgByteArray(img);
+            await _profileRepository.UpdateAsync(profile);
+        }
+
+        private static IFormFile CreateFormFileFromBytes(byte[] fileBytes)
+        {
+            var contentType = "image/jpeg";
+            var fileName = "profile-avatar";
+            var stream = new MemoryStream(fileBytes ?? []);
+            var formFile = new FormFile(stream, 0, stream.Length, "file", fileName)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = contentType
+            };
+
+            return formFile;
+        }
+
+        private async Task<byte[]> ConvertIFormFileToJpgByteArray(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return null; // Or handle accordingly
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                memoryStream.Position = 0; // Reset the position to the beginning of the stream
+
+                using (var image = System.Drawing.Image.FromStream(memoryStream))
+                using (var jpgStream = new MemoryStream())
+                {
+                    image.Save(jpgStream, ImageFormat.Jpeg);
+                    return jpgStream.ToArray();
+                }
+            }
+        }
+
+        private async Task<IFormFile> ConvertStaticImageToIFormFileAsync(string filePath)
+        {
+            // Ensure the file exists
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException("The specified file does not exist.", filePath);
+            }
+
+            // Read the file into a stream
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+            // Create a FormFile instance from the stream
+            var formFile = new FormFile(fileStream, 0, fileStream.Length, "profile-avatar-placeholder", Path.GetFileName(filePath))
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = "image/jpeg" // Adjust as needed based on the file type
+            };
+
+            return formFile;
         }
     }
 }

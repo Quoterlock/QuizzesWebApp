@@ -53,7 +53,7 @@ namespace QuizApp_API.DataAccess.Repositories
             return (await _context.Profiles.FindAsync(q => q.OwnerId == id)).FirstOrDefault();
         }
 
-        public async Task Update(UserProfile entity)
+        public async Task UpdateAsync(UserProfile entity)
         {
             if (entity != null)
             {

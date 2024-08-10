@@ -7,6 +7,8 @@
         public UserProfileInfo UserProfile { get; set; } = new();
         public int Result { get; set; } = 0;
 
+        public string TimeStamp { get; set; } = string.Empty;
+
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -18,6 +20,7 @@
             return Id == other.Id &&
                    QuizId == other.QuizId &&
                    UserProfile == other.UserProfile &&
+                   TimeStamp == other.TimeStamp &&
                    Result == other.Result;
         }
         public override int GetHashCode()
@@ -28,6 +31,7 @@
                 hash = hash * 23 + (Id?.GetHashCode() ?? 0);
                 hash = hash * 23 + (QuizId?.GetHashCode() ?? 0);
                 hash = hash * 23 + (UserProfile?.GetHashCode() ?? 0);
+                hash = hash * 23 + (TimeStamp?.GetHashCode() ?? 0);
                 hash = hash * 23 + Result.GetHashCode();
                 return hash;
             }

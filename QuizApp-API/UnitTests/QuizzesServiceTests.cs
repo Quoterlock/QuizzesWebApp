@@ -17,7 +17,7 @@ namespace UnitTests
             var userProfile = new UserProfileInfo { 
                 DisplayName = "Name",
                 Id = "profileId", 
-                ImageBytes = [], 
+                Image = [], 
                 Owner = new ProfileOwnerInfo { 
                     Id = "userId", Username = username } 
             };
@@ -96,7 +96,7 @@ namespace UnitTests
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                ImageBytes = [],
+                Image = [],
                 Owner = new ProfileOwnerInfo { Id = authorUserId, Username = "username"  },
             };
             profilesService.Setup(m => m.GetRangeAsync(authorUserId))
@@ -181,21 +181,21 @@ namespace UnitTests
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                ImageBytes = [],
+                Image = [],
                 Owner = new ProfileOwnerInfo { Id = authorUserId, Username = "username" },
             };
             var quizAuthorProfileInfo1 = new UserProfileInfo
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                ImageBytes = [],
+                Image = [],
                 Owner = new ProfileOwnerInfo { Id = "1", Username = "username" },
             };
             var quizAuthorProfileInfo2 = new UserProfileInfo
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                ImageBytes = [],
+                Image = [],
                 Owner = new ProfileOwnerInfo { Id = "2", Username = "username" },
             };
             // Arrange
@@ -372,7 +372,7 @@ namespace UnitTests
                 Author = new UserProfileInfo {
                     DisplayName = "Name",
                     Id = "1",
-                    ImageBytes = [],
+                    Image = [],
                     Owner = new ProfileOwnerInfo
                     {
                         Id = "2",

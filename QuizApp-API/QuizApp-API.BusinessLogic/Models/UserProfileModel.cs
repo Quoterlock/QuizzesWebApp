@@ -1,4 +1,6 @@
-﻿namespace QuizApp_API.BusinessLogic.Models
+﻿using Microsoft.AspNetCore.Http;
+
+namespace QuizApp_API.BusinessLogic.Models
 {
     public class UserProfileModel
     {
@@ -7,7 +9,7 @@
         public ProfileOwnerInfo Owner { get; set; } = new ProfileOwnerInfo();
         public List<QuizListItemModel> CreatedQuizzes { get; set; } = [];
         public int CompletedQuizzesCount { get; set; } = 0;
-        public byte[] ImageBytes { get; set; } = [];
+        public byte[] Image { get; set; } = [];
         public override bool Equals(object? obj)
         {
             if (obj is UserProfileModel other)
@@ -16,7 +18,7 @@
                                 DisplayName == other.DisplayName &&
                                 Equals(Owner, other.Owner) &&
                                 CreatedQuizzes.Count == other.CreatedQuizzes.Count &&
-                                ImageBytes == other.ImageBytes &&
+                                Image == other.Image &&
                                 CompletedQuizzesCount == other.CompletedQuizzesCount;
                 for (int i = 0; i < CreatedQuizzes.Count; i++)
                 {
@@ -40,7 +42,7 @@
                 hash = hash * 23 + (Id?.GetHashCode() ?? 0);
                 hash = hash * 23 + (DisplayName?.GetHashCode() ?? 0);
                 hash = hash * 23 + (Owner?.GetHashCode() ?? 0);
-                hash = hash * 23 + (ImageBytes?.GetHashCode() ?? 0);
+                hash = hash * 23 + (Image?.GetHashCode() ?? 0);
                 hash = hash * 23 + (CompletedQuizzesCount.GetHashCode());
 
                 foreach (var quiz in CreatedQuizzes)
@@ -58,7 +60,7 @@
         public string Id { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public ProfileOwnerInfo Owner { get; set; } = new();
-        public byte[] ImageBytes { get; set; } = [];
+        public byte[] Image { get; set; } = [];
 
         public override bool Equals(object? obj)
         {
@@ -67,7 +69,7 @@
                 return Id == other.Id &&
                     DisplayName == other.DisplayName &&
                     Owner == other.Owner &&
-                    ImageBytes == other.ImageBytes;
+                    Image == other.Image;
             }
             return false;
         }
@@ -79,7 +81,7 @@
                 hash = hash * 27 + (DisplayName?.GetHashCode() ?? 0);
                 hash = hash * 27 + (Id?.GetHashCode() ?? 0);
                 hash = hash * 27 + (Owner?.GetHashCode() ?? 0);
-                hash = hash * 27 + (ImageBytes?.GetHashCode() ?? 0);
+                hash = hash * 27 + (Image?.GetHashCode() ?? 0);
                 return hash;
             }
         }

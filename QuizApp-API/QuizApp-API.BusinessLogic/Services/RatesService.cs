@@ -60,6 +60,13 @@ namespace QuizApp_API.BusinessLogic.Services
                 models.Add(Convert(entity));
             return models;
         }
+        
+        public async Task RemoveByQuizIdAsync(string quizId)
+        {
+            if (string.IsNullOrEmpty(quizId)) 
+                throw new ArgumentNullException(nameof(quizId));
+            await _ratesRepository.RemoveByQuizIdAsync(quizId);
+        }
 
         private QuizRateModel Convert(UserQuizRate entity)
         {
@@ -71,5 +78,6 @@ namespace QuizApp_API.BusinessLogic.Services
                 Rate = entity.Rate
             };
         }
+
     }
 }

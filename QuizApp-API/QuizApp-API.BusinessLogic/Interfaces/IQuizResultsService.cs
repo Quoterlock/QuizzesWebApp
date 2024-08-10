@@ -7,5 +7,6 @@ namespace QuizApp_API.BusinessLogic.Interfaces
         Task SaveResultAsync(QuizResultModel quizResult);
         Task<IEnumerable<QuizResultModel>> GetResultsByQuizIdAsync(string quizId);
         Task<IEnumerable<QuizResultModel>> GetResultsByUserIdAsync(string userId);
+        Task RemoveByQuizIdAsync(string quizId);
     }
 }

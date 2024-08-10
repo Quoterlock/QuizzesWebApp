@@ -38,7 +38,7 @@ namespace UnitTests
             var quizzes = new List<QuizListItemModel>
                 {
                     new QuizListItemModel() {
-                        Author = { Id = profileId, DisplayName = "Name", ImageBytes = [], Owner = new ProfileOwnerInfo() { Id = ownerUserId, Username = "username" }},
+                        Author = { Id = profileId, DisplayName = "Name", Image = [], Owner = new ProfileOwnerInfo() { Id = ownerUserId, Username = "username" }},
                         Id = "1",
                         Rate = 100,
                         Title = "Title",
@@ -98,7 +98,7 @@ namespace UnitTests
             var quizzes = new List<QuizListItemModel>
                 {
                     new QuizListItemModel() {
-                        Author = { Id = profileId, DisplayName = "Name", ImageBytes = [], Owner = new ProfileOwnerInfo() { Id = ownerUserId, Username = "username" }},
+                        Author = { Id = profileId, DisplayName = "Name", Image = [], Owner = new ProfileOwnerInfo() { Id = ownerUserId, Username = "username" }},
                         Id = "1",
                         Rate = 100,
                         Title = "Title",

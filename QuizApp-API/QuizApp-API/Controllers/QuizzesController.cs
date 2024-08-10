@@ -20,22 +20,18 @@ namespace QuizApp_API.Controllers
         public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
         {
             // check cache
+            var isCacheAvailable = _cache.CheckConnection();
             var key = $"quiz-list-{startIndex}-{endIndex}";
-            if (await _cache.IsExistsAsync(key))
+            if (isCacheAvailable && await _cache.IsExistsAsync(key)) 
             {
-                var list = await _cache.Get<List<QuizListItemModel>>(key);
+                var list = await _cache.GetAsync<List<QuizListItemModel>>(key);
                 return list ?? [];
             }
             // get list items
-            if (startIndex == null || endIndex == null)
-            {
-                return await _service.GetTitlesAsync();
-            }
-            if (startIndex == 0 && startIndex == endIndex)
-            {
-                return await _service.GetTitlesAsync();
-            }
-            return [];
+            var titles = await _service.GetTitlesAsync() ?? [];
+            if (isCacheAvailable)
+                await _cache.SetAsync(key, titles);
+            return titles;
         }
 
         [HttpGet("{id}")]
@@ -70,12 +66,12 @@ namespace QuizApp_API.Controllers
                     else
                         list = await _service.SearchAsync(value);
 
-                    await _cache.Set(key, list ?? []);
+                    await _cache.SetAsync(key, list ?? []);
                     return list ?? [];
                 }
                 else
                 {
-                    list = (await _cache.Get<List<QuizListItemModel>>(key)) ?? [];
+                    list = (await _cache.GetAsync<List<QuizListItemModel>>(key)) ?? [];
                     return list;
                 }
             } 

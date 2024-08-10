@@ -8,5 +8,6 @@ namespace QuizApp_API.BusinessLogic.Interfaces
         Task AddRate(string quizId, string userId, double rate);
         Task DeleteRate(string rateId);
         Task UpdateRate(string rateId, double rate);
+        Task RemoveByQuizIdAsync(string quizId);
     }
 }

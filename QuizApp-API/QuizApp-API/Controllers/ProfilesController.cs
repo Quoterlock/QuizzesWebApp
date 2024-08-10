@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace QuizApp_API.Controllers
 {
     [Route("api/profile")]
     [ApiController]
-    [Authorize]
     public class ProfilesController(IUserProfilesService userProfilesService, IFullUserProfileService fullUserProfileService) 
         : ControllerBase
     {
@@ -74,7 +74,25 @@ namespace QuizApp_API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("update-photo")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePhoto(IFormFile image)
+        {
+            if (image == null)
+                return BadRequest(new { message = "Image data is missing or empty." });
+            try 
+            {
+                var username = GetCurrentUserName() ?? string.Empty;
+                await _userProfilesService.UpdateProfilePhoto(image, username);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("update")]
         [Authorize]
         public async Task<IActionResult> Edit([FromBody] UserProfileInfo profile)
         {
@@ -90,6 +108,16 @@ namespace QuizApp_API.Controllers
                     return BadRequest(ex.Message);
                 }
             } return BadRequest("You are not an owner");
+        }
+
+        [HttpGet("profile-photo")]
+        public async Task<IActionResult> GetPhoto(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                return BadRequest();
+
+            var profile = await _userProfilesService.GetByUsernameAsync(username);
+            return Ok(File(profile.Image, "image/jpeg"));
         }
 
         private string GetCurrentUserName()
