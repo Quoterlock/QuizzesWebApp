@@ -9,7 +9,7 @@ namespace QuizApp_API.BusinessLogic.Models
         public ProfileOwnerInfo Owner { get; set; } = new ProfileOwnerInfo();
         public List<QuizListItemModel> CreatedQuizzes { get; set; } = [];
         public int CompletedQuizzesCount { get; set; } = 0;
-        public byte[] Image { get; set; } = [];
+        public string ImageId { get; set; } = string.Empty;
         public override bool Equals(object? obj)
         {
             if (obj is UserProfileModel other)
@@ -18,7 +18,7 @@ namespace QuizApp_API.BusinessLogic.Models
                                 DisplayName == other.DisplayName &&
                                 Equals(Owner, other.Owner) &&
                                 CreatedQuizzes.Count == other.CreatedQuizzes.Count &&
-                                Image == other.Image &&
+                                ImageId == other.ImageId &&
                                 CompletedQuizzesCount == other.CompletedQuizzesCount;
                 for (int i = 0; i < CreatedQuizzes.Count; i++)
                 {
@@ -42,7 +42,7 @@ namespace QuizApp_API.BusinessLogic.Models
                 hash = hash * 23 + (Id?.GetHashCode() ?? 0);
                 hash = hash * 23 + (DisplayName?.GetHashCode() ?? 0);
                 hash = hash * 23 + (Owner?.GetHashCode() ?? 0);
-                hash = hash * 23 + (Image?.GetHashCode() ?? 0);
+                hash = hash * 23 + (ImageId?.GetHashCode() ?? 0);
                 hash = hash * 23 + (CompletedQuizzesCount.GetHashCode());
 
                 foreach (var quiz in CreatedQuizzes)
@@ -60,7 +60,7 @@ namespace QuizApp_API.BusinessLogic.Models
         public string Id { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
         public ProfileOwnerInfo Owner { get; set; } = new();
-        public byte[] Image { get; set; } = [];
+        public string ImageId { get; set; } = string.Empty;
 
         public override bool Equals(object? obj)
         {
@@ -69,7 +69,7 @@ namespace QuizApp_API.BusinessLogic.Models
                 return Id == other.Id &&
                     DisplayName == other.DisplayName &&
                     Owner == other.Owner &&
-                    Image == other.Image;
+                    ImageId == other.ImageId;
             }
             return false;
         }
@@ -81,7 +81,7 @@ namespace QuizApp_API.BusinessLogic.Models
                 hash = hash * 27 + (DisplayName?.GetHashCode() ?? 0);
                 hash = hash * 27 + (Id?.GetHashCode() ?? 0);
                 hash = hash * 27 + (Owner?.GetHashCode() ?? 0);
-                hash = hash * 27 + (Image?.GetHashCode() ?? 0);
+                hash = hash * 27 + (ImageId?.GetHashCode() ?? 0);
                 return hash;
             }
         }

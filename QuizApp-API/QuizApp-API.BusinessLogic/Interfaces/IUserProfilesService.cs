@@ -12,7 +12,7 @@ namespace QuizApp_API.BusinessLogic.Interfaces
         Task CreateAsync(string username);
         Task UpdateAsync(UserProfileInfo profile);
         Task DeleteAsync(UserProfileInfo profile);
-        Task UpdateProfilePhoto(IFormFile img, string username);
-
+        Task UpdateProfilePhoto(IFormFile image, string username);
+        Task<byte[]> GetProfilePhotoAsync(string username);
     }
 }

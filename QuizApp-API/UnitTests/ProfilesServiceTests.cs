@@ -21,7 +21,7 @@ namespace UnitTests
                 .ReturnsAsync(new UserProfile { 
                     DisplayName = "Name",
                     Id = profileId,
-                    ImageBytes = [],
+                    ImageId = [],
                     OwnerId = ownerUserId,
                 });
 
@@ -81,7 +81,7 @@ namespace UnitTests
                 {
                     DisplayName = "Name",
                     Id = profileId,
-                    ImageBytes = [],
+                    ImageId = [],
                     OwnerId = ownerUserId,
                 });
 

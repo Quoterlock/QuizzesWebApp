@@ -68,6 +68,7 @@ namespace QuizApp_API
             builder.Services.AddScoped<IRatesRepository, RatesRepository>();
             builder.Services.AddScoped<IRatesService, RatesService>();
             builder.Services.AddScoped<IFullUserProfileService, FullUserProfileService>();
+            builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

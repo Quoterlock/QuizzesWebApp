@@ -22,5 +22,6 @@ namespace QuizApp_API.DataAccess.Data
         public IMongoCollection<Quiz> Quizzes => _database.GetCollection<Quiz>("Quizzes");
 
         public IMongoCollection<UserProfile> Profiles => _database.GetCollection<UserProfile>("UserProfiles");
+        public IMongoCollection<Image> Images => _database.GetCollection<Image>("Images");
     }
 }

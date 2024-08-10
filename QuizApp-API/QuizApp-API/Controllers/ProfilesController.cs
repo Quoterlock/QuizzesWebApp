@@ -80,6 +80,8 @@ namespace QuizApp_API.Controllers
         {
             if (image == null)
                 return BadRequest(new { message = "Image data is missing or empty." });
+            if (image.ContentType != "image/jpeg")
+                return BadRequest("Image needs to be .jpeg");
             try 
             {
                 var username = GetCurrentUserName() ?? string.Empty;
@@ -110,14 +112,22 @@ namespace QuizApp_API.Controllers
             } return BadRequest("You are not an owner");
         }
 
-        [HttpGet("profile-photo")]
+        [HttpGet("img/@{username}")]
         public async Task<IActionResult> GetPhoto(string username)
         {
             if (string.IsNullOrEmpty(username))
                 return BadRequest();
-
-            var profile = await _userProfilesService.GetByUsernameAsync(username);
-            return Ok(File(profile.Image, "image/jpeg"));
+            try
+            {
+                var bytes = await _userProfilesService.GetProfilePhotoAsync(username);
+                var fileStream = new MemoryStream(bytes);
+                return File(fileStream, "image/jpeg", "profile-avatar");
+            } 
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         private string GetCurrentUserName()

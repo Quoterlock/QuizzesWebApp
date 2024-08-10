@@ -9,10 +9,12 @@ namespace QuizApp_API.BusinessLogic.Services
 {
     public class UserProfilesService(
         IUserProfileRepository userProfileRepository,
-        IUserService userService) : IUserProfilesService
+        IUserService userService,
+        IImagesRepository images) : IUserProfilesService
     {
         private readonly IUserProfileRepository _profileRepository = userProfileRepository;
         private readonly IUserService _userService = userService;
+        private readonly IImagesRepository _images = images;
 
         public async Task CreateAsync(string username)
         {
@@ -110,7 +112,6 @@ namespace QuizApp_API.BusinessLogic.Services
             {
                 var entity = await _profileRepository.GetByIdAsync(profile.Id);
                 var profileEntity = Convert(profile);
-                profileEntity.ImageBytes = entity.ImageBytes;
                 await _profileRepository.UpdateAsync(Convert(profile));
             } 
             catch (Exception ex)
@@ -124,30 +125,45 @@ namespace QuizApp_API.BusinessLogic.Services
             throw new NotImplementedException();
         }
 
-        private static UserProfile Convert(UserProfileInfo model)
+
+        public async Task UpdateProfilePhoto(IFormFile image, string username)
         {
-            return new UserProfile
+            if (image == null || image.ContentType != "image/jpeg")
+                throw new ArgumentException(nameof(image));
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+
+            byte[] fileBytes;
+            using (var memoryStream = new MemoryStream())
             {
-                Id = model.Id,
-                DisplayName = model.DisplayName,
-                OwnerId = model.Owner.Id,
-            };
+                await image.CopyToAsync(memoryStream);
+                fileBytes = memoryStream.ToArray();
+            }
+
+            var profile = await GetByUsernameAsync(username);
+
+
+            if (_images.IsExists(profile.ImageId))
+            {
+                await _images.UpdateImageAsync(profile.ImageId, fileBytes);
+            }
+            else
+            {
+                var imageId = await _images.AddImage(fileBytes);
+                profile.ImageId = imageId;
+                await UpdateAsync(profile);
+            }
+                
         }
 
-        private async Task<UserProfileInfo> Convert(UserProfile entity)
+        public async Task<byte[]> GetProfilePhotoAsync(string username)
         {
-            var profile = new UserProfileInfo
-            {
-                DisplayName = entity.DisplayName,
-                Id = entity.Id,
-                Owner = new ProfileOwnerInfo
-                {
-                    Id = entity.OwnerId,
-                    Username = ""
-                },
-                Image = entity.ImageBytes ?? []
-        };
-            return profile;
+            if(string.IsNullOrEmpty(username))
+                throw new ArgumentNullException(nameof(username));
+
+            var profile = await GetByUsernameAsync(username);
+            var imageBytes = await _images.GetImageAsync(profile.ImageId);
+            return imageBytes;
         }
 
         public async Task<bool> IsExists(string username)
@@ -166,73 +182,46 @@ namespace QuizApp_API.BusinessLogic.Services
             }
         }
 
-        public async Task UpdateProfilePhoto(IFormFile img, string username)
+        public async Task UpdateProfilePhoto(string imageId, string username)
         {
             if (string.IsNullOrEmpty(username))
                 throw new ArgumentNullException(nameof(username));
-            string[] types = ["image/png", "image/jpeg"];
-            if (!types.Contains(img.ContentType))
-                throw new ArgumentException(nameof(img), "type is not supported");
+            if(string.IsNullOrEmpty(imageId))
+                throw new ArgumentNullException(nameof(imageId));
 
             var userId = (await _userService.GetByNameAsync(username)).Id;
             var profile = await _profileRepository.GetByOwnerIdAsync(userId);
 
-            profile.ImageBytes = await ConvertIFormFileToJpgByteArray(img);
+            profile.ImageId = imageId;
             await _profileRepository.UpdateAsync(profile);
         }
 
-        private static IFormFile CreateFormFileFromBytes(byte[] fileBytes)
-        {
-            var contentType = "image/jpeg";
-            var fileName = "profile-avatar";
-            var stream = new MemoryStream(fileBytes ?? []);
-            var formFile = new FormFile(stream, 0, stream.Length, "file", fileName)
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = contentType
-            };
 
-            return formFile;
+        private static UserProfile Convert(UserProfileInfo model)
+        {
+            return new UserProfile
+            {
+                Id = model.Id,
+                DisplayName = model.DisplayName,
+                OwnerId = model.Owner.Id,
+                ImageId = model.ImageId
+            };
         }
 
-        private async Task<byte[]> ConvertIFormFileToJpgByteArray(IFormFile file)
+        private async Task<UserProfileInfo> Convert(UserProfile entity)
         {
-            if (file == null || file.Length == 0)
-                return null; // Or handle accordingly
-
-            using (var memoryStream = new MemoryStream())
+            var profile = new UserProfileInfo
             {
-                await file.CopyToAsync(memoryStream);
-                memoryStream.Position = 0; // Reset the position to the beginning of the stream
-
-                using (var image = System.Drawing.Image.FromStream(memoryStream))
-                using (var jpgStream = new MemoryStream())
+                DisplayName = entity.DisplayName,
+                Id = entity.Id,
+                Owner = new ProfileOwnerInfo
                 {
-                    image.Save(jpgStream, ImageFormat.Jpeg);
-                    return jpgStream.ToArray();
-                }
-            }
-        }
-
-        private async Task<IFormFile> ConvertStaticImageToIFormFileAsync(string filePath)
-        {
-            // Ensure the file exists
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException("The specified file does not exist.", filePath);
-            }
-
-            // Read the file into a stream
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
-            // Create a FormFile instance from the stream
-            var formFile = new FormFile(fileStream, 0, fileStream.Length, "profile-avatar-placeholder", Path.GetFileName(filePath))
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = "image/jpeg" // Adjust as needed based on the file type
+                    Id = entity.OwnerId,
+                    Username = ""
+                },
+                ImageId = entity.ImageId
             };
-
-            return formFile;
+            return profile;
         }
     }
 }

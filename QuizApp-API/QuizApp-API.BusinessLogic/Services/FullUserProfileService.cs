@@ -17,7 +17,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 DisplayName = profileInfo.DisplayName,
                 Id = profileInfo.Id,
                 Owner = profileInfo.Owner,
-                Image = profileInfo.Image,
+                ImageId = profileInfo.ImageId,
                 CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(profileInfo.Owner.Id),
                 CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(profileInfo.Owner.Id)).ToList()
             };
