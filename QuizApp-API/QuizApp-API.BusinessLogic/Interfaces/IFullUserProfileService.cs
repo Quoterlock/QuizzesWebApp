@@ -4,6 +4,6 @@ namespace QuizApp_API.BusinessLogic.Interfaces
 {
     public interface IFullUserProfileService
     {
-        Task<UserProfileModel> GetFullUserProfile(string username);
+        Task<UserProfileModel> GetFullUserProfileAsync(string username);
     }
 }

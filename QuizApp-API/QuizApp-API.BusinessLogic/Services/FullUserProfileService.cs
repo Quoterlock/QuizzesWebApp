@@ -9,8 +9,12 @@ namespace QuizApp_API.BusinessLogic.Services
         private readonly IUserProfilesService _userProfiles = userProfiles;
         private readonly IQuizzesService _quizzesService = quizzesService;
 
-        public async Task<UserProfileModel> GetFullUserProfile(string username)
+        public async Task<UserProfileModel> GetFullUserProfileAsync(string username)
         {
+            ArgumentException.ThrowIfNullOrEmpty(username);
+            if (!await _userProfiles.IsExistsAsync(username))
+                throw new ArgumentException("Profile doesn't exists for user:" + username, nameof(username));
+            
             var profileInfo = await _userProfiles.GetByUsernameAsync(username);
             var profile = new UserProfileModel
             {
@@ -18,8 +22,8 @@ namespace QuizApp_API.BusinessLogic.Services
                 Id = profileInfo.Id,
                 Owner = profileInfo.Owner,
                 ImageId = profileInfo.ImageId,
-                CompletedQuizzesCount = await _quizzesService.GetAllUserCompleted(profileInfo.Owner.Id),
-                CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserId(profileInfo.Owner.Id)).ToList()
+                CompletedQuizzesCount = await _quizzesService.GetAllUserCompletedAsync(profileInfo.Owner.Id),
+                CreatedQuizzes = (await _quizzesService.GetAllTitlesByUserIdAsync(profileInfo.Owner.Id)).ToList()
             };
             return profile;
         }

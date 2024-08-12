@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace QuizApp_API.BusinessLogic.Models
+﻿namespace QuizApp_API.BusinessLogic.Models
 {
     public class UserProfileModel
     {
@@ -64,24 +62,25 @@ namespace QuizApp_API.BusinessLogic.Models
 
         public override bool Equals(object? obj)
         {
-            if(obj is UserProfileInfo other)
+            if (obj is UserProfileInfo other)
             {
                 return Id == other.Id &&
-                    DisplayName == other.DisplayName &&
-                    Owner == other.Owner &&
-                    ImageId == other.ImageId;
+                       DisplayName == other.DisplayName &&
+                       Equals(Owner, other.Owner) &&
+                       ImageId == other.ImageId;
             }
             return false;
         }
+
         public override int GetHashCode()
         {
             unchecked
             {
-                int hash = 27;
-                hash = hash * 27 + (DisplayName?.GetHashCode() ?? 0);
-                hash = hash * 27 + (Id?.GetHashCode() ?? 0);
-                hash = hash * 27 + (Owner?.GetHashCode() ?? 0);
-                hash = hash * 27 + (ImageId?.GetHashCode() ?? 0);
+                int hash = 17;
+                hash = hash * 31 + (Id?.GetHashCode() ?? 0);
+                hash = hash * 31 + (DisplayName?.GetHashCode() ?? 0);
+                hash = hash * 31 + (Owner?.GetHashCode() ?? 0);
+                hash = hash * 31 + (ImageId?.GetHashCode() ?? 0);
                 return hash;
             }
         }
@@ -96,18 +95,19 @@ namespace QuizApp_API.BusinessLogic.Models
         {
             if (obj is ProfileOwnerInfo other)
             {
-                return Id == other.Id && Username == other.Username;
+                return Id == other.Id &&
+                       Username == other.Username;
             }
-
             return false;
         }
+
         public override int GetHashCode()
         {
             unchecked
             {
                 int hash = 17;
-                hash = hash * 23 + (Id?.GetHashCode() ?? 0);
-                hash = hash * 23 + (Username?.GetHashCode() ?? 0);
+                hash = hash * 31 + (Id?.GetHashCode() ?? 0);
+                hash = hash * 31 + (Username?.GetHashCode() ?? 0);
                 return hash;
             }
         }

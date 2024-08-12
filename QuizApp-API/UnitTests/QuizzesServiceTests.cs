@@ -16,8 +16,8 @@ namespace UnitTests
             string username = "user";
             var userProfile = new UserProfileInfo { 
                 DisplayName = "Name",
-                Id = "profileId", 
-                Image = [], 
+                Id = "profileId",
+                ImageId = "1",
                 Owner = new ProfileOwnerInfo { 
                     Id = "userId", Username = username } 
             };
@@ -48,7 +48,7 @@ namespace UnitTests
             int expected = 3;
 
             // Act
-            var actual = await sut.GetAllUserCompleted(username);
+            var actual = await sut.GetAllUserCompletedAsync(username);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -96,7 +96,7 @@ namespace UnitTests
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                Image = [],
+                ImageId = "1",
                 Owner = new ProfileOwnerInfo { Id = authorUserId, Username = "username"  },
             };
             profilesService.Setup(m => m.GetRangeAsync(authorUserId))
@@ -181,21 +181,21 @@ namespace UnitTests
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                Image = [],
+                ImageId = "1",
                 Owner = new ProfileOwnerInfo { Id = authorUserId, Username = "username" },
             };
             var quizAuthorProfileInfo1 = new UserProfileInfo
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                Image = [],
+                ImageId = "1",
                 Owner = new ProfileOwnerInfo { Id = "1", Username = "username" },
             };
             var quizAuthorProfileInfo2 = new UserProfileInfo
             {
                 Id = "profileId",
                 DisplayName = "Name",
-                Image = [],
+                ImageId = "1",
                 Owner = new ProfileOwnerInfo { Id = "2", Username = "username" },
             };
             // Arrange
@@ -305,7 +305,7 @@ namespace UnitTests
             };
 
             // Act
-            var result = await sut.GetAllTitlesByUserId(authorId);
+            var result = await sut.GetAllTitlesByUserIdAsync(authorId);
 
             // Assert
             Assert.Equal(expected, result);
@@ -372,7 +372,7 @@ namespace UnitTests
                 Author = new UserProfileInfo {
                     DisplayName = "Name",
                     Id = "1",
-                    Image = [],
+                    ImageId = "1",
                     Owner = new ProfileOwnerInfo
                     {
                         Id = "2",

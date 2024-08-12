@@ -56,7 +56,7 @@ namespace QuizApp_API.Controllers
 
             try
             {
-                if(!await _userProfilesService.IsExists(username))
+                if(!await _userProfilesService.IsExistsAsync(username))
                 {
                     if (!username.Equals(user))
                     {
@@ -65,7 +65,7 @@ namespace QuizApp_API.Controllers
                     else 
                         return NotFound();
                 }
-                var profile = await _fullUserProfileService.GetFullUserProfile(username);
+                var profile = await _fullUserProfileService.GetFullUserProfileAsync(username);
                 return Ok(profile);
             }
             catch (Exception ex)
@@ -85,7 +85,13 @@ namespace QuizApp_API.Controllers
             try 
             {
                 var username = GetCurrentUserName() ?? string.Empty;
-                await _userProfilesService.UpdateProfilePhoto(image, username);
+                byte[] fileBytes;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await image.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
+                await _userProfilesService.UpdateProfilePhotoAsync(fileBytes, username);
                 return Ok();
             }
             catch(Exception ex)

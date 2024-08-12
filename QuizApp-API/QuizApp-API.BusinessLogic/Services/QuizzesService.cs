@@ -88,7 +88,7 @@ namespace QuizApp_API.BusinessLogic
             }
         }
 
-        public async Task<List<QuizListItemModel>> GetAllTitlesByUserId(string userId)
+        public async Task<List<QuizListItemModel>> GetAllTitlesByUserIdAsync(string userId)
         {
             // get quizzes
             var entities = (await _repository.GetByUserIdAsync(userId)).ToList();
@@ -105,7 +105,7 @@ namespace QuizApp_API.BusinessLogic
             return GetTitles(models);
         }
         
-        public async Task<int> GetAllUserCompleted(string userId)
+        public async Task<int> GetAllUserCompletedAsync(string userId)
         {
             if (string.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId));
