@@ -34,6 +34,8 @@ namespace UnitTests
 
             userProfilesService.Setup(m => m.GetByUsernameAsync(username))
                 .ReturnsAsync(profile);
+            userProfilesService.Setup(m => m.IsExistsAsync(username))
+                .ReturnsAsync(true);
             quizzesService.Setup(m => m.GetAllUserCompletedAsync("2"))
                 .ReturnsAsync(100);
             quizzesService.Setup(m => m.GetAllTitlesByUserIdAsync("2"))
@@ -57,7 +59,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public async Task Get_full_profile_for_non_existring_user_test()
+        public async Task Get_full_profile_for_non_existing_user_test()
         {
             // Arrange
             var username = "username";

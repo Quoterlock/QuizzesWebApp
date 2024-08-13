@@ -16,7 +16,7 @@ namespace QuizApp_API.Controllers
             try
             {
                 var userId = GetCurrentUserId();
-                await _rates.AddRate(userRate.quizId, userId, userRate.rate);
+                await _rates.AddRateAsync(userRate.quizId, userId, userRate.rate);
                 return Ok();
             }
             catch (Exception ex)

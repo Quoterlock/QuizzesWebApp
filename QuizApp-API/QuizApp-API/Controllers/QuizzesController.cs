@@ -105,8 +105,8 @@ namespace QuizApp_API.Controllers
         {
             try
             {
-                result.UserProfile.Owner.Id = GetCurrentUserId();
-                await _results.SaveResultAsync(result);
+                var userId = GetCurrentUserId();
+                await _results.SaveResultAsync(result.QuizId, userId, result.Result);
                 return Ok();
             }
             catch(Exception ex)

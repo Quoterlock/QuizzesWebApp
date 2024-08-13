@@ -2,7 +2,6 @@
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
-using QuizApp_API.DataAccess.Repositories;
 
 namespace QuizApp_API.BusinessLogic.Services
 {
@@ -29,11 +28,19 @@ namespace QuizApp_API.BusinessLogic.Services
             return await ConvertEntitiesToModels(await _repository.GetByUserIdAsync(userId));
         }
 
-        public async Task SaveResultAsync(QuizResultModel quizResult)
+        public async Task SaveResultAsync(string quizId, string userId, int result)
         {
-            ArgumentNullException.ThrowIfNull(quizResult);
-            var entity = Convert(quizResult);
-            await _repository.SaveResultAsync(entity);
+            ArgumentException.ThrowIfNullOrEmpty(quizId);
+            ArgumentException.ThrowIfNullOrEmpty(userId);
+
+            var quizResult = new QuizResult
+            {
+                QuizId = quizId,
+                Result = result,
+                UserId = userId
+            };
+            
+            await _repository.SaveResultAsync(quizResult);
         }
 
         private static QuizResult Convert(QuizResultModel model)
