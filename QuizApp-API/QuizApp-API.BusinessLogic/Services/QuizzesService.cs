@@ -28,9 +28,7 @@ namespace QuizApp_API.BusinessLogic
                 throw new ArgumentException("Quiz author is null or empty");
 
             try
-            {
-                quiz.Id = Guid.NewGuid().ToString();
-                quiz.CreationDate = DateTime.Now.ToString();                
+            {        
                 await _repository.AddAsync(Convert(quiz));
             }
             catch (Exception ex)
