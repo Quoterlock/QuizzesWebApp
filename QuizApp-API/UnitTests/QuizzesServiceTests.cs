@@ -1,3 +1,4 @@
+using Microsoft.Identity.Client;
 using Moq;
 using QuizApp_API.BusinessLogic;
 using QuizApp_API.BusinessLogic.Interfaces;
@@ -52,19 +53,21 @@ namespace UnitTests
             {
                 AuthorUserId = "user-id",
                 Title = "Quiz1",
+                CreationDate = "",
+                Id = "",
                 Questions = [
                     new Question { 
                         Title = "q1", CorrectAnswerIndex = 0,
                         Options = [
                             new Option { Text = "o1"},
-                            new Option { Text = "o1"},
+                            new Option { Text = "o2"},
                         ]
                     },
                     new Question {
                         Title = "q2", CorrectAnswerIndex = 0,
                         Options = [
                             new Option { Text = "o1"},
-                            new Option { Text = "o1"},
+                            new Option { Text = "o2"},
                         ]
                     }
                 ],
@@ -75,7 +78,7 @@ namespace UnitTests
 
             // Assert
             quizRepo.Verify(
-                m => m.AddAsync(It.Is<Quiz>(e=>e.Equals(expected))), 
+                m => m.AddAsync(It.Is<Quiz>(e=>e.Equals(expected))),
                 Times.Once);
         }
 
@@ -155,10 +158,11 @@ namespace UnitTests
                         }]
                 });
 
+            List<QuizResultModel> results = [new QuizResultModel { Id = "3", QuizId = quizId }];
             var mockResultsService = new Mock<IQuizResultsService>();
             mockResultsService
                 .Setup(m => m.GetResultsByQuizIdAsync(quizId))
-                .ReturnsAsync([new QuizResultModel { Id = "3", QuizId = quizId }]);
+                .ReturnsAsync(results);
 
             var mockRatesService = new Mock<IRatesService>();
             mockRatesService.Setup(m => m.GetRatesAsync(quizId))
@@ -166,8 +170,6 @@ namespace UnitTests
                 [
                     new() {Id = "1", Rate = 15, QuizId = quizId, UserId = "0"},
                     new() {Id = "2", Rate = 5, QuizId = quizId, UserId = "0"},
-                    new() {Id = "3", Rate = 10, QuizId = "another", UserId = "0"},
-                    new() {Id = "4", Rate = 10, QuizId = "another", UserId = "0"},
                 ]);
             var profilesService = new Mock<IUserProfilesService>();
             var authorProfile = new UserProfileInfo()
@@ -189,10 +191,10 @@ namespace UnitTests
             var expected = new QuizModel
             {
                 Author = authorProfile,
-                Id = "1",
+                Id = quizId,
                 Rate = 10,
                 Title = "Quiz",
-                Results = [new QuizResultModel { Id = "3", QuizId = quizId }],
+                Results = results,
                 Questions = [
                     new QuestionModel
                     {
@@ -206,7 +208,7 @@ namespace UnitTests
             };
 
             // Act
-            var result = await sut.GetByIdAsync("1");
+            var result = await sut.GetByIdAsync(quizId);
 
             // Assert
             Assert.Equal(expected, result);
@@ -266,14 +268,14 @@ namespace UnitTests
             };
             var quizAuthorProfileInfo1 = new UserProfileInfo
             {
-                Id = "profileId",
+                Id = "profileId1",
                 DisplayName = "Name",
                 ImageId = "1",
                 Owner = new ProfileOwnerInfo { Id = "1", Username = "username" },
             };
             var quizAuthorProfileInfo2 = new UserProfileInfo
             {
-                Id = "profileId",
+                Id = "profileId2",
                 DisplayName = "Name",
                 ImageId = "1",
                 Owner = new ProfileOwnerInfo { Id = "2", Username = "username" },
@@ -304,7 +306,7 @@ namespace UnitTests
 
             var profilesService = new Mock<IUserProfilesService>();
             var userIds = new List<UserProfileInfo>() { quizAuthorProfileInfo, quizAuthorProfileInfo1, quizAuthorProfileInfo2 }.Select(e => e.Owner.Id);
-            profilesService.Setup(m => m.GetRangeAsync(userIds.ToArray()))
+            profilesService.Setup(m => m.GetRangeAsync("userId", "1", "2", "2"))
                 .ReturnsAsync([quizAuthorProfileInfo, quizAuthorProfileInfo1, quizAuthorProfileInfo2]);
 
             var sut = new QuizzesService(

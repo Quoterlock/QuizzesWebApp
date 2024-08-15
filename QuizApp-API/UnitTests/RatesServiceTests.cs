@@ -52,7 +52,7 @@ namespace UnitTests
             var quizId = "quiz";
             var rate = 10;
 
-            var quizRate = new QuizRateModel
+            var quizRate = new UserQuizRate
             {
                 Id = "", QuizId = quizId, 
                 UserId = userId, Rate = rate

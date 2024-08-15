@@ -17,7 +17,7 @@
                    AuthorUserId == other.AuthorUserId &&
                    Title == other.Title &&
                    CreationDate == other.CreationDate &&
-                   EqualityComparer<List<Question>>.Default.Equals(Questions, other.Questions);
+                   Questions.SequenceEqual(other.Questions);
         }
 
         public override int GetHashCode()
@@ -46,7 +46,7 @@
 
             return Title == other.Title &&
                    CorrectAnswerIndex == other.CorrectAnswerIndex &&
-                   EqualityComparer<List<Option>>.Default.Equals(Options, other.Options);
+                   Options.SequenceEqual(other.Options);
         }
 
         public override int GetHashCode()
