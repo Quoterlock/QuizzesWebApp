@@ -9,29 +9,39 @@ namespace QuizApp_API.Controllers
     [Route("api/quizzes")]
     public class QuizzesController(IQuizzesService service,
         IQuizResultsService results,
-        RedisService cache) 
+        RedisService cache,
+        Logger<QuizzesController> logger) 
         : ControllerBase
     {
         private readonly RedisService _cache = cache;
         private readonly IQuizzesService _service = service;
+        private readonly Logger<QuizzesController> _logger = logger;
         private readonly IQuizResultsService _results = results;
 
         [HttpGet("list")]
         public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
         {
             // check cache
-            var isCacheAvailable = _cache.CheckConnection();
-            var key = $"quiz-list-{startIndex}-{endIndex}";
-            if (isCacheAvailable && await _cache.IsExistsAsync(key)) 
+            try
             {
-                var list = await _cache.GetAsync<List<QuizListItemModel>>(key);
-                return list ?? [];
+                var isCacheAvailable = _cache.CheckConnection();
+                var key = $"quiz-list-{startIndex}-{endIndex}";
+                if (isCacheAvailable && await _cache.IsExistsAsync(key))
+                {
+                    var list = await _cache.GetAsync<List<QuizListItemModel>>(key);
+                    return list ?? [];
+                }
+                // get list items
+                var titles = await _service.GetTitlesAsync() ?? [];
+                if (isCacheAvailable)
+                    await _cache.SetAsync(key, titles);
+                return titles;
+            } catch (Exception ex)
+            {
+                _logger.LogError("GetQuizList error occured: {@ex}", ex);
+                return [];
             }
-            // get list items
-            var titles = await _service.GetTitlesAsync() ?? [];
-            if (isCacheAvailable)
-                await _cache.SetAsync(key, titles);
-            return titles;
+            
         }
 
         [HttpGet("{id}")]
@@ -75,8 +85,9 @@ namespace QuizApp_API.Controllers
                     return list;
                 }
             } 
-            catch(Exception)
+            catch(Exception ex)
             {
+                _logger.LogError("SearchQuizzes error occured: {@ex}", ex);
                 return [];
             }
         }
