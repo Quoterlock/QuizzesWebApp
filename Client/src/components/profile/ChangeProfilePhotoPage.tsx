@@ -25,7 +25,9 @@ export function ChangeProfilePhotoPage() {
         }
     }
 
-    return(<div>
+    return(
+    <div className="block-style photo-upload-block mx-auto d-grid">
+        <h5 className="text-center">New profile photo</h5>
         {
             imageBytes !== undefined &&
             <ImageFile file={imageBytes} width={200} height={200}/>
@@ -34,7 +36,10 @@ export function ChangeProfilePhotoPage() {
             if(e.target.files !== null)
                 setImageBytes(e.target.files[0])
         }}/>
-        <Button type="active" onClick={onUpdate}>Update</Button>
+        <div className="d-grid mt-2">
+            <Button type="active" onClick={onUpdate}>Update</Button>
+            <Button type="minor" onClick={()=>navigate('/profile')}>Cancel</Button>    
+        </div>
     </div>
 
     )

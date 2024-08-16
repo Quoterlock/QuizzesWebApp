@@ -6,6 +6,7 @@ import { logoutUser } from "../../services/authService";
 import { AppContext } from "../../services/AppContext";
 import QuizList from "../shared/QuizList";
 import { Button } from "../shared/Button";
+import { QuizLayout } from "../layout/QuizLayout";
 
 export default function UserProfilePage() {
     const navigate = useNavigate()
@@ -58,17 +59,13 @@ export default function UserProfilePage() {
         navigate("/")
     }
     
-    return(<div className="col-lg-6 col-md-8 col-sm-12 mx-auto">
+    return(<QuizLayout><div className="col-lg-6 col-md-8 col-sm-12 mx-auto">
           { profile &&
           <div>
-            <div className="d-flex justify-content-between mb-2">
-                <Link to="/" className="styless-link">{"< Home"}</Link>
-                {/*<Link to="/" className="styless-link">{"Logout"}</Link>*/}
-            </div> 
               <div className="block-style d-flex justify-content-between mb-3">                
                 <div className="d-flex">
                   <div className="d-grid">
-                    <img src={imageSrc} height={200} width={200}/>
+                    <img className="profile-photo" src={imageSrc}/>
                     <Button type="minor" onClick={()=>navigate("/profile/update-photo")}>Change Photo</Button>
                   </div>
                   
@@ -80,7 +77,6 @@ export default function UserProfilePage() {
                                     <img src="./src/assets/icons/edit-icon.png" className="icon-img"/>
                                 </Link>
                             }
-                            
                         </div>
                         
                         <h5>{profile.owner.username}</h5>
@@ -107,5 +103,5 @@ export default function UserProfilePage() {
           </div>
         }
       </div>
-    )
+      </QuizLayout>)
 }

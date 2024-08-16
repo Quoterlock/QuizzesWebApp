@@ -232,3 +232,25 @@
     width: 38px;
 }
 
+/* Profile photo styles */
+.profile-photo {
+    width: 200px;
+    height: 200px;
+    min-width: 200px;
+    min-height: 200px;
+    
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 3px;
+}
+
+.photo-upload-block{
+    min-width: 220px;
+    max-width: 250px;
+}
+
+/* links */
+.action-link {
+    text-decoration: underline !important;
+    color: var(--active-color) !important;
+}

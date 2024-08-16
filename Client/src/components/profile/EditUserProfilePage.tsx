@@ -47,11 +47,17 @@ export default function EditUserProfilePage(){
     }
 
     return(
-        <div className="col-lg-6 col-md-8 col-sm-12 mx-auto">
-            <div>Edit user : {userProfile?.owner.username as string}</div>
+        <div className="col-lg-6 col-md-8 col-sm-12 mx-auto block-style">
+            <h5 className="text-center">Edit @{userProfile?.owner.username as string}</h5>
             <TextInputGroup value={displayName} onChange={onTextChange} label="Display name" isCorrect={true} name="displayName"/>
-            <Button type="minor" onClick={onCancel}>Cancel</Button>
-            <Button type="active" onClick={onSave}>Save</Button>
+            <div className="row px-3">
+                <div className="col-6 d-grid p-0">
+                    <Button type="minor" onClick={onCancel}>Cancel</Button>
+                </div>
+                <div className="col-6 d-grid p-0">
+                    <Button type="active" onClick={onSave}>Save</Button>
+                </div>
+            </div>
         </div>
     )
 }

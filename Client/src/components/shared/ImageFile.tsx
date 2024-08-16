@@ -33,9 +33,9 @@ const ImageFile: React.FC<ImageFileProps> = ({ file, height, width }) => {
   }, [file]);
 
   return (
-    <div>
+    <div className='mx-auto mb-3'>
       {imageSrc ? (
-        <img src={imageSrc} alt="Uploaded" style={{ maxWidth: `${width}px`, maxHeight: `${height}px` }} />
+        <img className='profile-photo' src={imageSrc} alt="Uploaded" style={{ maxWidth: `${width}px`, maxHeight: `${height}px` }} />
       ) : (
         <p>No image to display</p>
       )}
