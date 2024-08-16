@@ -5,5 +5,5 @@ interface IUserProfileApi {
     GetCurrentUserNameAsync:() => Promise<{code: number, username?: string}>
     UpdateProfile:(profile:UserProfileInfo) => Promise<RequesResult>
     UpdateProfilePhoto(image:File): Promise<RequesResult>
-
+    GetProfileImagePath(username:string): string
 }

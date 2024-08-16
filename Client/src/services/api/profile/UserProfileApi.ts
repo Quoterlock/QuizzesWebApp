@@ -144,4 +144,8 @@ export default class UserProfileApi implements IUserProfileApi {
             return { code: 0, message: "Error" }
         }
     }
+
+    GetProfileImagePath(username:string): string {
+        return `${apiPath}/img/@${username}`
+    }
 }

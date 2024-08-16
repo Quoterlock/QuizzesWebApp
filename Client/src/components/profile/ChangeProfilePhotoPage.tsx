@@ -30,7 +30,7 @@ export function ChangeProfilePhotoPage() {
             imageBytes !== undefined &&
             <ImageFile file={imageBytes} width={200} height={200}/>
         }
-        <input type="file" onChange={(e)=>{
+        <input type="file" accept=".jpeg, .jpg" onChange={(e)=>{
             if(e.target.files !== null)
                 setImageBytes(e.target.files[0])
         }}/>

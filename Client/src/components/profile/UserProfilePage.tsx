@@ -13,7 +13,7 @@ export default function UserProfilePage() {
     const isOwner = (id === null || id === undefined || id === "")
     const [profile, setUserProfile] = useState<UserProfile>()
     const { userProfileApi } = useContext(AppContext)
-    const [image, setProfileImage] = useState<string | undefined>()
+    const [imageSrc, setImageSrc] = useState<string>("")
 
     useEffect(() => {
       const loadProfile = async () => {
@@ -31,20 +31,22 @@ export default function UserProfilePage() {
         }
       }
 
-      const loadProfileImage = async () => {
-        try{
-          const url = "http://192.168.0.104:5000/api/profile/profile-photo?username=user"
-          setProfileImage(url);
-        } catch (error) {
-          console.error("Error fetching data", error)
-          return { code: 0 }
-      }
-      }
-
       loadProfile()
-      loadProfileImage()
     },[])
     
+    useEffect(() => {
+
+      const loadProfileImage = () => {
+        if(profile?.owner.username){
+          const path = userProfileApi.GetProfileImagePath(profile?.owner.username)
+          setImageSrc(path)
+        }        
+      }
+      loadProfileImage()
+
+    },[profile])
+
+
     useEffect(()=> {
       localStorage.setItem("current-username", profile?.owner.username as string)
       localStorage.setItem("current-user-id", profile?.owner.id as string)
@@ -65,8 +67,8 @@ export default function UserProfilePage() {
             </div> 
               <div className="block-style d-flex justify-content-between mb-3">                
                 <div className="d-flex">
-                  <div>
-                    <img src={image}/>
+                  <div className="d-grid">
+                    <img src={imageSrc} height={200} width={200}/>
                     <Button type="minor" onClick={()=>navigate("/profile/update-photo")}>Change Photo</Button>
                   </div>
                   

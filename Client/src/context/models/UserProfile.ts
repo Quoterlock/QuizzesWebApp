@@ -4,7 +4,6 @@ type UserProfile = {
     owner:Owner,
     createdQuizzes: QuizListItem[],
     completedQuizzesCount: number
-    image?: File
 }
 
 type Owner = {
