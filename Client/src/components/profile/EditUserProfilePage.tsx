@@ -3,14 +3,12 @@ import { AppContext } from "../../services/AppContext"
 import TextInputGroup from "../shared/TextInputGroup"
 import { Button } from "../shared/Button"
 import { useNavigate } from "react-router"
-import FileUpload from "../shared/FileUpload"
 
 export default function EditUserProfilePage(){
 
     const {userProfileApi: userProfileService} = useContext(AppContext)
     const [userProfile, setUserProfile] = useState<UserProfileInfo>()
     const [displayName, setDisplayName] = useState("")
-    const [imageBytes, setImageBytes] = useState<Uint8Array>()
     const navigate = useNavigate()
     useEffect(()=> {
         const fetchData = () => {

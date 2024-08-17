@@ -68,7 +68,6 @@ export default function UserProfilePage() {
                     <img className="profile-photo" src={imageSrc}/>
                     <Button type="minor" onClick={()=>navigate("/profile/update-photo")}>Change Photo</Button>
                   </div>
-                  
                     <div className="ms-4">
                         <div className="d-flex">
                             <h2>{profile.displayName || "null"}</h2>
