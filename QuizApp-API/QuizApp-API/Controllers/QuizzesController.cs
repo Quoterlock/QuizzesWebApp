@@ -9,13 +9,11 @@ namespace QuizApp_API.Controllers
     [Route("api/quizzes")]
     public class QuizzesController(IQuizzesService service,
         IQuizResultsService results,
-        RedisService cache,
-        Logger<QuizzesController> logger) 
+        RedisService cache) 
         : ControllerBase
     {
         private readonly RedisService _cache = cache;
         private readonly IQuizzesService _service = service;
-        private readonly Logger<QuizzesController> _logger = logger;
         private readonly IQuizResultsService _results = results;
 
         [HttpGet("list")]
@@ -38,7 +36,6 @@ namespace QuizApp_API.Controllers
                 return titles;
             } catch (Exception ex)
             {
-                _logger.LogError("GetQuizList error occured: {@ex}", ex);
                 return [];
             }
             
@@ -87,7 +84,6 @@ namespace QuizApp_API.Controllers
             } 
             catch(Exception ex)
             {
-                _logger.LogError("SearchQuizzes error occured: {@ex}", ex);
                 return [];
             }
         }
