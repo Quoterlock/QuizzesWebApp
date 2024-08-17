@@ -84,7 +84,7 @@ namespace QuizApp_API.BusinessLogic.Services
                 throw new ArgumentNullException("profile.owner");
             if (profile.Owner.Id == null) 
                 throw new ArgumentNullException("profile.owner.id");
-            if (!await _profileRepository.IsExistsAsync(profile.Owner.Username))
+            if (!await _profileRepository.IsExistsAsync(profile.Owner.Id))
                 throw new ArgumentException("profile doesn't exist", nameof(profile));
 
             try

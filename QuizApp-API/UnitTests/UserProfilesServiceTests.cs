@@ -247,7 +247,7 @@ namespace UnitTests
                     ImageId = imageId,
                     OwnerId = ownerId
                 });
-            userProfileRepoMock.Setup(m => m.IsExistsAsync(username))
+            userProfileRepoMock.Setup(m => m.IsExistsAsync(ownerId))
                 .ReturnsAsync(true);
             imagesRepoMock.Setup(m => m.IsExists(imageId))
                 .Returns(false);
@@ -496,6 +496,7 @@ namespace UnitTests
         {
             // Arrange
             var username = "user";
+            var userId = "userid";
 
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
@@ -506,7 +507,7 @@ namespace UnitTests
                 userServiceMock.Object,
                 imagesRepoMock.Object);
 
-            userProfileRepoMock.Setup(m => m.IsExistsAsync(username))
+            userProfileRepoMock.Setup(m => m.IsExistsAsync(userId))
                 .ReturnsAsync(true);
 
             var profileModel = new UserProfileInfo
@@ -514,7 +515,7 @@ namespace UnitTests
                 DisplayName = "User",
                 Id = "1",
                 ImageId = "0",
-                Owner = new ProfileOwnerInfo { Id = "2", Username = username }
+                Owner = new ProfileOwnerInfo { Id = userId, Username = username }
             };
 
             var profileEntity = new UserProfile
