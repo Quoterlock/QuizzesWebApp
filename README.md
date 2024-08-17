@@ -25,8 +25,6 @@ An app where users can create and share quizzes with other users.
 
 ![image](https://github.com/Quoterlock/QuizzesWebApp/assets/109076089/ae3eb191-51b5-42a2-b289-af924131f371)
 
-![photo_2024-08-17_15-18-55](https://github.com/user-attachments/assets/64471421-8a95-4212-ad3f-ff2291c0a764)
-
 ![photo_2024-08-17_15-17-34](https://github.com/user-attachments/assets/c6eb3f2f-e69d-43f4-bca8-a9416bec24bd)
 
 ![photo_2024-08-17_15-17-38](https://github.com/user-attachments/assets/741dc739-a8ea-42cf-97b1-f3f924bf6767)
