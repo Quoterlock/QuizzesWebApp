@@ -6,10 +6,11 @@
 - user profile
 - quiz creation (with detailed builder)
 - quiz results list
+- user ratings for quizzes
 
 ### Databases
-- for profiles, quizzes and results -> MongoDB
-- for users' credentials -> Microsoft SqlServer
+- for profiles, quizzes -> MongoDB
+- for users' credentials, quiz results and rates -> Microsoft SqlServer
 
 ![image](https://github.com/Quoterlock/QuizzesWebApp/assets/109076089/94a0b7ef-7636-49eb-8f08-b40eb3e354e4)
 
@@ -24,4 +25,4 @@
 ![image](https://github.com/Quoterlock/QuizzesWebApp/assets/109076089/07e2b1f2-eb5a-4ff3-87ed-1f12e61bc339)
 
 
-*(project created for study purposes. I just wanted to create a web-app with authentication and backend data management, also learn ReactTS)*
+*(project created for study purposes)*

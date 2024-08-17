@@ -9,5 +9,6 @@ namespace QuizApp_API.BusinessLogic.Interfaces
         Task RemoveUser(string username, string email);
         Task<IdentityUser> GetByIdAsync(string id);
         Task<IdentityUser> GetByNameAsync(string username);
+        Task<IEnumerable<IdentityUser>> GetRangeByIdAsync(params string[] userIds);
     }
 }

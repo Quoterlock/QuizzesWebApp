@@ -1,7 +1,5 @@
 ﻿using MongoDB.Driver;
 using QuizApp_API.DataAccess.Entities;
-using QuizApp_API.DataAccess.Interfaces;
-
 
 namespace QuizApp_API.DataAccess.Data
 {
@@ -21,8 +19,9 @@ namespace QuizApp_API.DataAccess.Data
             );
         }
 
-
         public IMongoCollection<Quiz> Quizzes => _database.GetCollection<Quiz>("Quizzes");
+
         public IMongoCollection<UserProfile> Profiles => _database.GetCollection<UserProfile>("UserProfiles");
+        public IMongoCollection<Image> Images => _database.GetCollection<Image>("Images");
     }
 }

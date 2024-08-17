@@ -3,40 +3,34 @@
     public class Quiz
     {
         public string Id { get; set; } = string.Empty;
-        public string AuthorId { get; set; } = string.Empty;
-        public string AuthorName { get; set; } = string.Empty;
+        public string AuthorUserId { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public List<Question> Questions { get; set; } = [];
         public string CreationDate { get; set; } = string.Empty;
 
         public override bool Equals(object? obj)
         {
-            if (obj is Quiz other)
-            {
-                return Id == other.Id &&
-                       AuthorId == other.AuthorId &&
-                       AuthorName == other.AuthorName &&
-                       Title == other.Title &&
-                       CreationDate == other.CreationDate &&
-                       Questions.SequenceEqual(other.Questions);
-            }
-            return false;
-        }
-        public override int GetHashCode()
-        {
-            unchecked // Allow overflow to wrap around
-            {
-                int hash = 17;
-                hash = hash * 23 + (Id?.GetHashCode() ?? 0);
-                hash = hash * 23 + (AuthorId?.GetHashCode() ?? 0);
-                hash = hash * 23 + (AuthorName?.GetHashCode() ?? 0);
-                hash = hash * 23 + (Title?.GetHashCode() ?? 0);
-                hash = hash * 23 + (CreationDate?.GetHashCode() ?? 0);
-                hash = hash * 23 + (Questions?.Aggregate(0, (current, question) => current * 23 + (question?.GetHashCode() ?? 0)) ?? 0);
-                return hash;
-            }
+            if (obj is not Quiz other)
+                return false;
+
+            return Id == other.Id &&
+                   AuthorUserId == other.AuthorUserId &&
+                   Title == other.Title &&
+                   CreationDate == other.CreationDate &&
+                   Questions.SequenceEqual(other.Questions);
         }
 
+        public override int GetHashCode()
+        {
+            // Use a hash code combining strategy.
+            var hash = new HashCode();
+            hash.Add(Id);
+            hash.Add(AuthorUserId);
+            hash.Add(Title);
+            hash.Add(CreationDate);
+            hash.Add(Questions);
+            return hash.ToHashCode();
+        }
     }
 
     public class Question
@@ -47,25 +41,24 @@
 
         public override bool Equals(object? obj)
         {
-            if (obj is Question other)
-            {
-                return Title == other.Title &&
-                       CorrectAnswerIndex == other.CorrectAnswerIndex &&
-                       Options.SequenceEqual(other.Options);
-            }
-            return false;
+            if (obj is not Question other)
+                return false;
+
+            return Title == other.Title &&
+                   CorrectAnswerIndex == other.CorrectAnswerIndex &&
+                   Options.SequenceEqual(other.Options);
         }
+
         public override int GetHashCode()
         {
-            unchecked // Allow overflow to wrap around
-            {
-                int hash = 17;
-                hash = hash * 23 + (Title?.GetHashCode() ?? 0);
-                hash = hash * 23 + CorrectAnswerIndex.GetHashCode();
-                hash = hash * 23 + (Options?.Aggregate(0, (current, option) => current * 23 + (option?.GetHashCode() ?? 0)) ?? 0);
-                return hash;
-            }
+            // Use a hash code combining strategy.
+            var hash = new HashCode();
+            hash.Add(Title);
+            hash.Add(CorrectAnswerIndex);
+            hash.Add(Options);
+            return hash.ToHashCode();
         }
+
     }
 
     public class Option
@@ -74,15 +67,15 @@
 
         public override bool Equals(object? obj)
         {
-            if (obj is Option other)
-            {
-                return Text == other.Text;
-            }
-            return false;
+            if (obj is not Option other)
+                return false;
+
+            return Text == other.Text;
         }
+
         public override int GetHashCode()
         {
-            return Text?.GetHashCode() ?? 0;
+            return Text.GetHashCode();
         }
     }
 }

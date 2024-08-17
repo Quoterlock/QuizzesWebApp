@@ -10,27 +10,25 @@ namespace QuizApp_API.BusinessLogic
     public class QuizzesService(
         IQuizzesRepository repository, 
         IQuizResultsService resultsService, 
-        IRatesService ratesService) : IQuizzesService
+        IRatesService ratesService,
+        IUserProfilesService profilesService) : IQuizzesService
     {
         private readonly IQuizzesRepository _repository = repository;
         private readonly IQuizResultsService _resultsService = resultsService;
         private readonly IRatesService _ratesService = ratesService;
+        private readonly IUserProfilesService _profilesService = profilesService;
 
         public async Task AddQuizAsync(QuizModel quiz)
         {
             ArgumentNullException.ThrowIfNull(quiz);
 
             if (string.IsNullOrEmpty(quiz.Title))
-                throw new ArgumentException("Question title is null or empty");
-            if (string.IsNullOrEmpty(quiz.Author))
-                throw new ArgumentException("Question author is null or empty");
-            if (string.IsNullOrEmpty(quiz.AuthorId))
-                throw new ArgumentException("Question authorId is null or empty");
+                throw new ArgumentException("Quiz title is null or empty");
+            if (string.IsNullOrEmpty(quiz.Author.Owner.Id))
+                throw new ArgumentException("Quiz author is null or empty");
 
             try
-            {
-                quiz.Id = Guid.NewGuid().ToString();
-                quiz.CreationDate = DateTime.Now.ToString();
+            {        
                 await _repository.AddAsync(Convert(quiz));
             }
             catch (Exception ex)
@@ -45,13 +43,13 @@ namespace QuizApp_API.BusinessLogic
                 throw new ArgumentNullException(nameof(id));
 
             var entity = await _repository.GetByIdAsync(id) 
-                ?? throw new Exception("Entity doesn't exist with id:" + id);
+                ?? throw new ArgumentException("Entity doesn't exist with id:" + id);
 
             var model = Convert(entity);
-            
             // get results
             model.Results = await _resultsService.GetResultsByQuizIdAsync(model.Id);
-            
+            // get author profile
+            model.Author = (await _profilesService.GetRangeAsync(entity.AuthorUserId))[0];
             // get rates
             var rates = await _ratesService.GetRatesAsync(model.Id);
             if (!rates.IsNullOrEmpty())
@@ -60,13 +58,13 @@ namespace QuizApp_API.BusinessLogic
             return model;
         }
 
-        public async Task<IEnumerable<QuizListItemModel>> GetTitlesAsync(int from, int to)
+        public async Task<List<QuizListItemModel>> GetTitlesAsync(int from, int to)
         {
             var list = await GetRangeAsync(from, to);
             return GetTitles(list);
         }
 
-        public async Task<IEnumerable<QuizListItemModel>> GetTitlesAsync()
+        public async Task<List<QuizListItemModel>> GetTitlesAsync()
         {
             var list = await GetAllAsync();
             return GetTitles(list);
@@ -79,6 +77,8 @@ namespace QuizApp_API.BusinessLogic
             try
             {
                 await _repository.DeleteAsync(id);
+                await _resultsService.RemoveByQuizIdAsync(id);
+                await _ratesService.RemoveByQuizIdAsync(id);
             }
             catch (Exception ex)
             {
@@ -86,28 +86,32 @@ namespace QuizApp_API.BusinessLogic
             }
         }
 
-        public async Task<IEnumerable<QuizListItemModel>> GetAllTitlesByUserId(string profileId)
+        public async Task<List<QuizListItemModel>> GetAllTitlesByUserIdAsync(string userId)
         {
             // get quizzes
-            var entities = await _repository.GetByUserIdAsync(profileId) ?? [];
-            var models = ConvertEntitiesToModels(entities);
-
-            // add rates
-            models = await AddRatesForQuizzes(models);
+            var entities = (await _repository.GetByUserIdAsync(userId)).ToList();
+            var models = await ConvertEntitiesToModels(entities);
             return GetTitles(models);
         }
 
-        public async Task<IEnumerable<QuizListItemModel>> SearchAsync(string value)
+        public async Task<List<QuizListItemModel>> SearchAsync(string value)
         {
             if (string.IsNullOrEmpty(value))
                 throw new ArgumentNullException(nameof(value));
-
-            var entities = await _repository.SearchAsync(value);
-            var models = ConvertEntitiesToModels(entities);
+            var entities = (await _repository.SearchAsync(value)).ToList();
+            var models = await ConvertEntitiesToModels(entities);
             return GetTitles(models);
         }
+        
+        public async Task<int> GetAllUserCompletedAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
 
-        private async Task<IEnumerable<QuizModel>> AddRatesForQuizzes(IEnumerable<QuizModel> quizzes)
+            return (await _resultsService.GetResultsByUserIdAsync(userId)).GroupBy(r => r.QuizId).Select(v => v.Key).Count();
+        }
+
+        private async Task<List<QuizModel>> AddRatesForQuizzes(List<QuizModel> quizzes)
         {
             string[] ids = quizzes.Select(e => e.Id).ToArray();
             var rates = await _ratesService.GetRatesAsync(ids);
@@ -122,30 +126,34 @@ namespace QuizApp_API.BusinessLogic
             return quizzes;
         }
 
-        private async Task<IEnumerable<QuizModel>> GetAllAsync()
+        private async Task<List<QuizModel>> GetAllAsync()
         {
-            var entities = await _repository.GetAllAsync() ?? [];
-            var models = ConvertEntitiesToModels(entities);
-            return await AddRatesForQuizzes(models);
+            var entities = (await _repository.GetAllAsync()).ToList();
+            return await ConvertEntitiesToModels(entities);
         }
 
-        private async Task<IEnumerable<QuizModel>> GetRangeAsync(int from, int to)
+        private async Task<List<QuizModel>> GetRangeAsync(int from, int to)
         {
-            if (from <= to)
-            {
-                var entities = await _repository.GetRangeAsync(from, to) ?? [];
-                var models = ConvertEntitiesToModels(entities);
-                return models;
-            }
-            else throw new Exception("\"From\" cannot be larger that \"to\"");
+            if (from > to)
+                throw new Exception("\"From\" cannot be larger that \"to\"");
+            var entities = (await _repository.GetRangeAsync(from, to)).ToList();
+            return await ConvertEntitiesToModels(entities);
         }
 
-        private static IEnumerable<QuizModel> ConvertEntitiesToModels(IEnumerable<Quiz> entities)
+        private async Task<List<QuizModel>> ConvertEntitiesToModels(List<Quiz> entities)
         {
+            var ids = entities.Select(e => e.AuthorUserId).ToArray();
+            var authors = (await _profilesService.GetRangeAsync(ids)).ToArray();
             var models = new List<QuizModel>();
+
             foreach (var entity in entities)
-                models.Add(Convert(entity));
-            return models.AsEnumerable();
+            {
+                var model = Convert(entity);
+                model.Author = authors.FirstOrDefault(e=>e.Owner.Id == entity.AuthorUserId) ?? new();
+                models.Add(model);
+            }
+
+            return await AddRatesForQuizzes(models);
         }
         
         private static Quiz Convert(QuizModel model)
@@ -154,10 +162,10 @@ namespace QuizApp_API.BusinessLogic
             {
                 var entity = new Quiz
                 {
+                    Id = model.Id,
                     Title = model.Title,
                     Questions = [],
-                    AuthorName = model.Author,
-                    AuthorId = model.AuthorId,
+                    AuthorUserId = model.Author.Owner.Id,
                     CreationDate = model.CreationDate,
                 };
 
@@ -188,8 +196,6 @@ namespace QuizApp_API.BusinessLogic
             {
                 Id = entity.Id,
                 Title = entity.Title,
-                Author = entity.AuthorName,
-                AuthorId = entity.AuthorId
             };
             var questions = new List<QuestionModel>();
             foreach (Question question in entity.Questions)
@@ -208,7 +214,7 @@ namespace QuizApp_API.BusinessLogic
             return model;
         }
 
-        private static IEnumerable<QuizListItemModel> GetTitles(IEnumerable<QuizModel> models)
+        private static List<QuizListItemModel> GetTitles(List<QuizModel> models)
         {
             var list = new List<QuizListItemModel>();
             foreach (var item in models)
@@ -218,11 +224,10 @@ namespace QuizApp_API.BusinessLogic
                     Title = item.Title,
                     Id = item.Id,
                     Rate = item.Rate,
-                    AuthorId = item.AuthorId,
-                    Author = item.Author
+                    Author = item.Author,
                 });
             }
-            return list.AsEnumerable();
+            return list;
         }
     }
 }

@@ -1,17 +1,14 @@
-﻿using QuizApp_API.DataAccess.Entities;
-
-namespace QuizApp_API.BusinessLogic.Models
+﻿namespace QuizApp_API.BusinessLogic.Models
 {
     public class QuizModel
     {
         public string Id { get; set; } = string.Empty;
-        public string Author { get; set; } = string.Empty;
-        public string AuthorId { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
-        public QuestionModel[] Questions { get; set; } = [];
         public double Rate { get; set; } = 0;
-        public IEnumerable<QuizResultModel> Results { get; set; } = [];
         public string CreationDate { get; set; } = string.Empty;
+        public UserProfileInfo Author { get; set; } = new();
+        public QuestionModel[] Questions { get; set; } = [];
+        public IEnumerable<QuizResultModel> Results { get; set; } = [];
 
         public override bool Equals(object? obj)
         {
@@ -23,7 +20,6 @@ namespace QuizApp_API.BusinessLogic.Models
             QuizModel other = (QuizModel)obj;
             return Id == other.Id &&
                    Author == other.Author &&
-                   AuthorId == other.AuthorId &&
                    Title == other.Title &&
                    Questions.SequenceEqual(other.Questions) && // SequenceEqual compares arrays content
                    Rate == other.Rate &&
@@ -36,8 +32,7 @@ namespace QuizApp_API.BusinessLogic.Models
             {
                 int hash = 17;
                 hash = hash * 23 + Id.GetHashCode();
-                hash = hash * 23 + Author.GetHashCode();
-                hash = hash * 23 + AuthorId.GetHashCode();
+                hash = hash * 23 + Author.GetHashCode();;
                 hash = hash * 23 + Title.GetHashCode();
                 hash = hash * 23 + CreationDate.GetHashCode();
                 foreach (var question in Questions)

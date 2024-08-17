@@ -15,6 +15,7 @@ namespace QuizApp_API.DataAccess.Repositories
 
         public async Task AddAsync(UserQuizRate entity)
         {
+            entity.Id = Guid.NewGuid().ToString();
             await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
@@ -50,9 +51,16 @@ namespace QuizApp_API.DataAccess.Repositories
             return entity;
         }
 
-        public async Task Update(UserQuizRate entity)
+        public async Task UpdateAsync(UserQuizRate entity)
         {
             _context.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveByQuizIdAsync(string quizId)
+        {
+            var res = _context.Rates.Where(e => e.QuizId == quizId);
+            _context.Rates.RemoveRange(res);
             await _context.SaveChangesAsync();
         }
     }

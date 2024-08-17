@@ -2,30 +2,46 @@
 using Microsoft.AspNetCore.Mvc;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
-using System.Security.Claims;
+using QuizApp_API.BusinessLogic.Services;
 
 namespace QuizApp_API.Controllers
 {
     [Route("api/quizzes")]
     public class QuizzesController(IQuizzesService service,
-        IQuizResultsService results) 
+        IQuizResultsService results,
+        RedisService cache,
+        Logger<QuizzesController> logger) 
         : ControllerBase
     {
+        private readonly RedisService _cache = cache;
         private readonly IQuizzesService _service = service;
+        private readonly Logger<QuizzesController> _logger = logger;
         private readonly IQuizResultsService _results = results;
 
         [HttpGet("list")]
         public async Task<IEnumerable<QuizListItemModel>> GetQuizList(int? startIndex, int? endIndex)
         {
-            if (startIndex == null || endIndex == null)
+            // check cache
+            try
             {
-                return await _service.GetTitlesAsync();
-            }
-            if (startIndex == 0 && startIndex == endIndex)
+                var isCacheAvailable = _cache.CheckConnection();
+                var key = $"quiz-list-{startIndex}-{endIndex}";
+                if (isCacheAvailable && await _cache.IsExistsAsync(key))
+                {
+                    var list = await _cache.GetAsync<List<QuizListItemModel>>(key);
+                    return list ?? [];
+                }
+                // get list items
+                var titles = await _service.GetTitlesAsync() ?? [];
+                if (isCacheAvailable)
+                    await _cache.SetAsync(key, titles);
+                return titles;
+            } catch (Exception ex)
             {
-                return await _service.GetTitlesAsync();
+                _logger.LogError("GetQuizList error occured: {@ex}", ex);
+                return [];
             }
-            return [];
+            
         }
 
         [HttpGet("{id}")]
@@ -51,13 +67,27 @@ namespace QuizApp_API.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(value))
-                    return await _service.GetTitlesAsync();
+                List<QuizListItemModel> list;
+                var key = $"quiz-search-{value}";
+                if (!await _cache.IsExistsAsync(key))
+                {
+                    if (string.IsNullOrEmpty(value))
+                        list = await _service.GetTitlesAsync();
+                    else
+                        list = await _service.SearchAsync(value);
+
+                    await _cache.SetAsync(key, list ?? []);
+                    return list ?? [];
+                }
                 else
-                    return await _service.SearchAsync(value);
+                {
+                    list = (await _cache.GetAsync<List<QuizListItemModel>>(key)) ?? [];
+                    return list;
+                }
             } 
-            catch(Exception)
+            catch(Exception ex)
             {
+                _logger.LogError("SearchQuizzes error occured: {@ex}", ex);
                 return [];
             }
         }
@@ -68,9 +98,9 @@ namespace QuizApp_API.Controllers
         {
             if (quiz == null)
                 return BadRequest();
-
             try
             {
+                quiz.Author.Owner.Id = GetCurrentUserId();
                 await _service.AddQuizAsync(quiz);
                 return Ok();
             }
@@ -86,7 +116,8 @@ namespace QuizApp_API.Controllers
         {
             try
             {
-                await _results.SaveResultAsync(result);
+                var userId = GetCurrentUserId();
+                await _results.SaveResultAsync(result.QuizId, userId, result.Result);
                 return Ok();
             }
             catch(Exception ex)
@@ -102,7 +133,7 @@ namespace QuizApp_API.Controllers
             try
             {
                 var quiz = await _service.GetByIdAsync(id);
-                if (quiz.AuthorId == GetCurrentUserId())
+                if (quiz.Author.Owner.Id == GetCurrentUserId())
                 {
                     await _service.RemoveQuizAsync(id);
                     return Ok();

@@ -2,12 +2,6 @@
 using QuizApp_API.DataAccess.Data;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static MongoDB.Driver.WriteConcern;
 
 namespace QuizApp_API.DataAccess.Repositories
 {
@@ -59,7 +53,7 @@ namespace QuizApp_API.DataAccess.Repositories
             return (await _context.Profiles.FindAsync(q => q.OwnerId == id)).FirstOrDefault();
         }
 
-        public async Task Update(UserProfile entity)
+        public async Task UpdateAsync(UserProfile entity)
         {
             if (entity != null)
             {
@@ -91,6 +85,12 @@ namespace QuizApp_API.DataAccess.Repositories
         {
             var profile = await (await _context.Profiles.FindAsync(p => p.OwnerId == ownerId)).FirstAsync();
             return profile != null;
+        }
+
+        public async Task<IEnumerable<UserProfile>> GetRangeByOwnerIdsAsync(string[] ownerIds)
+        {
+            var profiles = await _context.Profiles.FindAsync(e => ownerIds.Contains(e.OwnerId));
+            return profiles.ToEnumerable(); 
         }
     }
 }

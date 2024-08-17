@@ -1,19 +1,47 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
-using System.Security.Claims;
+using System.ComponentModel.DataAnnotations;
 
 namespace QuizApp_API.Controllers
 {
     [Route("api/profile")]
     [ApiController]
-    //[Authorize]
-    public class ProfilesController(IUserProfilesService userProfilesService) 
+    public class ProfilesController(IUserProfilesService userProfilesService, IFullUserProfileService fullUserProfileService) 
         : ControllerBase
     {
         private readonly IUserProfilesService _userProfilesService = userProfilesService;
+        private readonly IFullUserProfileService _fullUserProfileService = fullUserProfileService;
+
+        [HttpGet("current-username")]
+        public IActionResult GetCurrentUser()
+        {
+            var username = GetCurrentUserName();
+            if (string.IsNullOrEmpty(username))
+                return BadRequest("There is no username");
+            else
+                return Ok(new { username });
+        }
+
+
+        [HttpGet("info")]
+        public async Task<IActionResult> GetCurrentUserProfileInfo()
+        {
+            var username = GetCurrentUserName();
+            if (string.IsNullOrEmpty(username))
+                return BadRequest("User id not found");
+            try
+            {
+                var profileInfo = await _userProfilesService.GetByUsernameAsync(username);
+                return Ok(profileInfo);
+            } 
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Index(string? user)
@@ -28,7 +56,7 @@ namespace QuizApp_API.Controllers
 
             try
             {
-                if(!await _userProfilesService.IsExists(username))
+                if(!await _userProfilesService.IsExistsAsync(username))
                 {
                     if (!username.Equals(user))
                     {
@@ -37,7 +65,7 @@ namespace QuizApp_API.Controllers
                     else 
                         return NotFound();
                 }
-                var profile = await _userProfilesService.GetByUsernameAsync(username);
+                var profile = await _fullUserProfileService.GetFullUserProfileAsync(username);
                 return Ok(profile);
             }
             catch (Exception ex)
@@ -46,9 +74,35 @@ namespace QuizApp_API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("update-photo")]
         [Authorize]
-        public async Task<IActionResult> Edit([FromBody] UserProfileModel profile)
+        public async Task<IActionResult> UpdatePhoto(IFormFile image)
+        {
+            if (image == null)
+                return BadRequest(new { message = "Image data is missing or empty." });
+            if (image.ContentType != "image/jpeg")
+                return BadRequest("Image needs to be .jpeg");
+            try 
+            {
+                var username = GetCurrentUserName() ?? string.Empty;
+                byte[] fileBytes;
+                using (var memoryStream = new MemoryStream())
+                {
+                    await image.CopyToAsync(memoryStream);
+                    fileBytes = memoryStream.ToArray();
+                }
+                await _userProfilesService.UpdateProfilePhotoAsync(fileBytes, username);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("update")]
+        [Authorize]
+        public async Task<IActionResult> Edit([FromBody] UserProfileInfo profile)
         {
             if(profile.Owner.Username == GetCurrentUserName())
             {
@@ -62,6 +116,24 @@ namespace QuizApp_API.Controllers
                     return BadRequest(ex.Message);
                 }
             } return BadRequest("You are not an owner");
+        }
+
+        [HttpGet("img/@{username}")]
+        public async Task<IActionResult> GetPhoto(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                return BadRequest();
+            try
+            {
+                var bytes = await _userProfilesService.GetProfilePhotoAsync(username);
+                var fileStream = new MemoryStream(bytes);
+                return File(fileStream, "image/jpeg", "profile-avatar");
+            } 
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         private string GetCurrentUserName()

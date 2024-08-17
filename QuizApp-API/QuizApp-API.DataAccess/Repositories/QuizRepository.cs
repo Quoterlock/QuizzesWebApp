@@ -2,6 +2,7 @@
 using QuizApp_API.DataAccess.Data;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
+using SharpCompress.Common;
 
 namespace QuizApp_API.DataAccess.Repositories
 {
@@ -16,6 +17,8 @@ namespace QuizApp_API.DataAccess.Repositories
 
         public async Task AddAsync(Quiz quiz)
         {
+            quiz.Id = Guid.NewGuid().ToString();
+            quiz.CreationDate = DateTime.Now.ToString();
             await _context.Quizzes.InsertOneAsync(quiz);
         }
 
@@ -47,7 +50,7 @@ namespace QuizApp_API.DataAccess.Repositories
             return (await _context.Quizzes.FindAsync(q => q.Id == id)).FirstOrDefault();
         }
 
-        public Task Update(Quiz entity)
+        public Task UpdateAsync(Quiz entity)
         {
             throw new NotImplementedException();
         }
@@ -61,10 +64,10 @@ namespace QuizApp_API.DataAccess.Repositories
             else throw new ArgumentNullException("quiz-id");
         }
 
-        public async Task<IEnumerable<Quiz>> GetByUserIdAsync(string authorId)
+        public async Task<IEnumerable<Quiz>> GetByUserIdAsync(string userId)
         {
             var entities = await _context.Quizzes
-                .FindAsync(q => q.AuthorId == authorId);
+                .FindAsync(q => q.AuthorUserId == userId);
             return entities.ToEnumerable();
         }
 
