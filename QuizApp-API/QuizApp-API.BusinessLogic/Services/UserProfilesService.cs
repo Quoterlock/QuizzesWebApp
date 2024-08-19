@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using QuizApp_API.BusinessLogic.Interfaces;
+﻿using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
@@ -9,11 +8,12 @@ namespace QuizApp_API.BusinessLogic.Services
     public class UserProfilesService(
         IUserProfileRepository userProfileRepository,
         IUserService userService,
-        IImagesRepository images) : IUserProfilesService
+        IImagesRepository images, IImageConverter imageConverter) : IUserProfilesService
     {
         private readonly IUserProfileRepository _profileRepository = userProfileRepository;
         private readonly IUserService _userService = userService;
         private readonly IImagesRepository _images = images;
+        private readonly IImageConverter _imageConverter = imageConverter;
 
         public async Task CreateAsync(string username)
         {
@@ -22,9 +22,9 @@ namespace QuizApp_API.BusinessLogic.Services
             if (await _profileRepository.IsExistsAsync(username))
                 throw new ArgumentException("Profile already exists for this user", nameof(username));
 
-            var user = await _userService.GetByNameAsync(username) 
+            var user = await _userService.GetByNameAsync(username)
                 ?? throw new ArgumentException("User not found with username:" + username, nameof(username));
-            
+
             var profile = new UserProfileInfo
             {
                 DisplayName = user.NormalizedUserName ?? "Unknown",
@@ -37,7 +37,7 @@ namespace QuizApp_API.BusinessLogic.Services
 
             await _profileRepository.AddAsync(Convert(profile));
         }
-        
+
         public async Task<List<UserProfileInfo>> GetRangeAsync(params string[] userIds)
         {
             ArgumentNullException.ThrowIfNull(userIds);
@@ -45,14 +45,15 @@ namespace QuizApp_API.BusinessLogic.Services
             var profiles = await _profileRepository.GetRangeByOwnerIdsAsync(userIds);
             var owners = await _userService.GetRangeByIdAsync(userIds);
             var profilesInfos = new List<UserProfileInfo>();
-            foreach(var profile in profiles)
+            foreach (var profile in profiles)
             {
                 var owner = owners.FirstOrDefault(o => o.Id == profile.OwnerId)
                     ?? throw new ArgumentException($"Owner withId:{profile.OwnerId} doesn't exist");
                 var profileModel = await Convert(profile);
-                profileModel.Owner = new ProfileOwnerInfo { 
-                    Id = owner.Id, 
-                    Username = owner.UserName ?? "none" 
+                profileModel.Owner = new ProfileOwnerInfo
+                {
+                    Id = owner.Id,
+                    Username = owner.UserName ?? "none"
                 };
                 profilesInfos.Add(profileModel);
             }
@@ -61,12 +62,12 @@ namespace QuizApp_API.BusinessLogic.Services
 
         public async Task<UserProfileInfo> GetByUsernameAsync(string username)
         {
-            if(string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
                 throw new ArgumentNullException(nameof(username));
 
-            var user = await _userService.GetByNameAsync(username) 
+            var user = await _userService.GetByNameAsync(username)
                 ?? throw new Exception("User not found with username:" + username);
-            var entity = await _profileRepository.GetByOwnerIdAsync(user.Id) 
+            var entity = await _profileRepository.GetByOwnerIdAsync(user.Id)
                 ?? throw new Exception("User profile not found");
 
             var profile = await Convert(entity);
@@ -78,11 +79,11 @@ namespace QuizApp_API.BusinessLogic.Services
         {
             ArgumentNullException.ThrowIfNull(profile);
 
-            if (string.IsNullOrEmpty(profile.Id)) 
+            if (string.IsNullOrEmpty(profile.Id))
                 throw new ArgumentNullException("profile.id");
-            if (profile.Owner == null) 
+            if (profile.Owner == null)
                 throw new ArgumentNullException("profile.owner");
-            if (profile.Owner.Id == null) 
+            if (profile.Owner.Id == null)
                 throw new ArgumentNullException("profile.owner.id");
             if (!await _profileRepository.IsExistsAsync(profile.Owner.Id))
                 throw new ArgumentException("profile doesn't exist", nameof(profile));
@@ -90,7 +91,7 @@ namespace QuizApp_API.BusinessLogic.Services
             try
             {
                 await _profileRepository.UpdateAsync(Convert(profile));
-            } 
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -110,33 +111,34 @@ namespace QuizApp_API.BusinessLogic.Services
                 throw new ArgumentNullException(nameof(username));
 
             var profile = await GetByUsernameAsync(username);
+            var imageNormalized = _imageConverter.ResizeImage(image, 200, 200);
 
             if (_images.IsExists(profile.ImageId))
             {
-                await _images.UpdateImageAsync(profile.ImageId, image);
+                await _images.UpdateImageAsync(profile.ImageId, imageNormalized);
             }
             else
             {
-                var imageId = await _images.AddImage(image);
+                var imageId = await _images.AddImage(imageNormalized);
                 profile.ImageId = imageId;
                 await UpdateAsync(profile);
             }
-                
+
         }
 
         public async Task<byte[]> GetProfilePhotoAsync(string username)
         {
-            if(string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
                 throw new ArgumentNullException(nameof(username));
 
             var owner = await _userService.GetByNameAsync(username);
-            if(owner == null)
+            if (owner == null)
                 throw new ArgumentException($"User:{username} doesn't exist", nameof(username));
             var profile = await _profileRepository.GetByOwnerIdAsync(owner.Id);
             if (profile == null)
                 throw new Exception($"Profile with owner:{owner.Id} doesn't exist");
             var imageBytes = await _images.GetImageAsync(profile.ImageId);
-           
+
             return imageBytes;
         }
 
@@ -149,7 +151,7 @@ namespace QuizApp_API.BusinessLogic.Services
                     return await _profileRepository.IsExistsAsync(user.Id);
                 else
                     return false;
-            } 
+            }
             catch (Exception)
             {
                 return false;

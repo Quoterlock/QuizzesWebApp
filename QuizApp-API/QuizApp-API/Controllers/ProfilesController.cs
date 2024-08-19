@@ -24,7 +24,6 @@ namespace QuizApp_API.Controllers
                 return Ok(new { username });
         }
 
-
         [HttpGet("info")]
         public async Task<IActionResult> GetCurrentUserProfileInfo()
         {
