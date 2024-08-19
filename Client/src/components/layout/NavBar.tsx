@@ -17,8 +17,6 @@ export default function NavBar({username}:Props) {
         navigate("/login")
     }
     
-    console.log("[Nav] username:" + username as string)
-
     return(<div className="custom-navbar">
         <div className="col ms-2">
             <IconButton iconSrc="./src/assets/icons/home-icon.png" onClick={()=>{navigate("/")}}/>

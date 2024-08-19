@@ -41,8 +41,9 @@ export default function QuizPage(){
 
         var correctAnswersCount = 0;
         quiz?.questions.map((q, index)=> {
-          if(q.correctAnswerIndex === userAnswers[index])
+          if(q.correctAnswerIndex === answers[index]) {
             correctAnswersCount++
+          }
         })
         const finalResult = correctAnswersCount*100/(quiz?.questions.length??correctAnswersCount)
 
@@ -51,7 +52,7 @@ export default function QuizPage(){
           quizId:quiz?.id ?? "", 
           result:finalResult
         }
-        console.log(result)
+
         api.SaveResultAsync(result)
         .then((response) => {
           console.log(response)
