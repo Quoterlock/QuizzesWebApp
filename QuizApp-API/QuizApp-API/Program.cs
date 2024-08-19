@@ -59,6 +59,7 @@ namespace QuizApp_API
             // add redis cache
             builder.Services.AddSingleton(new RedisService(redisConnectionString, 60));
 
+            builder.Services.AddScoped<IImageConverter, ImageConverter>();
             builder.Services.AddScoped<IQuizzesRepository, QuizRepository>();
             builder.Services.AddScoped<IQuizzesService, QuizzesService>();
             builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();

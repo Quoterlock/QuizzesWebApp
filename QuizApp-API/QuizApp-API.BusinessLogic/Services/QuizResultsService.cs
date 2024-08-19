@@ -1,4 +1,5 @@
-﻿using QuizApp_API.BusinessLogic.Interfaces;
+﻿using Amazon.Runtime.EventStreams.Internal;
+using QuizApp_API.BusinessLogic.Interfaces;
 using QuizApp_API.BusinessLogic.Models;
 using QuizApp_API.DataAccess.Entities;
 using QuizApp_API.DataAccess.Interfaces;
@@ -16,7 +17,10 @@ namespace QuizApp_API.BusinessLogic.Services
         public async Task<IEnumerable<QuizResultModel>> GetResultsByQuizIdAsync(string quizId)
         {
             if (!string.IsNullOrEmpty(quizId))
-                return await ConvertEntitiesToModels(await _repository.GetByQuizIdAsync(quizId));
+            {
+                var item = await ConvertEntitiesToModels(await _repository.GetByQuizIdAsync(quizId));
+                return item;
+            }
             else
                 throw new ArgumentNullException(nameof(quizId));
         }

@@ -20,11 +20,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object, 
                 userServiceMock.Object, 
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser { 
@@ -61,12 +66,17 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
-            
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
+
             userProfileRepoMock.Setup(m => m.GetByOwnerIdAsync(ownerId))
                 .ReturnsAsync(new UserProfile
                 {
@@ -91,11 +101,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser
@@ -116,11 +131,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             string[] ids = ["1", "2", "3"];
             UserProfile[] profiles = [
@@ -158,12 +178,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
-
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
             // Act
             var actual = await sut.GetRangeAsync();
 
@@ -183,11 +207,17 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] imageBytes = [2];
+            byte[] bytes = [1];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns(imageBytes);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser
@@ -206,14 +236,12 @@ namespace UnitTests
             imagesRepoMock.Setup(m=>m.IsExists(imageId))
                 .Returns(true);
 
-            byte[] bytes = [];
-
             // Act
             await sut.UpdateProfilePhotoAsync(bytes, username);
             
             //Assert
-            imagesRepoMock.Verify(m => m.UpdateImageAsync(imageId, bytes), Times.Once);
-            imagesRepoMock.Verify(m => m.AddImage(bytes), Times.Never);
+            imagesRepoMock.Verify(m => m.UpdateImageAsync(imageId, imageBytes), Times.Once);
+            imagesRepoMock.Verify(m => m.AddImage(imageBytes), Times.Never);
         }
 
         [Fact]
@@ -227,11 +255,17 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] imageBytes = [2];
+            byte[] bytes = [1];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns(imageBytes);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser
@@ -252,14 +286,12 @@ namespace UnitTests
             imagesRepoMock.Setup(m => m.IsExists(imageId))
                 .Returns(false);
 
-            byte[] bytes = [];
-
             // Act
             await sut.UpdateProfilePhotoAsync(bytes, username);
 
             //Assert
-            imagesRepoMock.Verify(m => m.UpdateImageAsync(imageId, bytes), Times.Never);
-            imagesRepoMock.Verify(m => m.AddImage(bytes), Times.Once);
+            imagesRepoMock.Verify(m => m.UpdateImageAsync(imageId, imageBytes), Times.Never);
+            imagesRepoMock.Verify(m => m.AddImage(imageBytes), Times.Once);
             userProfileRepoMock.Verify(m => m.UpdateAsync(It.IsAny<UserProfile>()), Times.Once);
         }
 
@@ -274,17 +306,23 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] imageBytes = [2];
+            byte[] bytes = [1];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns(imageBytes);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser { Id = ownerId });
             userProfileRepoMock.Setup(m => m.GetByOwnerIdAsync(ownerId))
                 .ReturnsAsync(new UserProfile { ImageId = imageId });
-            var bytes = new byte[] { 1, 2, 3 };
+
 
             imagesRepoMock.Setup(m => m.GetImageAsync(imageId))
                 .ReturnsAsync(bytes);
@@ -305,11 +343,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             // Assert
             await Assert.ThrowsAsync<ArgumentException>(() => sut.GetProfilePhotoAsync(username));
@@ -325,11 +368,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser { Id = ownerId });
@@ -348,10 +396,16 @@ namespace UnitTests
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
 
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
+
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser { Id = "1", UserName = "user1" });
@@ -374,11 +428,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             // Act
             var actual = await sut.IsExistsAsync(username);
@@ -396,11 +455,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser { Id = "1", UserName = "user1" });
@@ -421,11 +485,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userServiceMock.Setup(m => m.GetByNameAsync(username))
                 .ReturnsAsync(new IdentityUser { Id = "1", UserName = username, NormalizedUserName="USER" });
@@ -456,11 +525,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userProfileRepoMock.Setup(m => m.IsExistsAsync(username))
                 .ReturnsAsync(false);
@@ -478,11 +552,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userProfileRepoMock.Setup(m => m.IsExistsAsync(username))
                 .ReturnsAsync(true);
@@ -501,11 +580,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userProfileRepoMock.Setup(m => m.IsExistsAsync(userId))
                 .ReturnsAsync(true);
@@ -543,11 +627,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userProfileRepoMock.Setup(m => m.IsExistsAsync(username))
                 .ReturnsAsync(false);
@@ -573,11 +662,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userProfileRepoMock.Setup(m => m.IsExistsAsync(username))
                 .ReturnsAsync(true);
@@ -603,11 +697,16 @@ namespace UnitTests
             var userProfileRepoMock = new Mock<IUserProfileRepository>();
             var userServiceMock = new Mock<IUserService>();
             var imagesRepoMock = new Mock<IImagesRepository>();
+            var imageConverterMock = new Mock<IImageConverter>();
+            byte[] bytes = [];
+            imageConverterMock.Setup(m => m.ResizeImage(bytes, 200, 200))
+                .Returns([]);
 
             var sut = new UserProfilesService(
                 userProfileRepoMock.Object,
                 userServiceMock.Object,
-                imagesRepoMock.Object);
+                imagesRepoMock.Object,
+                imageConverterMock.Object);
 
             userProfileRepoMock.Setup(m => m.IsExistsAsync(username))
                 .ReturnsAsync(true);
